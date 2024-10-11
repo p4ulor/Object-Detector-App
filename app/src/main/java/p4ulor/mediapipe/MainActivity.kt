@@ -9,7 +9,11 @@ import p4ulor.mediapipe.ui.screens.RootScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
+
+        // Lock screen to portrait
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
+
         setContent {
             RootScreen()
         }

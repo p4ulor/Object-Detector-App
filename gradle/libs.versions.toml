@@ -13,6 +13,7 @@ composeBom = "2024.04.01"
 camerax_version = "1.3.4"
 navigationCompose = "2.8.2"
 accompanistPermissions = "0.36.0"
+tasksVision = "0.10.16"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +38,7 @@ androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycl
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref="camerax_version" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
+tasks-vision = { group = "com.google.mediapipe", name = "tasks-vision", version.ref = "tasksVision" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

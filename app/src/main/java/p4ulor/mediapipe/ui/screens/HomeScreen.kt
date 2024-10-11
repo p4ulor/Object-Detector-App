@@ -6,7 +6,6 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,12 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.common.util.concurrent.ListenableFuture
+import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.CenteredContent
 import p4ulor.mediapipe.ui.getActivityOrNull
@@ -66,11 +66,12 @@ fun HomeScreen() {
 @Composable
 fun CameraX(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
     val lifecycleOwner = LocalLifecycleOwner.current
+    val viewModel = viewModel<MainViewModel>()
 
     AndroidView(
         factory = { ctx ->
             val cameraPreviewView = PreviewView(ctx)
-            
+
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
 
@@ -79,14 +80,19 @@ fun CameraX(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
                     .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                     .build()
 
+                // Indicate the cameraProvider that we want to get the preview of the camera
+                val previewUseCase = Preview.Builder().build().also {
+                    it.setSurfaceProvider(cameraPreviewView.surfaceProvider)
+                }
+
+                // Indicate the cameraProvider that we want to get extra details about the data
+                // from the camera. Used to process the frames that are captured
                 val imageAnalyzerUseCase = ImageAnalysis.Builder()
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                         .build()
 
-                val previewUseCase = Preview.Builder().build().also {
-                    it.setSurfaceProvider(cameraPreviewView.surfaceProvider)
-                }
+                viewModel.process(imageAnalyzerUseCase)
 
                 // We close any currently open camera just in case, then open up
                 // our own to be display the live camera feed
@@ -94,12 +100,11 @@ fun CameraX(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
                     frontCamera,
-                    imageAnalyzerUseCase,
-                    previewUseCase
+                    previewUseCase,
+                    imageAnalyzerUseCase
                 )
             }, ContextCompat.getMainExecutor(ctx))
             cameraPreviewView
-        },
-        modifier = Modifier.fillMaxSize()
+        }
     )
 }
