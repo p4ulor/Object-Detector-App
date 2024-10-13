@@ -1,6 +1,9 @@
+import org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.de.undercouch.gradle.download)
 }
 
 android {
@@ -50,7 +53,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -81,4 +83,24 @@ dependencies {
 
     // Permission utils
     implementation(libs.accompanist.permissions)
+}
+
+private val ASSET_DIR = "$projectDir/src/main/assets"
+
+// Has underscore to appear at the top of the gradle task list in app/tasks/other
+task<Download>("_download1") {
+    src("https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite")
+    dest(File("$ASSET_DIR/efficientdet-lite0.tflite"))
+    overwrite(false) // Prevents file from being downloaded again & overwritten
+}
+
+task<Download>("_download2") {
+    src("https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/float32/1/efficientdet_lite2.tflite")
+    dest(File("$ASSET_DIR/efficientdet-lite2.tflite"))
+    overwrite(false)
+}
+
+tasks.named("build") {
+    finalizedBy("_download1")
+    finalizedBy("_download2")
 }

@@ -3,7 +3,7 @@ package p4ulor.mediapipe.data
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 
-object CameeraConstants {
+object CameraConstants {
     /** Specify to use back camera */
     val frontCamera = CameraSelector.Builder()
         .requireLensFacing(CameraSelector.LENS_FACING_BACK)

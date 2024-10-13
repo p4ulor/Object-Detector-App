@@ -6,4 +6,4 @@ const val TAG = "p4ulor.log"
 
 fun i(s: String) = Log.i(TAG, s)
 
-fun w(s: String) = Log.w(TAG, s)
+fun e(s: String) = Log.e(TAG, s)

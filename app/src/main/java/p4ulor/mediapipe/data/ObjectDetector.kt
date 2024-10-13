@@ -14,7 +14,8 @@ import com.google.mediapipe.tasks.core.OutputHandler
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetector
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectorResult
-import p4ulor.mediapipe.w
+import p4ulor.mediapipe.e
+import p4ulor.mediapipe.i
 
 /**
  * Has all the MediaPipe logic
@@ -24,7 +25,7 @@ class ObjectDetector(
     private val settings: ObjectDetectorSettings = ObjectDetectorSettings()
 ) : ImageAnalysis.Analyzer {
 
-    lateinit var callbacks: ObjectDetectorCallbacks
+    var callbacks: ObjectDetectorCallbacks? = null
 
     // For this example this needs to be a var so it can be reset on changes. If the ObjectDetector
     // will not change, a lazy val would be preferable.
@@ -37,7 +38,7 @@ class ObjectDetector(
     private fun setupObjectDetector() = with(settings){
         val mediaPipeBaseOptions = BaseOptions.builder()
             .setDelegate(processor)
-            .setModelAssetPath(model.name)
+            .setModelAssetPath(model.id)
             .build()
 
         val objectDetectorOptions = ObjectDetector.ObjectDetectorOptions.builder()
@@ -55,17 +56,22 @@ class ObjectDetector(
                     .setErrorListener(errorListener())
         }
 
-        objectDetector = ObjectDetector.createFromOptions(context, objectDetectorOptions.build())
+        objectDetector = try {
+            ObjectDetector.createFromOptions(context, objectDetectorOptions.build())
+        } catch (e: Exception){
+            i("Object detector exception $e")
+            null
+        }
     }
 
     private fun resultListener() = MPImageResultListener { objectResult, inputImage ->
         val finishTimeMs = SystemClock.uptimeMillis()
         val inferenceTime = finishTimeMs - objectResult.timestampMs()
         if(callbacks==null){
-            w("Callbacks is null, results will not be reported")
+            e("Callbacks is null, results will not be reported")
             return@MPImageResultListener
         }
-        callbacks.onResults(
+        callbacks?.onResults(
             ResultBundle(
                 objectResult,
                 inferenceTime,
@@ -76,7 +82,7 @@ class ObjectDetector(
     }
 
     private fun errorListener() = ErrorListener {
-        w("error $it")
+        e("error $it")
     }
 
     /**
@@ -84,7 +90,7 @@ class ObjectDetector(
      * asynchronously to the caller.
      */
     override fun analyze(image: ImageProxy) {
-        require(settings.mediaTypeToAnalyze != RunningMode.LIVE_STREAM) {
+        require(settings.mediaTypeToAnalyze == RunningMode.LIVE_STREAM) {
             "This method can only be called in the context of a camera preview (live stream)"
         }
 
@@ -117,7 +123,7 @@ class ObjectDetector(
          * [resultListener]
          */
         if (objectDetector==null){
-            w("objectDetector is null!")
+            e("objectDetector is null!")
         }
         objectDetector?.detectAsync(mpImage, frameTime)
     }

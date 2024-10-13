@@ -28,22 +28,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectorResult
-import p4ulor.mediapipe.data.CameeraConstants
+import p4ulor.mediapipe.data.CameraConstants
 import p4ulor.mediapipe.data.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.ResultBundle
 import p4ulor.mediapipe.data.viewmodel.MainViewModel
+import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.CenteredContent
 import p4ulor.mediapipe.ui.getActivityOrNull
 import p4ulor.mediapipe.ui.onComposableDisposed
 import p4ulor.mediapipe.ui.requestPermission
-import p4ulor.mediapipe.w
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: MainViewModel) {
     val context = LocalContext.current
 
     val isGranted = requestPermission(Manifest.permission.CAMERA, onPermissionNotGranted = {
@@ -64,7 +63,7 @@ fun HomeScreen() {
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
-    CameraX(cameraProviderFuture)
+    CameraX(viewModel, cameraProviderFuture)
 }
 
 /**
@@ -74,9 +73,11 @@ fun HomeScreen() {
  * https://developer.android.com/media/camera/camerax/architecture#cameraprovider
  */
 @Composable
-fun CameraX(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
+fun CameraX(
+    viewModel: MainViewModel,
+    cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
+) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val viewModel = viewModel<MainViewModel>()
 
     var isCameraActive by remember { mutableStateOf(true) }
 
@@ -108,7 +109,7 @@ fun CameraX(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
                     it.setSurfaceProvider(cameraPreviewView.surfaceProvider)
                 }
 
-                viewModel.process(CameeraConstants.imageAnalyzerUseCase, object : ObjectDetectorCallbacks {
+                viewModel.process(CameraConstants.imageAnalyzerUseCase, object : ObjectDetectorCallbacks {
                     override fun onResults(resultBundle: ResultBundle) {
                         if (isCameraActive) {
                             objectResults = resultBundle.result
@@ -117,7 +118,7 @@ fun CameraX(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
                     }
 
                     override fun onError(error: String) {
-                        w("error")
+                        e("error")
                     }
                 })
 
@@ -126,9 +127,9 @@ fun CameraX(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
-                    CameeraConstants.frontCamera,
+                    CameraConstants.frontCamera,
                     previewUseCase,
-                    CameeraConstants.imageAnalyzerUseCase
+                    CameraConstants.imageAnalyzerUseCase
                 )
             }, ContextCompat.getMainExecutor(ctx))
             cameraPreviewView
