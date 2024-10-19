@@ -19,6 +19,7 @@ import p4ulor.mediapipe.i
 
 /**
  * Has all the MediaPipe logic
+ * https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android
  */
 class ObjectDetector(
     private val context: Context,
@@ -98,9 +99,9 @@ class ObjectDetector(
 
         // Copy out RGB bits from the frame to a bitmap buffer
         val bitmapBuffer = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
-
         image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
         image.close()
+
         // Rotate the frame received from the camera to be in the same direction as it'll be shown
         val matrix = Matrix().apply { postRotate(image.imageInfo.rotationDegrees.toFloat()) }
 
@@ -125,7 +126,7 @@ class ObjectDetector(
         if (objectDetector==null){
             e("objectDetector is null!")
         }
-        objectDetector?.detectAsync(mpImage, frameTime)
+        objectDetector?.detectAsync(mpImage, frameTime) //todo, investigate com.google.mediapipe.framework.MediaPipeException: failed precondition: The received packets having a smaller timestamp than the processed timestamp
     }
 }
 
@@ -136,8 +137,10 @@ interface ObjectDetectorCallbacks {
     fun onError(error: String)
 }
 
-// Wraps results from inference, the time it takes for inference to be performed, and
-// the input image and height for properly scaling UI to return back to callers
+/**
+ * Wraps results from inference, the time it takes for inference to be performed, and
+ * the input image and height for properly scaling UI to return back to callers
+ */
 data class ResultBundle(
     val result: ObjectDetectorResult,
     val processingTime: Long,
