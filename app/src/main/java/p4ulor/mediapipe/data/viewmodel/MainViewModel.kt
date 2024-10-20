@@ -15,15 +15,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val executor = Executors.newSingleThreadExecutor()
     private val objectDetector = ObjectDetector(application.applicationContext)
 
-    private val _objectResults = MutableStateFlow<ObjectDetectorResult?>(null)
-    val objectResults: StateFlow<ObjectDetectorResult?> get() = _objectResults
+    private val _results = MutableStateFlow<ResultBundle?>(null)
+    val results: StateFlow<ResultBundle?> get() = _results
 
     fun process(
         imageAnalyzerUseCase: ImageAnalysis,
     ) {
         objectDetector.callbacks = object : ObjectDetectorCallbacks {
             override fun onResults(resultBundle: ResultBundle) {
-                _objectResults.value = resultBundle.result
+                _results.value = resultBundle
             }
 
             override fun onError(error: String) {

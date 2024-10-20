@@ -7,6 +7,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -79,7 +80,7 @@ fun CameraX(
     var processingTimeMs by rememberSaveable { mutableIntStateOf(0) }
 
     // Contains the data necessary to outline an object into the screen
-    val objectResults by viewModel.objectResults.collectAsState()
+    val resultsBundle by viewModel.results.collectAsState()
 
     /*onComposableDisposed { //this is causing problems, and freezing UI, investigate
         i("Composable disposed")
@@ -120,48 +121,49 @@ fun CameraX(
     )
 
     // Show the detected objects overlay
-    ObjectBoundsBoxOverlay(
-        detections = objectResults?.detections() ?: emptyList()
-    )
+    resultsBundle?.let {
+        ObjectBoundsBoxOverlay(
+            detections = it.result.detections() ?: emptyList<Detection>(),
+            frameWidth = it.inputImageWidth,
+            frameHeight = it.inputImageHeight
+        )
+    }
+
 }
 
 @Composable
 private fun ObjectBoundsBoxOverlay(
-    detections: List<Detection>
+    detections: List<Detection>,
+    frameWidth: Int,
+    frameHeight: Int,
 ) {
     if (detections.isNotEmpty()) {
         for (detection in detections) {
-            // calculating the UI dimensions of the detection bounds
-            val resultBounds = detection.boundingBox()
-            val boxWidth = resultBounds.width()
-            val boxHeight = resultBounds.height()
-            val boxLeftOffset = resultBounds.left
-            val boxTopOffset = resultBounds.top
+            BoxWithConstraints(Modifier.fillMaxSize()) {
+                // calculating the UI dimensions of the detection bounds
+                val resultBounds = detection.boundingBox()
+                val boxWidth = (resultBounds.width() / frameWidth) * this.maxWidth.value
+                val boxHeight = (resultBounds.height() / frameHeight) * this.maxHeight.value
+                val boxLeftOffset = (resultBounds.left / frameWidth) * this.maxWidth.value
+                val boxTopOffset = (resultBounds.top / frameHeight) * this.maxHeight.value
 
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .offset(
-                        boxLeftOffset.dp,
-                        boxTopOffset.dp,
-                    )
-            ) {
-                Box(
-                    modifier = Modifier
+                Box(Modifier.fillMaxSize().offset(boxLeftOffset.dp, boxTopOffset.dp)) {
+                    Box(Modifier
                         .border(3.dp, Color.Red)
                         .width(boxWidth.dp)
                         .height(boxHeight.dp)
-                )
-                Box(modifier = Modifier.padding(3.dp)) {
-                    Text(
-                        text = "${
-                            detection.categories().first().categoryName()
-                        } ${detection.categories().first().score().toString().take(4)}",
-                        modifier = Modifier
-                            .background(Color.Black)
-                            .padding(5.dp, 0.dp),
-                        color = Color.White,
                     )
+                    Box(Modifier.padding(3.dp)) {
+                        Text(
+                            text = "${
+                                detection.categories().first().categoryName()
+                            } ${detection.categories().first().score().toString().take(4)}",
+                            modifier = Modifier
+                                .background(Color.Black)
+                                .padding(5.dp, 0.dp),
+                            color = Color.White,
+                        )
+                    }
                 }
             }
         }

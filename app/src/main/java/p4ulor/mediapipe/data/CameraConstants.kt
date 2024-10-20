@@ -1,5 +1,6 @@
 package p4ulor.mediapipe.data
 
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 
@@ -14,6 +15,7 @@ object CameraConstants {
      * from the camera. Used to process the frames that are captured
      */
     val imageAnalyzerUseCase = ImageAnalysis.Builder()
+        .setTargetAspectRatio(AspectRatio.RATIO_16_9)
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
         .build()
