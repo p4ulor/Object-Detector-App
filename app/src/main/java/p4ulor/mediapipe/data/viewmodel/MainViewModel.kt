@@ -3,7 +3,6 @@ package p4ulor.mediapipe.data.viewmodel
 import android.app.Application
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.AndroidViewModel
-import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectorResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import p4ulor.mediapipe.data.ObjectDetector
