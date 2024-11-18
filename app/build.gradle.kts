@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    // Added:
     alias(libs.plugins.de.undercouch.gradle.download)
 }
 
@@ -71,7 +72,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Added
+    // Added:
     // Camera
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
@@ -85,6 +86,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
 }
 
+// Added:
 private val ASSET_DIR = "$projectDir/src/main/assets"
 
 // Has underscore to appear at the top of the gradle task list in app/tasks/other
