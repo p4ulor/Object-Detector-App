@@ -1,6 +1,6 @@
 ## Technology introduction
-- [MediaPipe](https://github.com/google/mediapipe) is an open-source project from Google. It consists of a library that facilitate the integration of AI & ML into your applications. It provides pre-trained models like it's [shown here](https://mediapipe-studio.webapps.google.com/home). 
-- Note: MediaPipe uses or is based on the TensorFlow Lite, and provides an easier way to add some basic ML capabilities to your apps. Per example, you don't need to download models and put them in the *assets* folder. Checkout the [ML on Android with MediaPipe](https://www.youtube.com/playlist?list=PLOU2XLYxmsILZnKn6Erxdyhxmc3fxyitP) YT playlist.
+- [MediaPipe](https://github.com/google/mediapipe) is an open-source project from Google. It's a framework that facilitates the integration of AI & ML into your applications. It provides pre-trained models like it's [shown here](https://mediapipe-studio.webapps.google.com/home). The [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models) can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
+- Note: MediaPipe uses or is based on the TensorFlow Lite, and provides an easier way to add some basic ML capabilities to your apps. Checkout the [ML on Android with MediaPipe](https://www.youtube.com/playlist?list=PLOU2XLYxmsILZnKn6Erxdyhxmc3fxyitP) YT playlist.
 - I was inspired by [mediapipe-samples - object_detection](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android-jetpack-compose). Which has a very spaghetti and hard to read code, but it helped nonetheless
 
 ## App features
@@ -16,7 +16,7 @@ I'm using:
 - [Gradle version catalogs](https://developer.android.com/build/migrate-to-catalogs)
 
 ## Dependencies
-- Gradle Plugin [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) to facilitate the download of the small TFlite ML models
+- Gradle Plugin [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) to facilitate the download of the small TFlite AI/ML models
 - [androidx.camera.* dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
 - MediaPipe Tasks Vision 
 	- https://mvnrepository.com/artifact/com.google.mediapipe/tasks-vision

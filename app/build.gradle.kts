@@ -89,19 +89,29 @@ dependencies {
 // Added:
 private val ASSET_DIR = "$projectDir/src/main/assets"
 
-// Has underscore to appear at the top of the gradle task list in app/tasks/other
+// The tasks have an underscore to appear at the top of the gradle task list in the gradle tab,
+// at app/tasks/other
+/**
+ *  This model is recommended because it strikes a balance between latency and accuracy
+ *  https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#efficientdet-lite0_model_recommended
+ */
 task<Download>("_download1") {
     src("https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite")
     dest(File("$ASSET_DIR/efficientdet-lite0.tflite"))
     overwrite(false) // Prevents file from being downloaded again & overwritten
 }
 
+/**
+ * This model is generally more accurate than EfficientDet-Lite0, but is also slower and more memory intensive
+ * https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#efficientdet-lite2_model
+ */
 task<Download>("_download2") {
     src("https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/float32/1/efficientdet_lite2.tflite")
     dest(File("$ASSET_DIR/efficientdet-lite2.tflite"))
     overwrite(false)
 }
 
+/** Download models after building */
 tasks.named("build") {
     finalizedBy("_download1")
     finalizedBy("_download2")

@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ML-on-Android-w-MediaPipe"
+rootProject.name = "Object-Detector-App-w-MediaPipe"
 include(":app")
