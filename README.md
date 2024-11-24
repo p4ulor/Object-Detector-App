@@ -3,6 +3,9 @@
 - Note: MediaPipe uses or is based on the TensorFlow Lite, and provides an easier way to add some basic ML capabilities to your apps. Checkout the [ML on Android with MediaPipe](https://www.youtube.com/playlist?list=PLOU2XLYxmsILZnKn6Erxdyhxmc3fxyitP) YT playlist.
 - I was inspired by [mediapipe-samples - object_detection](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android-jetpack-compose). Which has a very spaghetti and hard to read code, but it helped nonetheless
 
+## Demo
+
+
 ## App features
 - Detect very simple objects
 - Describe the object

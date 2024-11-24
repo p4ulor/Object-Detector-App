@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui
+package p4ulor.mediapipe.ui.utils
 
 import android.Manifest
 import android.app.Activity
