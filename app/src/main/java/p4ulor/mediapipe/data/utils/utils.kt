@@ -7,7 +7,6 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.compose.ui.geometry.Size
 import p4ulor.mediapipe.e
 
-/** Get ratio in numerical format */
 fun ResolutionSelector.toSize() = when(this.aspectRatioStrategy){
     AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY -> Size(height = 4f, width = 3f)
     AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY -> Size(height = 16f, width = 9f)

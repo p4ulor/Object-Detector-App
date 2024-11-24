@@ -27,8 +27,8 @@ fun getSizeOfBoxKeepingRatioGivenContainer(container: Size, box: Size) : Size {
         )
     } else {
         Size(
-            width =  (container.height / box.height) * box.width,
-            height = container.height,
+            width = (container.height / box.height) * box.width,
+            height = container.height
         )
     }
 }

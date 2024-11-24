@@ -2,7 +2,6 @@ package p4ulor.mediapipe.ui.screens
 
 import android.Manifest
 import android.graphics.RectF
-import android.view.View
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -20,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +25,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -101,9 +97,8 @@ fun CameraPreviewContainer(
     cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 ) {
     var isCameraActive by remember { mutableStateOf(true) }
-    var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_4_3) }
+    var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
 
-    //CameraPreview(viewModel, cameraProviderFuture)
     val lifecycleOwner = LocalLifecycleOwner.current
 
     // Contains the data necessary to outline an object into the screen
@@ -111,29 +106,24 @@ fun CameraPreviewContainer(
 
     BoxWithConstraints(
         Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.TopCenter
     ) {
         val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer(
-            container = Size(
-                width = this.maxWidth.value,
-                height = this.maxHeight.value,
-            ),
+            container = Size(width = this.maxWidth.value, height = this.maxHeight.value),
             box = with(cameraPreviewRatio.toSize()) {
-                Size(
-                    width = resultsBundle?.inputImageWidth?.toFloat() ?: width,
-                    height = resultsBundle?.inputImageHeight?.toFloat() ?: height
-                )
+                Size(width = width, height = height)
             }
         )
+
         Box(Modifier
             .width(cameraPreviewSize.width.dp)
             .height(cameraPreviewSize.height.dp),
-            contentAlignment = Alignment.Center
         ) {
             // CameraX isn't providing a composable yet, so we use AndroidView to use it
             val cameraProvider = cameraProviderFuture.get() ?: return@Box
 
             AndroidView(
+                modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
                     val cameraPreviewView = PreviewView(ctx)
                     cameraProviderFuture.addListener(
