@@ -11,13 +11,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.data.viewmodel.MainViewModelFactory
-import p4ulor.mediapipe.ui.theme.MLonAndroidwMediaPipeTheme
+import p4ulor.mediapipe.ui.theme.AppTheme
 
 @Composable
 fun RootScreen(){
-    MLonAndroidwMediaPipeTheme {
+    AppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-
             val viewModel: MainViewModel = viewModel(
                 factory = MainViewModelFactory(LocalContext.current)
             )

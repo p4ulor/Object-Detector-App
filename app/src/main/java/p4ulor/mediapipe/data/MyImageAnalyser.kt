@@ -18,17 +18,17 @@ import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 
 /**
- * Has all the MediaPipe logic
+ * This class is the main class that uses the MediaPipe logic
  * https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android
  */
-class ObjectDetector(
+class MyImageAnalyser(
     private val context: Context,
     private val settings: ObjectDetectorSettings = ObjectDetectorSettings()
 ) : ImageAnalysis.Analyzer {
 
     var callbacks: ObjectDetectorCallbacks? = null
 
-    // For this example this needs to be a var so it can be reset on changes. If the ObjectDetector
+    // Sample docs: For this example this needs to be a var so it can be reset on changes. If the ObjectDetector
     // will not change, a lazy val would be preferable.
     private var objectDetector: ObjectDetector? = null
 
@@ -100,7 +100,6 @@ class ObjectDetector(
         // Copy out RGB bits from the frame to a bitmap buffer
         val bitmapBuffer = Bitmap.createBitmap(image.width, image.height, Bitmap.Config.ARGB_8888)
         image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
-        image.close()
 
         // Rotate the frame received from the camera to be in the same direction as it'll be shown
         val matrix = Matrix().apply { postRotate(image.imageInfo.rotationDegrees.toFloat()) }
@@ -143,7 +142,7 @@ interface ObjectDetectorCallbacks {
  */
 data class ResultBundle(
     val result: ObjectDetectorResult,
-    val processingTime: Long,
+    val processingTimeMs: Long,
     val inputImageHeight: Int,
     val inputImageWidth: Int,
 )

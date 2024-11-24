@@ -51,15 +51,6 @@ fun Activity.requestPermission(permission: String = Manifest.permission.CAMERA){
 }
 
 @Composable
-fun onComposableDisposed(cleanup: () -> Unit){
-    DisposableEffect(Any()) {
-        onDispose {
-            cleanup()
-        }
-    }
-}
-
-@Composable
 fun CenteredContent(content: @Composable () -> Unit){
     Column(
         modifier = Modifier.fillMaxSize(),

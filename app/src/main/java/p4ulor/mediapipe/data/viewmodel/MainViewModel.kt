@@ -5,22 +5,29 @@ import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import p4ulor.mediapipe.data.ObjectDetector
+import p4ulor.mediapipe.data.MyImageAnalyser
 import p4ulor.mediapipe.data.ObjectDetectorCallbacks
+import p4ulor.mediapipe.data.ObjectDetectorSettings
 import p4ulor.mediapipe.data.ResultBundle
 import java.util.concurrent.Executors
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(private val application: Application) : AndroidViewModel(application) {
     private val executor = Executors.newSingleThreadExecutor()
-    private val objectDetector = ObjectDetector(application.applicationContext)
+
+    lateinit var imageAnalysisSettings: ImageAnalysis
+    private lateinit var myImageAnalyser: MyImageAnalyser
 
     private val _results = MutableStateFlow<ResultBundle?>(null)
     val results: StateFlow<ResultBundle?> get() = _results
 
-    fun process(
-        imageAnalyzerUseCase: ImageAnalysis,
+    /** For ou can use [p4ulor.mediapipe.data.utils.imageAnalyzer] */
+    fun initObjectDetector(
+        imageAnalysisSettings: ImageAnalysis,
+        objectDetectorSettings: ObjectDetectorSettings = ObjectDetectorSettings()
     ) {
-        objectDetector.callbacks = object : ObjectDetectorCallbacks {
+        this.imageAnalysisSettings = imageAnalysisSettings
+        myImageAnalyser = MyImageAnalyser(application.applicationContext, objectDetectorSettings)
+        myImageAnalyser.callbacks = object : ObjectDetectorCallbacks {
             override fun onResults(resultBundle: ResultBundle) {
                 _results.value = resultBundle
             }
@@ -29,9 +36,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 TODO("Not yet implemented")
             }
         }
-        imageAnalyzerUseCase.setAnalyzer(
+        imageAnalysisSettings.setAnalyzer(
             executor,
-            objectDetector //implements ImageAnalysis.Analyzer
+            myImageAnalyser //implements ImageAnalysis.Analyzer
         )
     }
 }

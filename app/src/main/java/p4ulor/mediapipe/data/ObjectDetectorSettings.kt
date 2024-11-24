@@ -5,10 +5,10 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
 
 data class ObjectDetectorSettings(
     val processor: Delegate = Delegate.GPU,
-    val maxObjectDetection: Int = 3,
+    val maxObjectDetection: Int = 5,
     val mediaTypeToAnalyze: RunningMode = RunningMode.LIVE_STREAM,
     val model: Model = Model.EFFICIENTDETV0,
-    val sensitivityThreshold: Float = 0.5F
+    val sensitivityThreshold: Float = 0.5F,
 ) {
 
     companion object {

@@ -26,3 +26,14 @@ I'm using:
 	- https://ai.google.dev/edge/api/mediapipe/js/tasks-vision
 - [com.google.accompanist](https://google.github.io/accompanist/) for permission utils
 
+## Todo
+- Fix log spam when exiting app
+```
+updateSurface: surface is not valid
+SurfaceView@2f2a982 p4ulor.mediapipe I releaseSurfaces: viewRoot = ViewRootImpl@f434e9e[MainActivity]
+```
+- Fix not using deprecated resolution selector causing
+```
+java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer
+```
+

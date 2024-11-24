@@ -2,6 +2,7 @@ package p4ulor.mediapipe.ui.screens
 
 import android.Manifest
 import android.graphics.RectF
+import android.view.View
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,10 +30,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -44,14 +49,18 @@ import com.google.mediapipe.tasks.components.containers.Category
 import com.google.mediapipe.tasks.components.containers.Detection
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import p4ulor.mediapipe.data.CameraConstants
+import p4ulor.mediapipe.data.utils.CameraConstants
+import p4ulor.mediapipe.data.utils.imageAnalysisSettings
+import p4ulor.mediapipe.data.utils.toInt
+import p4ulor.mediapipe.data.utils.toSize
 import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.CenteredContent
-import p4ulor.mediapipe.ui.getActivityOrNull
-import p4ulor.mediapipe.ui.requestPermission
+import p4ulor.mediapipe.ui.utils.CenteredContent
+import p4ulor.mediapipe.ui.utils.getActivityOrNull
+import p4ulor.mediapipe.ui.utils.requestPermission
 import p4ulor.mediapipe.ui.shapes.RoundRectangleShape
 import p4ulor.mediapipe.ui.theme.rainbowWith
+import p4ulor.mediapipe.ui.utils.getSizeOfBoxKeepingRatioGivenContainer
 import kotlin.random.Random
 import androidx.compose.ui.tooling.preview.Preview as PreviewComposable
 
@@ -77,7 +86,7 @@ fun HomeScreen(viewModel: MainViewModel) {
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
-    CameraX(viewModel, cameraProviderFuture)
+    CameraPreviewContainer(viewModel, cameraProviderFuture)
 }
 
 /**
@@ -87,62 +96,83 @@ fun HomeScreen(viewModel: MainViewModel) {
  * https://developer.android.com/media/camera/camerax/architecture#cameraprovider
  */
 @Composable
-fun CameraX(
+fun CameraPreviewContainer(
     viewModel: MainViewModel,
     cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
     var isCameraActive by remember { mutableStateOf(true) }
-    var processingTimeMs by rememberSaveable { mutableIntStateOf(0) }
+    var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_4_3) }
+
+    //CameraPreview(viewModel, cameraProviderFuture)
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     // Contains the data necessary to outline an object into the screen
     val resultsBundle by viewModel.results.collectAsState()
 
-    /*onComposableDisposed { //this is causing problems, and freezing UI, investigate
-        i("Composable disposed")
-        isCameraActive = false
-        cameraProviderFuture.get().unbindAll()
-    }*/
+    BoxWithConstraints(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer(
+            container = Size(
+                width = this.maxWidth.value,
+                height = this.maxHeight.value,
+            ),
+            box = with(cameraPreviewRatio.toSize()) {
+                Size(
+                    width = resultsBundle?.inputImageWidth?.toFloat() ?: width,
+                    height = resultsBundle?.inputImageHeight?.toFloat() ?: height
+                )
+            }
+        )
+        Box(Modifier
+            .width(cameraPreviewSize.width.dp)
+            .height(cameraPreviewSize.height.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            // CameraX isn't providing a composable yet, so we use AndroidView to use it
+            val cameraProvider = cameraProviderFuture.get() ?: return@Box
 
-    // CameraX isn't providing a composable yet, so we use AndroidView to use it
-    AndroidView(
-        factory = { ctx ->
-            val cameraPreviewView = PreviewView(ctx)
+            AndroidView(
+                factory = { ctx ->
+                    val cameraPreviewView = PreviewView(ctx)
+                    cameraProviderFuture.addListener(
+                        {
+                            // Indicate the cameraProvider that we want to get the preview of the camera
+                            val previewUseCase = Preview.Builder().build().also {
+                                it.setSurfaceProvider(cameraPreviewView.surfaceProvider)
+                            }
 
-            cameraProviderFuture.addListener(
-                {
-                    val cameraProvider = cameraProviderFuture.get()
+                            viewModel.initObjectDetector(imageAnalysisSettings(
+                                ratioDeprecated = cameraPreviewRatio.toInt()
+                            ))
 
-                    // Indicate the cameraProvider that we want to get the preview of the camera
-                    val previewUseCase = Preview.Builder().build().also {
-                        it.setSurfaceProvider(cameraPreviewView.surfaceProvider)
-                    }
-
-                    viewModel.process(CameraConstants.imageAnalyzerUseCase)
-
-                    // We close any currently open camera just in case, then open up
-                    // our own to display the live camera feed
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        CameraConstants.frontCamera,
-                        previewUseCase,
-                        CameraConstants.imageAnalyzerUseCase
+                            // We close any currently open camera just in case, then open up
+                            // our own to display the live camera feed
+                            cameraProvider.unbindAll()
+                            cameraProvider.bindToLifecycle(
+                                lifecycleOwner,
+                                CameraConstants.frontCamera,
+                                previewUseCase,
+                                viewModel.imageAnalysisSettings
+                            )
+                        },
+                        ContextCompat.getMainExecutor(ctx)
                     )
-                }, ContextCompat.getMainExecutor(ctx)
+
+                    cameraPreviewView
+                }
             )
 
-            cameraPreviewView
+            // Show the detected objects overlays
+            resultsBundle?.let {
+                ObjectBoundsBoxOverlay(
+                    detections = it.result.detections() ?: emptyList(),
+                    frameWidth = it.inputImageWidth,
+                    frameHeight = it.inputImageHeight
+                )
+            }
         }
-    )
-
-    // Show the detected objects overlay
-    resultsBundle?.let {
-        ObjectBoundsBoxOverlay(
-            detections = it.result.detections() ?: emptyList(),
-            frameWidth = it.inputImageWidth,
-            frameHeight = it.inputImageHeight
-        )
     }
 }
 
@@ -152,7 +182,6 @@ private fun ObjectBoundsBoxOverlay(
     frameWidth: Int,
     frameHeight: Int,
 ) {
-    //i("frameWidth: $frameWidth, frameHeight: $frameHeight, detections: $detections")
     val borderWidth = 3.dp
     for (detection in detections) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -180,7 +209,7 @@ private fun ObjectBoundsBoxOverlay(
             var hueShift by remember { mutableFloatStateOf(0f) }
             var isHueShiftIncrement by remember { mutableStateOf(true) }
 
-            // Linear gradient Box border hue loop
+            // Linear gradient Box border hue loop, goes back and fourth between the hue limits
             LaunchedEffect(Unit) {
                 while (this.isActive) {
                     // Gradually shift the colors in the gradient
@@ -200,7 +229,7 @@ private fun ObjectBoundsBoxOverlay(
             val rainBowBrush = Brush.linearGradient(
                 colorStops = rainbowWith(hueShift),
                 start = Offset(0f, 0f),
-                end = Offset(boxWidth*8, boxHeight*8) // This helps in not showing too many colors at the same time
+                end = Offset(boxWidth*8, boxHeight*8) // This helps in not showing too many colors at the same time, by stretching the gradient
             )
 
             // 2 sets of blurs for glow effect
