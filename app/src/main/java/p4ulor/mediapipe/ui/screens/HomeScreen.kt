@@ -5,6 +5,8 @@ import android.graphics.RectF
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -43,16 +45,21 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mediapipe.tasks.components.containers.Category
 import com.google.mediapipe.tasks.components.containers.Detection
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import p4ulor.mediapipe.data.utils.CameraConstants
 import p4ulor.mediapipe.data.utils.imageAnalysisSettings
+import p4ulor.mediapipe.data.utils.objectName
 import p4ulor.mediapipe.data.utils.toInt
 import p4ulor.mediapipe.data.utils.toSize
 import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.i
+import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.utils.CenteredContent
-import p4ulor.mediapipe.ui.utils.getActivityOrNull
+import p4ulor.mediapipe.ui.utils.getActivity
 import p4ulor.mediapipe.ui.utils.requestPermission
 import p4ulor.mediapipe.ui.shapes.RoundRectangleShape
 import p4ulor.mediapipe.ui.theme.rainbowWith
@@ -69,7 +76,7 @@ fun HomeScreen(viewModel: MainViewModel) {
         CenteredContent {
             Text("No camera permission!")
             Button(onClick = {
-                context.getActivityOrNull()?.requestPermission()
+                context.getActivity()?.requestPermission()
             }) {
                 Text("Get permissions")
             }
@@ -173,14 +180,41 @@ private fun ObjectBoundsBoxOverlay(
     frameHeight: Int,
 ) {
     val borderWidth = 3.dp
+
+    /**
+     * Tracks positions of a single [Detection.objectName] in order to animate
+     * transitions to new position and dimensions
+     */
+    val currentBounds = remember { mutableMapOf<String, DetectionAnimationState>() }
+
+    // Update animation states for all results
     for (detection in detections) {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
-            // calculating the UI dimensions of the detection bounds
-            val resultBounds = detection.boundingBox()
-            val boxWidth = (resultBounds.width() / frameWidth) * this.maxWidth.value
-            val boxHeight = (resultBounds.height() / frameHeight) * this.maxHeight.value
-            val boxLeftOffset = (resultBounds.left / frameWidth) * this.maxWidth.value
-            val boxTopOffset = (resultBounds.top / frameHeight) * this.maxHeight.value
+        val detectionBounds = detection.boundingBox()
+        val animatableState = currentBounds.getOrPut(detection.objectName) {
+            val detectionBounds = detection.boundingBox()
+            DetectionAnimationState(
+                xLeft = Animatable(detectionBounds.left),
+                yTop = Animatable(detectionBounds.top),
+                width = Animatable(detectionBounds.width()),
+                height = Animatable(detectionBounds.height())
+            )
+        }
+
+        // Update targets for animations
+        LaunchedEffect(detection.objectName, detectionBounds) {
+            animatableState.updateBoundingBox(detectionBounds)
+        }
+    }
+
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        for (detection in detections) {
+            // calculating the UI dimensions of the detection bounds based on the container
+            // and based on the exact bounds,
+            val instantBounds = currentBounds[detection.objectName] ?: continue
+            val boxWidth = (instantBounds.width.value / frameWidth) * this.maxWidth.value
+            val boxHeight = (instantBounds.height.value / frameHeight) * this.maxHeight.value
+            val boxLeftOffset = (instantBounds.xLeft.value / frameWidth) * this.maxWidth.value
+            val boxTopOffset = (instantBounds.yTop.value / frameHeight) * this.maxHeight.value
 
             // Text field with grey background
             Box(Modifier.offset(boxLeftOffset.dp, boxTopOffset.dp)
@@ -236,6 +270,24 @@ private fun ObjectBoundsBoxOverlay(
     }
 }
 
+private class DetectionAnimationState(
+    val xLeft: Animatable<Float, AnimationVector1D>,
+    val yTop: Animatable<Float, AnimationVector1D>,
+    val width: Animatable<Float, AnimationVector1D>,
+    val height: Animatable<Float, AnimationVector1D>
+) {
+    /**
+     * [Dispatchers.Default] is required so the 4 values are updated in parallel, otherwise, it
+     * will be visible how each value updates in steps, like first the X and then Y coordinate
+     */
+    suspend fun updateBoundingBox(newBox: RectF) = withContext(Dispatchers.Default) {
+        launch { xLeft.animateTo(newBox.left, smooth()) }
+        launch { yTop.animateTo(newBox.top, smooth()) }
+        launch { width.animateTo(newBox.width(), smooth()) }
+        launch { height.animateTo(newBox.height(), smooth()) }
+    }
+}
+
 @PreviewComposable
 @Composable
 fun ObjectBoundsBoxOverlayPreview() {
@@ -244,10 +296,10 @@ fun ObjectBoundsBoxOverlayPreview() {
 
     LaunchedEffect(Unit) {
         while (this.isActive) {
-            return@LaunchedEffect
+            //return@LaunchedEffect
             score = Random.nextFloat()
             cameraMovement = (Random.nextFloat()*40).toInt()
-            delay(200) // Update every 500ms
+            delay(1000) // Update every 500ms
         }
     }
 

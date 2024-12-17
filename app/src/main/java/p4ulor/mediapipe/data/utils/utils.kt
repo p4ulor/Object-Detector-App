@@ -5,6 +5,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.compose.ui.geometry.Size
+import com.google.mediapipe.tasks.components.containers.Detection
 import p4ulor.mediapipe.e
 
 fun ResolutionSelector.toSize() = when(this.aspectRatioStrategy){
@@ -33,3 +34,11 @@ fun imageAnalysisSettings(
     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
     .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
 }.build()
+
+/**
+ * The name of the detected object
+ * It's not clear why categories() is a list
+ * https://ai.google.dev/edge/api/mediapipe/python/mp/tasks/components/containers/Detection
+ */
+val Detection.objectName
+    get() = categories().first().categoryName()

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,12 +60,11 @@ fun CenteredContent(content: @Composable () -> Unit){
     }
 }
 
-fun Context.getActivityOrNull(): Activity? {
+fun Context.getActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {
         if (context is Activity) return context
         context = context.baseContext
     }
-
     return null
 }

@@ -3,6 +3,10 @@ package p4ulor.mediapipe.data
 import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 
+/**
+ * @param [sensitivityThreshold] the minimum amount of certainty (percentage) of the image detector
+ * has on classifying an object as X
+ */
 data class ObjectDetectorSettings(
     val processor: Delegate = Delegate.GPU,
     val maxObjectDetection: Int = 5,
@@ -18,7 +22,7 @@ data class ObjectDetectorSettings(
     }
 }
 
-/** These should be in the assets folder */
+/** These files should be in the assets folder */
 enum class Model(val id: String) {
     EFFICIENTDETV0("efficientdet-lite0.tflite"),
     EFFICIENTDETV2("efficientdet-lite2.tflite")

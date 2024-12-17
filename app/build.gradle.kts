@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.android.application)
@@ -115,4 +116,15 @@ task<Download>("_download2") {
 tasks.named("build") {
     finalizedBy("_download1")
     finalizedBy("_download2")
+}
+
+/**
+ * Enables context receivers
+ * https://kotlinlang.org/docs/whatsnew1620.html#prototype-of-context-receivers-for-kotlin-jvm
+ * https://kotlinlang.org/docs/whatsnew2020.html#phased-replacement-of-context-receivers-with-context-parameters
+ */
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        freeCompilerArgs = listOfNotNull("-Xcontext-receivers")
+    }
 }

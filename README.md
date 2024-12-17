@@ -42,6 +42,7 @@ running in Google Cloud Platform
 - Apps that use MediaPipe will generally not run in phone emulators, you will need a physical Android device to run this app
 - MediaPipe's runs the model on your phone's CPU or GPU.
 - I'm using: Jetpack Compose, Gradle's Kotlin DSL, [Gradle version catalogs](https://developer.android.com/build/migrate-to-catalogs)
+- If the object detection overlay isn't smooth, it's because you have toggled on the "Reduce Animations" in your Android's settings
 
 ### Getting API Keys 🔑
 - Gemini API -> https://aistudio.google.com/app/apikey
