@@ -59,6 +59,8 @@ import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.HueShiftLooper
 import p4ulor.mediapipe.ui.animations.smooth
+import p4ulor.mediapipe.ui.screens.home.AnimatedDetectionOverlay
+import p4ulor.mediapipe.ui.screens.home.OverlayScaler
 import p4ulor.mediapipe.ui.utils.CenteredContent
 import p4ulor.mediapipe.ui.utils.getActivity
 import p4ulor.mediapipe.ui.utils.requestPermission
@@ -188,16 +190,15 @@ private fun ObjectBoundsBoxOverlays(
      * Tracks positions of a single [Detection.objectName] in order to animate
      * transitions to new position and dimensions
      */
-    val currentBoundsForEachObject = remember { mutableMapOf<String, DetectionAnimationState>() }
+    val currentBoundsForEachObject = remember { mutableMapOf<String, AnimatedDetectionOverlay>() }
 
     // Update animation states for all results
-
     if(animate){
         for (detection in detections) {
             val detectionBounds = detection.boundingBox()
             val animatableState = currentBoundsForEachObject.getOrPut(detection.objectName) {
                 val detectionBounds = detection.boundingBox()
-                DetectionAnimationState(
+                AnimatedDetectionOverlay(
                     xLeft = Animatable(detectionBounds.left),
                     yTop = Animatable(detectionBounds.top),
                     width = Animatable(detectionBounds.width()),
@@ -216,20 +217,28 @@ private fun ObjectBoundsBoxOverlays(
         for (detection in detections) {
             // calculating the UI dimensions of the detection bounds based on the container
             // and based on the exact bounds,
-            val currBounds = currentBoundsForEachObject[detection.objectName] ?: continue
-            val boxWidth = (currBounds.width.value / frameWidth) * this.maxWidth.value
-            val boxHeight = (currBounds.height.value / frameHeight) * this.maxHeight.value
-            val boxLeftOffset = (currBounds.xLeft.value / frameWidth) * this.maxWidth.value
-            val boxTopOffset = (currBounds.yTop.value / frameHeight) * this.maxHeight.value
+
+            val scaler = OverlayScaler(
+                frameWidth = frameWidth,
+                frameHeight = frameHeight,
+                containerWidth = this.maxWidth.value,
+                containerHeight = this.maxHeight.value
+            )
+            val box = if(animate){
+                val currBounds = currentBoundsForEachObject[detection.objectName] ?: continue
+                scaler.scaleBox(currBounds)
+            } else {
+                scaler.scaleBox(detection.boundingBox())
+            }
 
             // Text field with grey background
-            Box(Modifier.offset(boxLeftOffset.dp, boxTopOffset.dp)
+            Box(Modifier.offset(box.xLeft.dp, box.yTop.dp)
                 .background(Color(0x4E4F4F4F), shape = RoundRectangleShape)) {
                 val obj = detection.categories().first()
                 Column {
                     Text(
                         text = "${obj.categoryName()} ${obj.score().toString().take(4)}",
-                        modifier = Modifier.width(boxWidth.dp).padding(borderWidth*1.5f),
+                        modifier = Modifier.width(box.width.dp).padding(borderWidth*1.5f),
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )
@@ -247,41 +256,23 @@ private fun ObjectBoundsBoxOverlays(
             val rainBowBrush = Brush.linearGradient(
                 colorStops = rainbowWith(hueShift),
                 start = Offset(0f, 0f),
-                end = Offset(boxWidth*8, boxHeight*8) // This helps in not showing too many colors at the same time, by stretching the gradient
+                end = Offset(box.width*8, box.height*8) // This helps in not showing too many colors at the same time, by stretching the gradient
             )
 
             // 2 sets of blurs for glow effect
-            Box(Modifier.offset(boxLeftOffset.dp, boxTopOffset.dp)
-                .width(boxWidth.dp).height(boxHeight.dp).blur(1.dp , BlurredEdgeTreatment.Unbounded)
+            Box(Modifier.offset(box.xLeft.dp, box.yTop.dp)
+                .width(box.width.dp).height(box.height.dp).blur(1.dp , BlurredEdgeTreatment.Unbounded)
                 .border(borderWidth, rainBowBrush, RoundRectangleShape)
             )
 
-            Box(Modifier.offset(boxLeftOffset.dp, boxTopOffset.dp)
-                .width(boxWidth.dp).height(boxHeight.dp).blur(16.dp , BlurredEdgeTreatment.Unbounded)
+            Box(Modifier.offset(box.xLeft.dp, box.yTop.dp)
+                .width(box.width.dp).height(box.height.dp).blur(16.dp , BlurredEdgeTreatment.Unbounded)
                 .border(borderWidth*2, rainBowBrush, RoundRectangleShape)
             )
         }
     }
 }
 
-/** Utility class used for animating the bounds of a detection, by using the 4 corners of the box */
-private class DetectionAnimationState(
-    val xLeft: Animatable<Float, AnimationVector1D>,
-    val yTop: Animatable<Float, AnimationVector1D>,
-    val width: Animatable<Float, AnimationVector1D>,
-    val height: Animatable<Float, AnimationVector1D>
-) {
-    /**
-     * 4 coroutines are required so the 4 values are updated in parallel, since [animateTo] is a
-     * suspend func. Otherwise, it will be visible how each value (and dimension) updates in steps
-     */
-    suspend fun updateBoundingBox(newBox: RectF) = withContext(Dispatchers.Default) {
-        launch { xLeft.animateTo(newBox.left, smooth()) }
-        launch { yTop.animateTo(newBox.top, smooth()) }
-        launch { width.animateTo(newBox.width(), smooth()) }
-        launch { height.animateTo(newBox.height(), smooth()) }
-    }
-}
 
 @PreviewComposable
 @Composable

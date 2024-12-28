@@ -20,7 +20,6 @@ import p4ulor.mediapipe.data.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.ObjectDetectorSettings
 import p4ulor.mediapipe.data.ResultBundle
 import p4ulor.mediapipe.e
-import p4ulor.mediapipe.i
 import p4ulor.mediapipe.toStateFlow
 import java.util.concurrent.Executors
 
@@ -29,10 +28,12 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     lateinit var imageAnalysisSettings: ImageAnalysis
     private lateinit var myImageAnalyser: MyImageAnalyser
-    var animateResults = true
+    var animateResults = false
 
     private val _results = MutableStateFlow<ResultBundle?>(null)
-    val results: StateFlow<ResultBundle?> get() = _results.sample(500L).toStateFlow(_results.value)
+    val results: StateFlow<ResultBundle?> get() = _results.let {
+        if(animateResults) it.sample(500L) else it
+    }.toStateFlow(_results.value)
 
     /** For ou can use [p4ulor.mediapipe.data.utils.imageAnalyzer] */
     fun initObjectDetector(
