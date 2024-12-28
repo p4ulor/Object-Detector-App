@@ -3,16 +3,24 @@ package p4ulor.mediapipe.data.viewmodel
 import android.app.Application
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.sample
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import p4ulor.mediapipe.data.MyImageAnalyser
 import p4ulor.mediapipe.data.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.ObjectDetectorSettings
 import p4ulor.mediapipe.data.ResultBundle
+import p4ulor.mediapipe.e
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.toStateFlow
 import java.util.concurrent.Executors
 
@@ -21,9 +29,10 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     lateinit var imageAnalysisSettings: ImageAnalysis
     private lateinit var myImageAnalyser: MyImageAnalyser
+    var animateResults = true
 
     private val _results = MutableStateFlow<ResultBundle?>(null)
-    val results: StateFlow<ResultBundle?> get() = _results.sample(1000L).toStateFlow(_results.value)
+    val results: StateFlow<ResultBundle?> get() = _results.sample(500L).toStateFlow(_results.value)
 
     /** For ou can use [p4ulor.mediapipe.data.utils.imageAnalyzer] */
     fun initObjectDetector(
@@ -38,7 +47,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             }
 
             override fun onError(error: String) {
-                TODO("Not yet implemented")
+                e("Error: $error")
             }
         }
         imageAnalysisSettings.setAnalyzer(

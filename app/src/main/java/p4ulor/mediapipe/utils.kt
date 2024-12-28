@@ -16,7 +16,7 @@ fun e(s: String) = Log.e(TAG, s)
 
 /** Converts a cold [Flow] into a hot [StateFlow] in the context of a ViewModel instance */
 context(ViewModel)
-public fun <T> Flow<T>.toStateFlow(
+fun <T> Flow<T>.toStateFlow(
     initialValue: T,
     started: SharingStarted = SharingStarted.Lazily,
 ): StateFlow<T> = stateIn(viewModelScope, started, initialValue)

@@ -40,5 +40,5 @@ fun imageAnalysisSettings(
  * It's not clear why categories() is a list
  * https://ai.google.dev/edge/api/mediapipe/python/mp/tasks/components/containers/Detection
  */
-val Detection.objectName
+val Detection.objectName: String
     get() = categories().first().categoryName()

@@ -20,5 +20,5 @@ val RoundRectangleShape: Shape = object : Shape {
             CornerRadius(30.0f)
         ))
 
-    override fun toString(): String = "RectangleShape"
+    override fun toString(): String = "RoundRectangleShape"
 }
