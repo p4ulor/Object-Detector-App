@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.data.viewmodel.MainViewModelFactory
+import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 @Composable

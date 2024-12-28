@@ -87,6 +87,12 @@ dependencies {
 
     // Permission utils
     implementation(libs.accompanist.permissions)
+
+    // Mockk
+    testImplementation(libs.mockk)
+
+    // kotlin.test for utility methods to allow parameter naming, while JUnit does not
+    testImplementation(kotlin("test"))
 }
 
 // Added:

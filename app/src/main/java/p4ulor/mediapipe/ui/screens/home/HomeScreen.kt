@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.screens
+package p4ulor.mediapipe.ui.screens.home
 
 import android.Manifest
 import android.graphics.RectF
@@ -6,7 +6,6 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -45,11 +44,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mediapipe.tasks.components.containers.Category
 import com.google.mediapipe.tasks.components.containers.Detection
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import p4ulor.mediapipe.data.utils.CameraConstants
 import p4ulor.mediapipe.data.utils.imageAnalysisSettings
 import p4ulor.mediapipe.data.utils.objectName
@@ -58,9 +54,6 @@ import p4ulor.mediapipe.data.utils.toSize
 import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.HueShiftLooper
-import p4ulor.mediapipe.ui.animations.smooth
-import p4ulor.mediapipe.ui.screens.home.AnimatedDetectionOverlay
-import p4ulor.mediapipe.ui.screens.home.OverlayScaler
 import p4ulor.mediapipe.ui.utils.CenteredContent
 import p4ulor.mediapipe.ui.utils.getActivity
 import p4ulor.mediapipe.ui.utils.requestPermission
@@ -188,7 +181,7 @@ private fun ObjectBoundsBoxOverlays(
 
     /**
      * Tracks positions of a single [Detection.objectName] in order to animate
-     * transitions to new position and dimensions
+     * transitions to new position and dimensions. TODO Allow storing various objects w/ same name
      */
     val currentBoundsForEachObject = remember { mutableMapOf<String, AnimatedDetectionOverlay>() }
 
