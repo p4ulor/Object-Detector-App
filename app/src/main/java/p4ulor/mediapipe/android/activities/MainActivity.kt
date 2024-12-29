@@ -1,4 +1,4 @@
-package p4ulor.mediapipe
+package p4ulor.mediapipe.android.activities
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle

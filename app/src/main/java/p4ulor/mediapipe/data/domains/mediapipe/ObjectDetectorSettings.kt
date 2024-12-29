@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data
+package p4ulor.mediapipe.data.domains.mediapipe
 
 import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode

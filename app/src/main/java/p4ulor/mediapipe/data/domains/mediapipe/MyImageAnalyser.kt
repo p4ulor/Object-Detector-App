@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data
+package p4ulor.mediapipe.data.domains.mediapipe
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,13 +7,10 @@ import android.os.SystemClock
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mediapipe.framework.image.BitmapImageBuilder
-import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.core.ErrorListener
-import com.google.mediapipe.tasks.core.OutputHandler
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetector
-import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectorResult
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 
@@ -128,21 +125,3 @@ class MyImageAnalyser(
         objectDetector?.detectAsync(mpImage, frameTime) //todo, investigate com.google.mediapipe.framework.MediaPipeException: failed precondition: The received packets having a smaller timestamp than the processed timestamp
     }
 }
-
-private typealias MPImageResultListener = OutputHandler.ResultListener<ObjectDetectorResult, MPImage>
-
-interface ObjectDetectorCallbacks {
-    fun onResults(resultBundle: ResultBundle)
-    fun onError(error: String)
-}
-
-/**
- * Wraps results from inference, the time it takes for inference to be performed, and
- * the input image and height for properly scaling UI to return back to callers
- */
-data class ResultBundle(
-    val result: ObjectDetectorResult,
-    val processingTimeMs: Long,
-    val inputImageHeight: Int,
-    val inputImageWidth: Int,
-)

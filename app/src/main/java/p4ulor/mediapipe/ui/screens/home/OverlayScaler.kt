@@ -36,8 +36,8 @@ class OverlayScaler(
         RectF(
             bounds.xLeft.value,
             bounds.yTop.value,
-            bounds.width.value + bounds.xLeft.value, //right
-            bounds.height.value + bounds.yTop.value //bottom
+            bounds.xLeft.value + bounds.width.value, //right
+            bounds.yTop.value + bounds.height.value //bottom
         )
     )
 

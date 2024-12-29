@@ -1,24 +1,15 @@
-package p4ulor.mediapipe.data.viewmodel
+package p4ulor.mediapipe.android.viewmodels
 
 import android.app.Application
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.AndroidViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.channels.ticker
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.sample
-import kotlinx.coroutines.flow.transformLatest
-import p4ulor.mediapipe.data.MyImageAnalyser
-import p4ulor.mediapipe.data.ObjectDetectorCallbacks
-import p4ulor.mediapipe.data.ObjectDetectorSettings
-import p4ulor.mediapipe.data.ResultBundle
+import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
+import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
+import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
+import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.toStateFlow
 import java.util.concurrent.Executors
@@ -52,7 +43,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         }
         imageAnalysisSettings.setAnalyzer(
             executor,
-            myImageAnalyser //implements ImageAnalysis.Analyzer
+            myImageAnalyser
         )
     }
 }

@@ -2,6 +2,7 @@ package p4ulor.mediapipe.ui.screens.home
 
 import android.Manifest
 import android.graphics.RectF
+import android.view.View
 import androidx.annotation.OptIn
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -17,6 +18,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -27,6 +29,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,6 +52,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mediapipe.tasks.components.containers.Category
@@ -56,20 +61,22 @@ import com.google.mediapipe.tasks.components.containers.Detection
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.data.utils.CameraConstants
-import p4ulor.mediapipe.data.utils.imageAnalysisSettings
-import p4ulor.mediapipe.data.utils.objectName
-import p4ulor.mediapipe.data.utils.toInt
-import p4ulor.mediapipe.data.utils.toSize
-import p4ulor.mediapipe.data.viewmodel.MainViewModel
+import p4ulor.mediapipe.android.utils.CameraConstants
+import p4ulor.mediapipe.android.utils.CameraConstants.toggle
+import p4ulor.mediapipe.android.utils.getActivity
+import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.HueShiftLooper
 import p4ulor.mediapipe.ui.shapes.RoundRectangleShape
 import p4ulor.mediapipe.ui.theme.rainbowWith
 import p4ulor.mediapipe.ui.utils.CenteredContent
-import p4ulor.mediapipe.ui.utils.getActivity
-import p4ulor.mediapipe.ui.utils.getSizeOfBoxKeepingRatioGivenContainer
-import p4ulor.mediapipe.ui.utils.requestPermission
+import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
+import p4ulor.mediapipe.android.utils.imageAnalysisSettings
+import p4ulor.mediapipe.android.utils.requestPermission
+import p4ulor.mediapipe.android.utils.toInt
+import p4ulor.mediapipe.android.utils.toSize
+import p4ulor.mediapipe.data.domains.mediapipe.objectName
+
 import java.util.concurrent.Executors
 import kotlin.random.Random
 import androidx.compose.ui.tooling.preview.Preview as PreviewComposable
@@ -108,10 +115,8 @@ fun CameraPreviewContainer(
     viewModel: MainViewModel,
     cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 ) {
-    val ctx = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var isCameraActive by remember { mutableStateOf(true) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
     var camera by remember { mutableStateOf<Camera?>(null) }
 
@@ -135,7 +140,7 @@ fun CameraPreviewContainer(
                 .height(cameraPreviewSize.height.dp),
         ) {
             // CameraX isn't providing a composable yet, so we use AndroidView to use it
-            val cameraProvider = cameraProviderFuture.get() ?: return@Box
+            val cameraProvider = cameraProviderFuture.get() // is throwable, but let's not overcomplicate
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
@@ -191,24 +196,33 @@ fun CameraPreviewContainer(
             i("Torch supported, state: ${torchState.value}")
             Box(modifier = Modifier.fillMaxSize()) {
                 var isFlashEnabled by remember { mutableStateOf(false) }
-                val vectorAsset = if (isFlashEnabled) {
-                    R.drawable.flashlight_off
-                } else {
-                    R.drawable.flashlight_on
+
+                Row(Modifier.align(Alignment.BottomCenter)) {
+                    val icon = if (isFlashEnabled) R.drawable.flashlight_off
+                               else R.drawable.flashlight_on
+                    Icon(
+                        painterResource(icon),
+                        contentDescription = "Flash",
+                        modifier = Modifier
+                            .padding(bottom = 24.dp)
+                            .size(64.dp)
+                            .clickable {
+                                isFlashEnabled = !isFlashEnabled
+                                camera?.cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
+                                    i("Flashlight updated")
+                                }, Executors.newSingleThreadExecutor())
+                            })
+
+                    Icon(
+                        painterResource(R.drawable.aspect_ratio),
+                        contentDescription = "Ratio",
+                        modifier = Modifier
+                            .padding(bottom = 24.dp)
+                            .size(64.dp)
+                            .clickable {
+                                cameraPreviewRatio = cameraPreviewRatio.toggle()
+                            })
                 }
-                Icon(
-                    painterResource(id = vectorAsset),
-                    contentDescription = "Flash",
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 24.dp)
-                        .size(64.dp)
-                        .clickable {
-                            isFlashEnabled = !isFlashEnabled
-                            camera?.cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
-                                i("Flashlight updated")
-                            }, Executors.newSingleThreadExecutor())
-                        })
             }
         } else {
             i("Torch not supportedD")
