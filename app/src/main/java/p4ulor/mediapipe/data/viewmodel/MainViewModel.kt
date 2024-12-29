@@ -28,14 +28,13 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
 
     lateinit var imageAnalysisSettings: ImageAnalysis
     private lateinit var myImageAnalyser: MyImageAnalyser
-    var animateResults = false
+    var animateResults = true
 
     private val _results = MutableStateFlow<ResultBundle?>(null)
     val results: StateFlow<ResultBundle?> get() = _results.let {
         if(animateResults) it.sample(500L) else it
     }.toStateFlow(_results.value)
 
-    /** For ou can use [p4ulor.mediapipe.data.utils.imageAnalyzer] */
     fun initObjectDetector(
         imageAnalysisSettings: ImageAnalysis,
         objectDetectorSettings: ObjectDetectorSettings = ObjectDetectorSettings()

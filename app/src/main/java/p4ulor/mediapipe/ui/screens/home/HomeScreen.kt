@@ -2,12 +2,18 @@ package p4ulor.mediapipe.ui.screens.home
 
 import android.Manifest
 import android.graphics.RectF
+import androidx.annotation.OptIn
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalZeroShutterLag
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -15,8 +21,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +44,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -46,6 +55,7 @@ import com.google.mediapipe.tasks.components.containers.Category
 import com.google.mediapipe.tasks.components.containers.Detection
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.data.utils.CameraConstants
 import p4ulor.mediapipe.data.utils.imageAnalysisSettings
 import p4ulor.mediapipe.data.utils.objectName
@@ -54,12 +64,13 @@ import p4ulor.mediapipe.data.utils.toSize
 import p4ulor.mediapipe.data.viewmodel.MainViewModel
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.HueShiftLooper
-import p4ulor.mediapipe.ui.utils.CenteredContent
-import p4ulor.mediapipe.ui.utils.getActivity
-import p4ulor.mediapipe.ui.utils.requestPermission
 import p4ulor.mediapipe.ui.shapes.RoundRectangleShape
 import p4ulor.mediapipe.ui.theme.rainbowWith
+import p4ulor.mediapipe.ui.utils.CenteredContent
+import p4ulor.mediapipe.ui.utils.getActivity
 import p4ulor.mediapipe.ui.utils.getSizeOfBoxKeepingRatioGivenContainer
+import p4ulor.mediapipe.ui.utils.requestPermission
+import java.util.concurrent.Executors
 import kotlin.random.Random
 import androidx.compose.ui.tooling.preview.Preview as PreviewComposable
 
@@ -80,11 +91,8 @@ fun HomeScreen(viewModel: MainViewModel) {
     })
 
     if(!isGranted) return
-
     i("Permission granted")
-
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-
     CameraPreviewContainer(viewModel, cameraProviderFuture)
 }
 
@@ -94,15 +102,18 @@ fun HomeScreen(viewModel: MainViewModel) {
  * We are using CameraProvider and not CameraController for more customization
  * https://developer.android.com/media/camera/camerax/architecture#cameraprovider
  */
+@OptIn(ExperimentalZeroShutterLag::class)
 @Composable
 fun CameraPreviewContainer(
     viewModel: MainViewModel,
     cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 ) {
+    val ctx = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
     var isCameraActive by remember { mutableStateOf(true) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
-
-    val lifecycleOwner = LocalLifecycleOwner.current
+    var camera by remember { mutableStateOf<Camera?>(null) }
 
     // Contains the data necessary to outline an object into the screen
     val resultsBundle by viewModel.results.collectAsState()
@@ -118,13 +129,13 @@ fun CameraPreviewContainer(
             }
         )
 
-        Box(Modifier
-            .width(cameraPreviewSize.width.dp)
-            .height(cameraPreviewSize.height.dp),
+        Box(
+            Modifier
+                .width(cameraPreviewSize.width.dp)
+                .height(cameraPreviewSize.height.dp),
         ) {
             // CameraX isn't providing a composable yet, so we use AndroidView to use it
             val cameraProvider = cameraProviderFuture.get() ?: return@Box
-
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
@@ -136,6 +147,10 @@ fun CameraPreviewContainer(
                                 it.setSurfaceProvider(cameraPreviewView.surfaceProvider)
                             }
 
+                            // Not needed for flash, but can be used later
+                            val imageCaptureUseCase = ImageCapture.Builder()
+                                .build()
+
                             viewModel.initObjectDetector(imageAnalysisSettings(
                                 ratioDeprecated = cameraPreviewRatio.toInt()
                             ))
@@ -143,12 +158,14 @@ fun CameraPreviewContainer(
                             // We close any currently open camera just in case, then open up
                             // our own to display the live camera feed
                             cameraProvider.unbindAll()
-                            cameraProvider.bindToLifecycle(
+                            camera = cameraProvider.bindToLifecycle(
                                 lifecycleOwner,
-                                CameraConstants.frontCamera,
+                                CameraSelector.DEFAULT_BACK_CAMERA,
                                 previewUseCase,
+                                imageCaptureUseCase,
                                 viewModel.imageAnalysisSettings
                             )
+
                         },
                         ContextCompat.getMainExecutor(ctx)
                     )
@@ -166,6 +183,35 @@ fun CameraPreviewContainer(
                     animate = viewModel.animateResults
                 )
             }
+        }
+    }
+
+    with(camera?.cameraInfo){
+        if (this?.hasFlashUnit() == true) {
+            i("Torch supported, state: ${torchState.value}")
+            Box(modifier = Modifier.fillMaxSize()) {
+                var isFlashEnabled by remember { mutableStateOf(false) }
+                val vectorAsset = if (isFlashEnabled) {
+                    R.drawable.flashlight_off
+                } else {
+                    R.drawable.flashlight_on
+                }
+                Icon(
+                    painterResource(id = vectorAsset),
+                    contentDescription = "Flash",
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
+                        .size(64.dp)
+                        .clickable {
+                            isFlashEnabled = !isFlashEnabled
+                            camera?.cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
+                                i("Flashlight updated")
+                            }, Executors.newSingleThreadExecutor())
+                        })
+            }
+        } else {
+            i("Torch not supportedD")
         }
     }
 }
@@ -224,14 +270,18 @@ private fun ObjectBoundsBoxOverlays(
                 scaler.scaleBox(detection.boundingBox())
             }
 
-            // Text field with grey background
-            Box(Modifier.offset(box.xLeft.dp, box.yTop.dp)
-                .background(Color(0x4E4F4F4F), shape = RoundRectangleShape)) {
+            // Text field with grey background with the name of the object
+            Box(
+                Modifier
+                    .offset(box.xLeft.dp, box.yTop.dp)
+                    .background(Color(0x4E4F4F4F), shape = RoundRectangleShape)) {
                 val obj = detection.categories().first()
                 Column {
                     Text(
                         text = "${obj.categoryName()} ${obj.score().toString().take(4)}",
-                        modifier = Modifier.width(box.width.dp).padding(borderWidth*1.5f),
+                        modifier = Modifier
+                            .width(box.width.dp)
+                            .padding(borderWidth * 1.5f),
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )
@@ -253,14 +303,22 @@ private fun ObjectBoundsBoxOverlays(
             )
 
             // 2 sets of blurs for glow effect
-            Box(Modifier.offset(box.xLeft.dp, box.yTop.dp)
-                .width(box.width.dp).height(box.height.dp).blur(1.dp , BlurredEdgeTreatment.Unbounded)
-                .border(borderWidth, rainBowBrush, RoundRectangleShape)
+            Box(
+                Modifier
+                    .offset(box.xLeft.dp, box.yTop.dp)
+                    .width(box.width.dp)
+                    .height(box.height.dp)
+                    .blur(1.dp, BlurredEdgeTreatment.Unbounded)
+                    .border(borderWidth, rainBowBrush, RoundRectangleShape)
             )
 
-            Box(Modifier.offset(box.xLeft.dp, box.yTop.dp)
-                .width(box.width.dp).height(box.height.dp).blur(16.dp , BlurredEdgeTreatment.Unbounded)
-                .border(borderWidth*2, rainBowBrush, RoundRectangleShape)
+            Box(
+                Modifier
+                    .offset(box.xLeft.dp, box.yTop.dp)
+                    .width(box.width.dp)
+                    .height(box.height.dp)
+                    .blur(16.dp, BlurredEdgeTreatment.Unbounded)
+                    .border(borderWidth * 2, rainBowBrush, RoundRectangleShape)
             )
         }
     }

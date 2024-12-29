@@ -5,11 +5,6 @@ import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 
 object CameraConstants {
-    /** Specify to use back camera */
-    val frontCamera = CameraSelector.Builder()
-        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-        .build()
-
     val RATIO_16_9 = ResolutionSelector.Builder().setAspectRatioStrategy(
         AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
     ).build()

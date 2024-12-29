@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Declare features -->
+    <uses-feature android:name="android.hardware.camera" />
     <uses-feature
-        android:name="android.hardware.camera"
-        android:required="true">
-    </uses-feature>
+        android:name="android.hardware.camera.flash"
+        android:required="false"
+    />
 
     <!-- Declare permissions -->
     <uses-permission android:name="android.permission.CAMERA" />

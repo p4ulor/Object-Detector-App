@@ -25,7 +25,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 @Composable
 fun requestPermission(permission: String, onPermissionNotGranted: @Composable () -> Unit) : Boolean {
     val cameraPermission = rememberPermissionState(permission)
-    LaunchedEffect(Any()) {
+    LaunchedEffect(Unit) {
         if (!cameraPermission.status.isGranted) {
             cameraPermission.launchPermissionRequest()
         }

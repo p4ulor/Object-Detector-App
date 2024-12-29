@@ -70,3 +70,4 @@ SurfaceView@2f2a982 p4ulor.mediapipe I releaseSurfaces: viewRoot = ViewRootImpl@
 ```
 java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer
 ```
+- Support landscape mode when [rotating camera](https://developer.android.com/media/camera/camerax/orientation-rotation)
