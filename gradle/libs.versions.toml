@@ -16,6 +16,10 @@ accompanistPermissions = "0.36.0"
 tasksVision = "0.10.16"
 gradleDownload = "5.6.0"
 mockk = "1.13.14"
+ktorClientCore = "3.0.3"
+ktorClientCio = "3.0.3"
+ktorClientContentNegotiation = "3.0.3"
+ktorSerializationKotlinxJson = "3.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +46,10 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
 tasks-vision = { group = "com.google.mediapipe", name = "tasks-vision", version.ref = "tasksVision" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorClientCore" }
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorClientCio" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

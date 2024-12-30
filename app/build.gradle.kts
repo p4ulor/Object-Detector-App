@@ -88,6 +88,12 @@ dependencies {
     // Permission utils
     implementation(libs.accompanist.permissions)
 
+    // Ktor HTTP client, to make HTTP requests to the Gemini API
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio) // Engine for processing network requests
+    implementation(libs.ktor.client.content.negotiation) // https://ktor.io/docs/client-serialization.html
+    implementation(libs.ktor.serialization.kotlinx.json) // ^
+
     // Mockk
     testImplementation(libs.mockk)
 

@@ -23,6 +23,7 @@ fun RootScreen(){
             )
 
             val navController = rememberNavController()
+
             NavHost(
                 navController = navController,
                 startDestination = Screens.HOME,

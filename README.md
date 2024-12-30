@@ -1,10 +1,17 @@
 ## Demo 🎥
 
-## App features ✨
+## Main features ✨
 - Detect very simple objects
-- Change model settings
-- Ask Gemini to talk about the object or describe a picture taken
-- Save and manage results
+- Ask Gemini to talk about the object or describe a picture taken (TODO)
+- Save and manage results (TODO)
+
+### Side features
+- Turn on flashlight
+- Change camera ratio
+- Change max detection count (TODO)
+- Change detection sensitivity (TODO)
+- Change model settings (TODO)
+- Achivements list for the 80 Media Pipe objects (TODO)
 
 ## Main Technology introduction 🛠️
 | MediaPipe | Gemini API | Ktor | Firebase |
@@ -24,11 +31,12 @@
 
 ### 2. [Gemini API](https://aistudio.google.com/app/apikey)
 - A RESTful API that allows you to perform HTTP requests to a Gemini model,
-running in Google Cloud Platform
+running in Google Cloud Platform. Doesn't require a GCP project, although you can associate it to
+one and monitor the use of your API key
 - Pricing: It has a reasonable free tier of [1.5k requests per day and other limits](https://ai.google.dev/gemini-api/docs/billing#about-billing) for Gemini 1.5 Flash. [See it's capabilities and various details](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash)
 
 ### 3. [Ktor (client)](https://ktor.io/docs/client-create-new-application.html)
-- An open-source framework developed by JetBrains to develop HTTP servers or clients
+- An open-source framework developed by JetBrains to create HTTP servers or clients
 - I only use it's client components, in order to make HTTP calls to the Gemini API
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
