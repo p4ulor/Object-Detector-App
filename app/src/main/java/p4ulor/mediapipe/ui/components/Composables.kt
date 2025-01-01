@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.utils
+package p4ulor.mediapipe.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

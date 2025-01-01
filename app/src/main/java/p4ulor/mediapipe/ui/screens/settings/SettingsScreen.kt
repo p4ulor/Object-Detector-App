@@ -1,12 +1,12 @@
-package p4ulor.mediapipe.ui.screens.about
+package p4ulor.mediapipe.ui.screens.settings
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import p4ulor.mediapipe.ui.components.CenteredContent
 
 @Composable
-fun AboutScreen(){
+fun SettingsScreen(){
     CenteredContent {
-        Text("About")
+        Text("Settings")
     }
 }

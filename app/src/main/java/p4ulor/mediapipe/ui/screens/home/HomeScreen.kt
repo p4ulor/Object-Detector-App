@@ -34,12 +34,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.getActivity
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.utils.CenteredContent
+import p4ulor.mediapipe.ui.components.CenteredContent
 import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.createImageAnalyser
 import p4ulor.mediapipe.android.utils.requestPermission

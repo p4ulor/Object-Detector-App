@@ -2,7 +2,9 @@ package p4ulor.mediapipe.ui.screens.root
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Badge
@@ -21,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,6 +36,7 @@ import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.screens.about.AboutScreen
+import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 
 @Composable
 fun RootScreen(){
@@ -44,12 +49,12 @@ fun RootScreen(){
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
-                    NavigationBar {
+                    NavigationBar (Modifier.height(65.dp)) {
                         bottomBarDestinations.forEach { item ->
-                            buildNavigationBarItem(item, currentDestination , this) {
+                            buildNavigationBarItem(item, currentDestination, this, onClick = {
                                 currentDestination = it
                                 navController.navigate(item.title)
-                            }
+                            })
                         }
                     }
                 },
@@ -64,12 +69,9 @@ fun RootScreen(){
                         navController = navController,
                         startDestination = Screens.Home.name,
                     ) {
-                        composable(route = Screens.Home.name) {
-                            HomeScreen(viewModel)
-                        }
-                        composable(route = Screens.About.name) {
-                            AboutScreen()
-                        }
+                        composable(route = Screens.About.name) { AboutScreen() }
+                        composable(route = Screens.Home.name) { HomeScreen(viewModel) }
+                        composable(route = Screens.Settings.name) { SettingsScreen() }
                     }
                 }
             )
@@ -87,8 +89,8 @@ private fun buildNavigationBarItem(
     NavigationBarItem(
         selected = currentDestination == item,
         onClick = { onClick(item) },
-        label = { Text(text = item.title) },
-        alwaysShowLabel = false,
+        label = { Text(item.title) },
+        alwaysShowLabel = false, // the label will only be shown when this item is selected
         icon = {
             BadgedBox(
                 badge = {
@@ -99,15 +101,21 @@ private fun buildNavigationBarItem(
             ) {
                 Icon(
                     imageVector = item.selectedIcon,
-                    contentDescription = item.title
+                    contentDescription = item.title,
+                    modifier = Modifier.size(item.size)
                 )
             }
         }
     )
 }
 
-enum class Screens(val icon: AppIcons? = null, val materialIcons: ImageVector? = null) {
+/** This enum defines the order in which the destinations appear */
+enum class Screens(
+    val icon: AppIcons? = null,
+    val materialIcons: ImageVector? = null,
+    val size: Dp = 30.dp
+) {
+    About(materialIcons = MaterialIcons.Info, size = 25.dp),
     Home(materialIcons = MaterialIcons.Home),
-    Settings(icon = AppIcons.Settings),
-    About(materialIcons = MaterialIcons.Info)
+    Settings(icon = AppIcons.Settings, size = 28.dp)
 }

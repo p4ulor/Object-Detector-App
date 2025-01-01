@@ -11,13 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.ui.theme.ColorInvertFilter
 
-enum class AppIcons(val resourceId: Int) {
+/**
+ * Drawable resources that are either .xml (can be created from an .svg, a vector image) or .png
+ * To convert .svg to .xml, you can use [Android's Asset Studio](https://stackoverflow.com/a/56276118/28417805)
+ * But it gave me errors, so I used https://svg2vector.com/ to convert .svg from
+ * https://lucide.dev/icons/ to android .xml
+ */
+enum class AppIcons(val resourceId: Int, val resourceVectorId: Int? = null) {
     FlashlightOff(R.drawable.flashlight_off),
     FlashlightOn(R.drawable.flashlight_on),
     Scale(R.drawable.scale),
-    Settings(R.drawable.settings)
+    Settings(R.drawable.settings_vector, R.drawable.settings_vector)
 }
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */
