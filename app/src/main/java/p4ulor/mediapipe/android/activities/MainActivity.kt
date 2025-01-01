@@ -4,7 +4,7 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import p4ulor.mediapipe.ui.screens.RootScreen
+import p4ulor.mediapipe.ui.screens.root.RootScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

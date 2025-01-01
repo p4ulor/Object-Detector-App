@@ -1,6 +1,8 @@
 package p4ulor.mediapipe.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -17,4 +19,15 @@ fun rainbowWith(hueShift: Float, saturation: Float = 1f, lightness: Float = 0.5f
     0.6f to Color.hsl((180f + hueShift) % 360f, saturation, lightness),
     0.8f to Color.hsl((240f + hueShift) % 360f, saturation, lightness),
     1f to Color.hsl((300f + hueShift) % 360f, saturation, lightness)
+)
+
+val ColorInvertFilter = ColorFilter.colorMatrix(
+    ColorMatrix(
+        floatArrayOf(
+            -1f, 0f, 0f, 0f, 255f, // Red inversion
+            0f, -1f, 0f, 0f, 255f, // Green inversion
+            0f, 0f, -1f, 0f, 255f, // Blue inversion
+            0f, 0f, 0f, 1f, 0f // Alpha unchanged
+        )
+    )
 )

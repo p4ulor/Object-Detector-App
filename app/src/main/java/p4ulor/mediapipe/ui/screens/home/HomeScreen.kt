@@ -53,6 +53,8 @@ import p4ulor.mediapipe.android.utils.imageAnalysisSettings
 import p4ulor.mediapipe.android.utils.requestPermission
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
+import p4ulor.mediapipe.ui.components.Icon
+import p4ulor.mediapipe.ui.components.AppIcons
 import java.util.concurrent.Executors
 
 @Composable
@@ -172,32 +174,17 @@ fun CameraPreviewContainer(
             i("Torch supported, state: ${torchState.value}")
             Box(modifier = Modifier.fillMaxSize()) {
                 var isFlashEnabled by remember { mutableStateOf(false) }
-
                 Row(Modifier.align(Alignment.BottomCenter)) {
-                    val icon = if (isFlashEnabled) R.drawable.flashlight_off
-                               else R.drawable.flashlight_on
-                    Icon(
-                        painterResource(icon),
-                        contentDescription = "Flash",
-                        modifier = Modifier
-                            .padding(bottom = 24.dp)
-                            .size(64.dp)
-                            .clickable {
-                                isFlashEnabled = !isFlashEnabled
-                                camera?.cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
-                                    i("Flashlight updated")
-                                }, Executors.newSingleThreadExecutor())
-                            })
-
-                    Icon(
-                        painterResource(R.drawable.aspect_ratio),
-                        contentDescription = "Ratio",
-                        modifier = Modifier
-                            .padding(bottom = 24.dp)
-                            .size(64.dp)
-                            .clickable {
-                                cameraPreviewRatio = cameraPreviewRatio.toggle()
-                            })
+                    val icon = if (isFlashEnabled) AppIcons.FlashlightOff else AppIcons.FlashlightOn
+                    Icon(icon) {
+                        isFlashEnabled = !isFlashEnabled
+                        camera?.cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
+                            i("Flashlight updated")
+                        }, Executors.newSingleThreadExecutor())
+                    }
+                    Icon(AppIcons.Scale) {
+                        cameraPreviewRatio = cameraPreviewRatio.toggle()
+                    }
                 }
             }
         } else {
