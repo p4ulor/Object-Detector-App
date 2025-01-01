@@ -21,6 +21,7 @@ fun rainbowWith(hueShift: Float, saturation: Float = 1f, lightness: Float = 0.5f
     1f to Color.hsl((300f + hueShift) % 360f, saturation, lightness)
 )
 
+// Might be useful
 val ColorInvertFilter = ColorFilter.colorMatrix(
     ColorMatrix(
         floatArrayOf(

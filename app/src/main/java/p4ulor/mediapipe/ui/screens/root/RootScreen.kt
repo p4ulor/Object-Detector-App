@@ -13,7 +13,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
@@ -29,53 +29,55 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.android.utils.MainViewModelFactory
 import p4ulor.mediapipe.ui.components.AppIcons
+import p4ulor.mediapipe.ui.components.BoxWithBackground
 import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.RoundedHorizontalDivider
 import p4ulor.mediapipe.ui.screens.about.AboutScreen
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 
 @Composable
-fun RootScreen(){
-    AppTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
+fun RootScreen() = AppTheme {
+    var currentDestination by remember { mutableStateOf<NavItem?>(null) }
+    val navController = rememberNavController()
 
-            var currentDestination by remember { mutableStateOf<NavItem?>(null) }
-            val navController = rememberNavController()
-
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                bottomBar = {
-                    NavigationBar (Modifier.height(65.dp)) {
-                        bottomBarDestinations.forEach { item ->
-                            buildNavigationBarItem(item, currentDestination, this, onClick = {
-                                currentDestination = it
-                                navController.navigate(item.title)
-                            })
-                        }
-                    }
-                },
-                content = { paddingPadding ->
-
-                    val viewModel: MainViewModel = viewModel(
-                        factory = MainViewModelFactory(LocalContext.current)
-                    )
-
-                    NavHost(
-                        modifier = Modifier.padding(paddingPadding),
-                        navController = navController,
-                        startDestination = Screens.Home.name,
-                    ) {
-                        composable(route = Screens.About.name) { AboutScreen() }
-                        composable(route = Screens.Home.name) { HomeScreen(viewModel) }
-                        composable(route = Screens.Settings.name) { SettingsScreen() }
+    BoxWithBackground(R.drawable.background_default) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            modifier = Modifier.fillMaxSize(),
+            bottomBar = {
+                RoundedHorizontalDivider()
+                NavigationBar (Modifier.height(65.dp), containerColor = Color.Transparent) {
+                    bottomBarDestinations.forEach { item ->
+                        buildNavigationBarItem(item, currentDestination, this, onClick = {
+                            currentDestination = it
+                            navController.navigate(item.title)
+                        })
                     }
                 }
-            )
-        }
+            },
+            content = { paddingPadding ->
+
+                val viewModel: MainViewModel = viewModel(
+                    factory = MainViewModelFactory(LocalContext.current)
+                )
+
+                NavHost(
+                    modifier = Modifier.padding(paddingPadding),
+                    navController = navController,
+                    startDestination = Screens.Home.name,
+                ) {
+                    composable(route = Screens.About.name) { AboutScreen() }
+                    composable(route = Screens.Home.name) { HomeScreen(viewModel) }
+                    composable(route = Screens.Settings.name) { SettingsScreen() }
+                }
+            }
+        )
     }
 }
 
@@ -113,9 +115,9 @@ private fun buildNavigationBarItem(
 enum class Screens(
     val icon: AppIcons? = null,
     val materialIcons: ImageVector? = null,
-    val size: Dp = 30.dp
+    val size: Dp = 25.dp
 ) {
-    About(materialIcons = MaterialIcons.Info, size = 25.dp),
+    About(materialIcons = MaterialIcons.Info, size = 22.dp),
     Home(materialIcons = MaterialIcons.Home),
-    Settings(icon = AppIcons.Settings, size = 28.dp)
+    Settings(icon = AppIcons.Settings)
 }

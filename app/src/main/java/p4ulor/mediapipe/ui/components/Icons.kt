@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
@@ -38,6 +39,6 @@ fun Icon(icon: AppIcons, onClick: () -> Unit) {
             .clickable {
                 onClick()
             },
-        //colorFilter = ColorInvertFilter
+        tint = Color.White
     )
 }
