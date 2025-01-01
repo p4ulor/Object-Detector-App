@@ -10,7 +10,7 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
  * This builds a [UseCase] that's used with the [cameraProvider] and is used to process the frames
  * that are captured
  */
-fun imageAnalysisSettings(
+fun createImageAnalyser(
     ratio: ResolutionSelector? = null,
     @AspectRatio.Ratio ratioDeprecated: Int? = null
 ) = ImageAnalysis.Builder().apply {

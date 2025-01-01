@@ -5,25 +5,21 @@ import androidx.annotation.OptIn
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalZeroShutterLag
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,15 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
-import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.getActivity
@@ -49,7 +41,7 @@ import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.utils.CenteredContent
 import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
-import p4ulor.mediapipe.android.utils.imageAnalysisSettings
+import p4ulor.mediapipe.android.utils.createImageAnalyser
 import p4ulor.mediapipe.android.utils.requestPermission
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
@@ -95,32 +87,24 @@ fun CameraPreviewContainer(
 
     var isAppMinimized by remember { mutableStateOf(false) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
-    var camera by remember { mutableStateOf<Camera?>(null) }
+    var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
     val cameraProvider = remember { cameraProviderFuture.get() } // is throwable, but let's not overcomplicate
 
     // Contains the data necessary to outline an object into the screen
     val resultsBundle by viewModel.results.collectAsState()
 
-    DisposableEffect(lifecycleOwner) {
-        val lifecycle = lifecycleOwner.lifecycle
-        val observer = LifecycleEventObserver { owner, event ->
-            if(event == Lifecycle.Event.ON_PAUSE){
-                i("Unbinding camera")
-                cameraProvider.unbindAll()
-                isAppMinimized = true
-            }
-            if(event == Lifecycle.Event.ON_RESUME){
-                i("Will re-bind camera")
-                isAppMinimized = false
-            }
+    CameraUseBinder(
+        lifecycleOwner,
+        onBind = {
+            i("Will re-bind camera")
+            isAppMinimized = false
+        },
+        onUnbind = {
+            i("Unbinding camera")
+            cameraProvider.unbindAll()
+            isAppMinimized = true
         }
-
-        lifecycle.addObserver(observer)
-        onDispose {
-            i("onDispose")
-            lifecycle.removeObserver(observer)
-        }
-    }
+    )
 
     BoxWithConstraints(
         Modifier.fillMaxSize(),
@@ -139,15 +123,20 @@ fun CameraPreviewContainer(
                 .height(cameraPreviewSize.height.dp),
         ) {
             // CameraX isn't providing a composable yet, so we use AndroidView to use it
-            if(!isAppMinimized){
+            if(!isAppMinimized){ // The only way to terminate the PreviewView in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
                     factory = { ctx ->
                         val cameraPreviewView = PreviewView(ctx)
+
+                        val imageAnalysisSettings  =viewModel.initObjectDetector(createImageAnalyser(
+                            ratioDeprecated = cameraPreviewRatio.toInt()
+                        ))
+
                         camera = startCameraAndPreviewView(
                             cameraProvider,
                             cameraPreviewView,
-                            viewModel,
+                            imageAnalysisSettings,
                             cameraPreviewRatio,
                             lifecycleOwner
                         )
@@ -169,12 +158,12 @@ fun CameraPreviewContainer(
         }
     }
 
-    with(camera?.cameraInfo){
-        if (this?.hasFlashUnit() == true) {
-            i("Torch supported, state: ${torchState.value}")
-            Box(modifier = Modifier.fillMaxSize()) {
-                var isFlashEnabled by remember { mutableStateOf(false) }
-                Row(Modifier.align(Alignment.BottomCenter)) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(Modifier.align(Alignment.BottomCenter)) {
+            with(camera?.cameraInfo) {
+                if (this?.hasFlashUnit() == true) {
+                    i("Torch supported, state: ${torchState.value}")
+                    var isFlashEnabled by remember { mutableStateOf(false) }
                     val icon = if (isFlashEnabled) AppIcons.FlashlightOff else AppIcons.FlashlightOn
                     Icon(icon) {
                         isFlashEnabled = !isFlashEnabled
@@ -182,21 +171,27 @@ fun CameraPreviewContainer(
                             i("Flashlight updated")
                         }, Executors.newSingleThreadExecutor())
                     }
-                    Icon(AppIcons.Scale) {
-                        cameraPreviewRatio = cameraPreviewRatio.toggle()
-                    }
+                } else {
+                    i("Torch not supported")
                 }
             }
-        } else {
-            i("Torch not supportedD")
+
+            Icon(AppIcons.Scale) {
+                cameraPreviewRatio = cameraPreviewRatio.toggle()
+            }
         }
     }
 }
 
+/**
+ * Creates a camera [PreviewView] which is passed to the [cameraProvider] along with other
+ * [UseCase]s (max 3), that are used with the camera
+ * @return The created [Camera]
+ */
 fun startCameraAndPreviewView(
     cameraProvider: ProcessCameraProvider,
     cameraPreviewView: PreviewView,
-    viewModel: MainViewModel,
+    imageAnalysisSettings: ImageAnalysis,
     cameraPreviewRatio: ResolutionSelector,
     lifecycleOwner: LifecycleOwner
 ): Camera {
@@ -210,10 +205,6 @@ fun startCameraAndPreviewView(
     val imageCaptureUseCase = ImageCapture.Builder()
         .build()
 
-    viewModel.initObjectDetector(imageAnalysisSettings(
-        ratioDeprecated = cameraPreviewRatio.toInt()
-    ))
-
     // We close any currently open camera just in case, then open up
     // our own to display the live camera feed
     // cameraProvider.unbindAll()
@@ -222,6 +213,6 @@ fun startCameraAndPreviewView(
         CameraSelector.DEFAULT_BACK_CAMERA,
         previewUseCase,
         imageCaptureUseCase,
-        viewModel.imageAnalysisSettings
+        imageAnalysisSettings
     )
 }

@@ -17,16 +17,16 @@ data class NavItem(
     override fun equals(other: Any?) = (other as? NavItem)?.title == title
 }
 
-val bottomBarDestinations
+internal val bottomBarDestinations
     @Composable
     get() = listOf(
     NavItem(
-        title = "Info",
+        title = Screens.About.name,
         selectedIcon = Icons.Filled.Info,
         hasNews = false,
     ),
     NavItem(
-        title = "Home",
+        title = Screens.Home.name,
         selectedIcon = Icons.Filled.Home,
         hasNews = false,
     ),

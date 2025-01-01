@@ -17,7 +17,7 @@ import java.util.concurrent.Executors
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
     private val executor = Executors.newSingleThreadExecutor()
 
-    lateinit var imageAnalysisSettings: ImageAnalysis
+    private lateinit var imageAnalysisSettings: ImageAnalysis
     private lateinit var myImageAnalyser: MyImageAnalyser
     var animateResults = true
 
@@ -26,10 +26,15 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         if(animateResults) it.sample(500L) else it
     }.toStateFlow(_results.value)
 
+    /**
+     * Set's the [ImageAnalysis] analyzer with [MyImageAnalyser] (if it's confusing, it's the API
+     * fault). And uses [objectDetectorSettings] when building [MyImageAnalyser]. The
+     * [imageAnalysisSettings] runs in a single thread pool [executor]
+     */
     fun initObjectDetector(
         imageAnalysisSettings: ImageAnalysis,
         objectDetectorSettings: ObjectDetectorSettings = ObjectDetectorSettings()
-    ) {
+    ): ImageAnalysis {
         this.imageAnalysisSettings = imageAnalysisSettings
         myImageAnalyser = MyImageAnalyser(application.applicationContext, objectDetectorSettings)
         myImageAnalyser.callbacks = object : ObjectDetectorCallbacks {
@@ -45,5 +50,6 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             executor,
             myImageAnalyser
         )
+        return this.imageAnalysisSettings
     }
 }

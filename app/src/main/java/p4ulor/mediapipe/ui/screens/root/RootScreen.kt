@@ -31,6 +31,7 @@ import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.screens.about.AboutScreen
 
 @Composable
 fun RootScreen(){
@@ -45,7 +46,7 @@ fun RootScreen(){
                 bottomBar = {
                     NavigationBar {
                         bottomBarDestinations.forEach { item ->
-                            buildNavigationBarItem(currentDestination, item, this) {
+                            buildNavigationBarItem(item, currentDestination , this) {
                                 currentDestination = it
                                 navController.navigate(item.title)
                             }
@@ -66,6 +67,9 @@ fun RootScreen(){
                         composable(route = Screens.Home.name) {
                             HomeScreen(viewModel)
                         }
+                        composable(route = Screens.About.name) {
+                            AboutScreen()
+                        }
                     }
                 }
             )
@@ -75,8 +79,8 @@ fun RootScreen(){
 
 @Composable
 private fun buildNavigationBarItem(
-    currentDestination: NavItem?,
     item: NavItem,
+    currentDestination: NavItem?,
     rowScope: RowScope,
     onClick: (item: NavItem) -> Unit,
 ) = with(rowScope) {
@@ -102,8 +106,8 @@ private fun buildNavigationBarItem(
     )
 }
 
-private enum class Screens(val icon: AppIcons? = null, val materialIcons: ImageVector? = null) {
+enum class Screens(val icon: AppIcons? = null, val materialIcons: ImageVector? = null) {
     Home(materialIcons = MaterialIcons.Home),
-    //Settings(icon = AppIcons.Settings),
-    Info(materialIcons = MaterialIcons.Info)
+    Settings(icon = AppIcons.Settings),
+    About(materialIcons = MaterialIcons.Info)
 }

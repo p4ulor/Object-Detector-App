@@ -4,8 +4,9 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 
 /**
+ * A class that encapsulates the different settings that can be to detect objects using MediaPipe
  * @param [sensitivityThreshold] the minimum amount of certainty (percentage) of the image detector
- * has on classifying an object as X
+ * in order to classify it as an object as X. Detections bellow this amount won't be displayed
  */
 data class ObjectDetectorSettings(
     val processor: Delegate = Delegate.GPU,
