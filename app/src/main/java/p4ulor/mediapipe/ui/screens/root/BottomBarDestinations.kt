@@ -28,7 +28,7 @@ internal val bottomBarDestinations
             selectedIcon = when {
                 it.icon?.resourceVectorId!=null -> ImageVector.vectorResource(id = it.icon?.resourceVectorId)
                 it.materialIcons!=null -> it.materialIcons
-                else -> MaterialIcons.Warning
+                else -> error("Something wasn't setup properly here")
             },
             hasNews = false,
             size = it.size

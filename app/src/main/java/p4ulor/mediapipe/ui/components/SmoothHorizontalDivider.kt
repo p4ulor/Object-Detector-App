@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RoundedHorizontalDivider(
+fun SmoothHorizontalDivider(
     color: Color = Color.White,
     modifier: Modifier = Modifier,
     thickness: Dp = 1.dp,
@@ -46,10 +46,10 @@ fun RoundedHorizontalDivider(
 
 @Preview
 @Composable
-fun RoundedHorizontalDividerPreview(){
+fun SmoothHorizontalDividerPreview(){
     Box(Modifier.size(100.dp, 100.dp)) {
         CenteredContent {
-            RoundedHorizontalDivider(Color(0xFFFFFFFF))
+            SmoothHorizontalDivider(Color(0xFFFFFFFF))
         }
     }
 }

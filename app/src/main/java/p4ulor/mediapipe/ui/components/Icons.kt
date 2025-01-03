@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -23,22 +24,38 @@ enum class AppIcons(val resourceId: Int, val resourceVectorId: Int? = null) {
     FlashlightOff(R.drawable.flashlight_off),
     FlashlightOn(R.drawable.flashlight_on),
     Scale(R.drawable.scale),
-    Settings(R.drawable.settings_vector, R.drawable.settings_vector)
+    Settings(R.drawable.settings_vector, R.drawable.settings_vector),
+    Camera(R.drawable.camera)
 }
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */
 val MaterialIcons = ComposeMaterialIcons.Default
 
+val IconDefaultSize = 44.dp
+
 @Composable
-fun Icon(icon: AppIcons, onClick: () -> Unit) {
-    Icon(painterResource(icon.resourceId),
-        contentDescription = icon.name,
-        modifier = Modifier
-            .padding(bottom = 24.dp)
-            .size(64.dp)
-            .clickable {
-                onClick()
-            },
-        tint = Color.White
-    )
-}
+fun Icon(icon: AppIcons, onClick: () -> Unit) = Icon(
+    painter = painterResource(icon.resourceId),
+    contentDescription = icon.name,
+    modifier = Modifier
+        .size(IconDefaultSize)
+        .clickable {
+            onClick()
+        },
+    tint = Color.White
+)
+
+
+/** Useful when using [MaterialIcons], which are [ImageVector]s */
+@Composable
+fun Icon(icon: ImageVector, onClick: () -> Unit) = Icon(
+    imageVector = icon,
+    contentDescription = icon.name,
+    modifier = Modifier
+        .padding(bottom = 24.dp)
+        .size(IconDefaultSize)
+        .clickable {
+            onClick()
+        },
+    tint = Color.White
+)
