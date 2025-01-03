@@ -62,16 +62,16 @@ class MyImageAnalyser(
         }
     }
 
-    private fun resultListener() = MPImageResultListener { objectResult, inputImage ->
+    private fun resultListener() = MPImageResultListener { detectedObjects, inputImage ->
         val finishTimeMs = SystemClock.uptimeMillis()
-        val inferenceTime = finishTimeMs - objectResult.timestampMs()
+        val inferenceTime = finishTimeMs - detectedObjects.timestampMs()
         if(callbacks==null){
             e("Callbacks is null, results will not be reported")
             return@MPImageResultListener
         }
         callbacks?.onResults(
             ResultBundle(
-                objectResult,
+                detectedObjects,
                 inferenceTime,
                 inputImage.height,
                 inputImage.width
@@ -84,8 +84,9 @@ class MyImageAnalyser(
     }
 
     /**
-     * Runs object detection on live streaming cameras frame-by-frame and returns the results
-     * asynchronously to the caller.
+     * Runs object detection on live streaming cameras frame-by-frame which are obtained and listened
+     * to asynchronously through the [MPImageResultListener] set at [resultListener], which calls
+     * the [callbacks] of this [MyImageAnalyser].
      */
     override fun analyze(image: ImageProxy) {
         require(settings.mediaTypeToAnalyze == RunningMode.LIVE_STREAM) {

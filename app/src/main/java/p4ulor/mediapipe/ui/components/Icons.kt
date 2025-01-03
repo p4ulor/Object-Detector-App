@@ -18,7 +18,8 @@ import p4ulor.mediapipe.R
  * Drawable resources that are either .xml (can be created from an .svg, a vector image) or .png
  * To convert .svg to .xml, you can use [Android's Asset Studio](https://stackoverflow.com/a/56276118/28417805)
  * But it gave me errors, so I used https://svg2vector.com/ to convert .svg from
- * https://lucide.dev/icons/ to android .xml
+ * https://lucide.dev/icons/ to android .xml. All with stroke width 1.5px, size 300px (scaled up
+ * by opening the .svg in Gimp)
  */
 enum class AppIcons(val resourceId: Int, val resourceVectorId: Int? = null) {
     FlashlightOff(R.drawable.flashlight_off),

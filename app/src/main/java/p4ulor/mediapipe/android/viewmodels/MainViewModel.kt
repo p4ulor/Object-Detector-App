@@ -6,12 +6,14 @@ import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.sample
+import p4ulor.mediapipe.android.utils.launch
+import p4ulor.mediapipe.android.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
+import p4ulor.mediapipe.data.sources.KtorClient
 import p4ulor.mediapipe.e
-import p4ulor.mediapipe.toStateFlow
 import java.util.concurrent.Executors
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -25,6 +27,8 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     val results: StateFlow<ResultBundle?> get() = _results.let {
         if(animateResults) it.sample(500L) else it
     }.toStateFlow(_results.value)
+
+    private val ktorClient = KtorClient("dummyjson.com")
 
     /**
      * Set's the [ImageAnalysis] analyzer with [MyImageAnalyser] (if it's confusing, it's the API
@@ -51,5 +55,9 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             myImageAnalyser
         )
         return this.imageAnalysisSettings
+    }
+
+    fun getDummyJson() = launch {
+        ktorClient.get("test")
     }
 }

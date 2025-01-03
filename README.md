@@ -13,7 +13,7 @@
 - Change model settings (TODO)
 - Achivements list for the 80 Media Pipe objects (TODO)
 
-## Main Technology introduction 🛠️
+## Primary Technologies 🛠️
 | MediaPipe | Gemini API | Ktor | Firebase |
 |:-:|:-:|:-:|:-:|
 | <img width="50" src='https://ai.google.dev/edge/mediapipe/images/mediapipe_icon.svg'> | <img width="50" src='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png'> | <img width="50" src='https://resources.jetbrains.com/storage/products/company/brand/logos/Ktor_icon.png'> | <img width="50" src='https://firebase.google.com/static/images/brand-guidelines/logo-logomark.png'> |
@@ -38,38 +38,43 @@ one and monitor the use of your API key
 ### 3. [Ktor (client)](https://ktor.io/docs/client-create-new-application.html)
 - An open-source framework developed by JetBrains to create HTTP servers or clients
 - I only use it's client components, in order to make HTTP calls to the Gemini API
+- I use the built-in JSON serializer
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
 - A cloud platform or BaaS (Backend As A Service) that provides a range of utilities for diferent enviornments (and programming languages) via SDK's (Software Development Kits)
 - I use it to store the results of prompts from the Gemini API
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
+## Secondary Technologies 🛠️
+| Koin | Lottie | Mockk |
+|:----:|:------:|:-----:|
+
+### Other Dependencies & Plugins Used 🔌
+- Gradle Plugin -> [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite AI/ML models
+- Gradle Plugin -> [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin)
+- [androidx.camera.*dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
+- [google-accompanist](https://google.github.io/accompanist/) -> For permission utils
+
+## Getting Started / Setup Guide 🙌
+### Getting API Keys 🔑
+- Gemini API -> https://aistudio.google.com/app/apikey
+- Firebase -> 
+
 ## Notes 📝
-- The models used with MediaPipe need to be a compatible with it, the compatability depends on the feature used
+- The Machine Learning models used with MediaPipe need to be a compatible with it, the compatability depends on the feature used
 - MediaPipe uses/is based on the TensorFlow Lite, and provides an easier way to add some basic ML capabilities to your apps. Checkout the [ML on Android with MediaPipe](https://www.youtube.com/playlist?list=PLOU2XLYxmsILZnKn6Erxdyhxmc3fxyitP) YT playlist.
 - Apps that use MediaPipe will generally not run in phone emulators, you will need a physical Android device to run this app
 - MediaPipe's runs the model on your phone's CPU or GPU.
 - I'm using: Jetpack Compose, Gradle's Kotlin DSL, [Gradle version catalogs](https://developer.android.com/build/migrate-to-catalogs)
 - If the object detection overlay isn't smooth, it's because you have toggled on the "Reduce Animations" in your Android's settings
 
-### Getting API Keys 🔑
-- Gemini API -> https://aistudio.google.com/app/apikey
-- Firebase -> 
-
-### Other dependencies used 🔌
-- Gradle Plugin [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite AI/ML models
-- Gradle Plugin [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin)
-- [androidx.camera.* dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
-- MediaPipe Tasks Vision 
-	- https://mvnrepository.com/artifact/com.google.mediapipe/tasks-vision
-	- https://ai.google.dev/edge/api/mediapipe/js/tasks-vision
-- [com.google.accompanist](https://google.github.io/accompanist/) -> For permission utils
-
 > [!NOTE]  
 > License: © 2024-currentYear, Paulo Rosa, [all reserved to me](https://choosealicense.com/no-permission/). Do not distribute to any public the entirety or individual parts (files and text) of the project without my consent. Do not claim you're the original author. Downloading / git cloning is inevitably allowed, in order to only build the artifacts and modify the project locally and privately for non-commercial use. Pull requests are welcomed. If a fork was done do not modify this current file, specially this license.
 
 ## Todo 🕒
-- Check if viewmodel use is correct and clean, use dependency injection?
+- Check if viewmodel uses are correct and clean, use dependency injection
+- Review and clean up the architecture
+- Make more composables previewable
 - Fix not using deprecated resolution selector causing
 ```
 java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer

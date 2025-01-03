@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     // Added:
     alias(libs.plugins.de.undercouch.gradle.download)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 android {
@@ -76,13 +77,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Added:
-    // Camera
+    // Camera https://developer.android.com/jetpack/androidx/releases/camera
     implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
     // MediaPipe
+    // - https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android
+    // - https://ai.google.dev/edge/api/mediapipe/java/com/google/mediapipe/tasks/vision/objectdetector/package-summary
+    // - https://mvnrepository.com/artifact/com.google.mediapipe/tasks-vision
     implementation(libs.tasks.vision)
 
     // Permission utils
@@ -90,15 +93,17 @@ dependencies {
 
     // Ktor HTTP client, to make HTTP requests to the Gemini API
     implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio) // Engine for processing network requests
+    implementation(libs.ktor.client.cio) // Coroutine-based I/O Engine for processing network requests https://ktor.io/docs/faq.html#cio
     implementation(libs.ktor.client.content.negotiation) // https://ktor.io/docs/client-serialization.html
-    implementation(libs.ktor.serialization.kotlinx.json) // ^
+    implementation(libs.ktor.serialization.kotlinx.json) // ^. But still requires the Serialization Gradle Plugin
+    implementation(libs.ktor.client.resources) // https://ktor.io/docs/client-resources.html
 
     // Mockk
     testImplementation(libs.mockk)
 
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))
+    testImplementation(libs.coroutines.test)
 }
 
 // Added:

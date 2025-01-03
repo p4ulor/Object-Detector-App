@@ -17,7 +17,7 @@ interface ObjectDetectorCallbacks {
  * the input image and height for properly scaling UI to return back to callers
  */
 data class ResultBundle(
-    val result: ObjectDetectorResult,
+    val detectedObjects: ObjectDetectorResult,
     val processingTimeMs: Long,
     val inputImageHeight: Int,
     val inputImageWidth: Int,

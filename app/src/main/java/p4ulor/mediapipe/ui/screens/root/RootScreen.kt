@@ -63,6 +63,11 @@ fun RootScreen() = AppTheme {
     val navController = rememberNavController()
 
     BoxWithBackground(R.drawable.background_default) {
+
+        val viewModel: MainViewModel = viewModel(
+            factory = MainViewModelFactory(LocalContext.current)
+        )
+
         Scaffold(
             containerColor = Color.Transparent,
             modifier = Modifier.fillMaxSize(),
@@ -78,10 +83,6 @@ fun RootScreen() = AppTheme {
                 }
             },
             content = { padding ->
-
-                val viewModel: MainViewModel = viewModel(
-                    factory = MainViewModelFactory(LocalContext.current)
-                )
 
                 NavHost(
                     modifier = Modifier.padding(padding),
@@ -103,16 +104,17 @@ fun RootScreen() = AppTheme {
                     LocalConfiguration.current.screenHeightDp.dp.toPx()
                 }
                 FloatingActionButton(
-                    onClick = { /* Take pic */ },
+                    onClick = {
+                        viewModel.getDummyJson()
+                    },
                     modifier = Modifier.padding(bottom = 14.dp)
                         .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
-                                //change.consume()
                                 offsetX += dragAmount.x
                                 offsetY += dragAmount.y
 
-                                // Keep the FAB within screen bounds
+                                // Keep the FAB within screen bounds, todo not working
                                 /*val screenWidth = this@BoxWithBackground.maxWidth.value
                                 val screenHeight = this@BoxWithBackground.maxHeight.value
                                 i("!!! ${offsetX.absoluteValue} & $offsetY $screenWidthPx and $screenHeightPx")

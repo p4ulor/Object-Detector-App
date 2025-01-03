@@ -21,7 +21,7 @@ class OverlayScalerTest {
             containerHeight = 720f
         )
 
-        val res4by3 = mockk<RectF>(relaxed = true) {
+        val contentby3 = mockk<RectF>(relaxed = true) {
             every { width() } returns 1600f
             every { height() } returns 900f
 
@@ -30,22 +30,22 @@ class OverlayScalerTest {
             // every { getProperty("left") } propertyType java.lang.Float::class answers { 0f } //
         }
 
-        val res16by9 = mockk<RectF> {
+        val content16by9 = mockk<RectF> {
             every { width() } returns 1024f
             every { height() } returns 576f
         }
 
-        val box4by3 = scaler.scaleBox(res4by3)
-        val box16by9 = scaler.scaleBox(res16by9)
+        val box4by3 = scaler.scaleBox(contentby3)
+        val box16by9 = scaler.scaleBox(content16by9)
 
-        with(res4by3){
+        with(contentby3){
             assertEquals(
                 expected = (width() / height()).round(6),
                 actual = (box4by3.width / box4by3.height).round(6)
             )
         }
 
-        with(res16by9){
+        with(content16by9){
             assertEquals(
                 expected = (width() / height()).round(6),
                 actual = (box16by9.width / box16by9.height).round(6)
@@ -53,7 +53,7 @@ class OverlayScalerTest {
         }
     }
 
-    fun Float.round(decimals: Int): Float {
+    private fun Float.round(decimals: Int): Float {
         var multiplier = 1.0f
         repeat(decimals) { multiplier *= 10 }
         return kotlin.math.round(this * multiplier) / multiplier

@@ -14,13 +14,11 @@ material3 = "1.3.1"
 camerax_version = "1.4.1"
 navigationCompose = "2.8.2"
 accompanistPermissions = "0.36.0"
+coroutines = "1.9.0"
 tasksVision = "0.10.16"
 gradleDownload = "5.6.0"
 mockk = "1.13.14"
-ktorClientCore = "3.0.3"
-ktorClientCio = "3.0.3"
-ktorClientContentNegotiation = "3.0.3"
-ktorSerializationKotlinxJson = "3.0.3"
+ktorGlobalVerion = "2.3.13"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,19 +38,21 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 
 # Added
 androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref="camerax_version" }
-androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref="camerax_version" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref="camerax_version" }
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref="camerax_version" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 tasks-vision = { group = "com.google.mediapipe", name = "tasks-vision", version.ref = "tasksVision" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
-ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorClientCore" }
-ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorClientCio" }
-ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
-ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorGlobalVerion" }
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorGlobalVerion" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorGlobalVerion" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorGlobalVerion" }
+ktor-client-resources = { group = "io.ktor", name = "ktor-client-resources", version.ref = "ktorGlobalVerion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 de-undercouch-gradle-download = { id = "de.undercouch.download", version.ref = "gradleDownload" }
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

@@ -35,7 +35,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
-import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.getActivity
@@ -151,7 +150,7 @@ fun CameraPreviewContainer(
             // Show the detected objects overlays
             resultsBundle?.let {
                 ObjectBoundsBoxOverlays(
-                    detections = it.result.detections() ?: emptyList(),
+                    detections = it.detectedObjects.detections() ?: emptyList(),
                     frameWidth = it.inputImageWidth,
                     frameHeight = it.inputImageHeight,
                     animate = viewModel.animateResults
