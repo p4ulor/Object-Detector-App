@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.annotation.OptIn
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.DynamicRange
 import androidx.camera.core.ExperimentalZeroShutterLag
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -43,11 +44,13 @@ import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.CenteredContent
 import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.createImageAnalyser
+import p4ulor.mediapipe.android.utils.isHdrSupported
 import p4ulor.mediapipe.android.utils.requestPermission
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.ui.components.Icon
 import p4ulor.mediapipe.ui.components.AppIcons
+import p4ulor.mediapipe.ui.components.requestPermission
 import java.util.concurrent.Executors
 
 @Composable
@@ -86,10 +89,11 @@ fun CameraPreviewContainer(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var isAppMinimized by remember { mutableStateOf(false) }
-    var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
-    var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
     val cameraProvider = remember { cameraProviderFuture.get() } // is throwable, but let's not overcomplicate
+    var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
+    var isFlashEnabled by remember { mutableStateOf(false) }
+    var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
+    var isAppMinimized by remember { mutableStateOf(false) }
 
     // Contains the data necessary to outline an object into the screen
     val resultsBundle by viewModel.results.collectAsState()
@@ -104,6 +108,7 @@ fun CameraPreviewContainer(
             i("Unbinding camera")
             cameraProvider.unbindAll()
             isAppMinimized = true
+            isFlashEnabled = false
         }
     )
 
@@ -164,7 +169,6 @@ fun CameraPreviewContainer(
             with(camera?.cameraInfo) {
                 if (this?.hasFlashUnit() == true) {
                     i("Torch supported, state: ${torchState.value}")
-                    var isFlashEnabled by remember { mutableStateOf(false) }
                     val icon = if (isFlashEnabled) AppIcons.FlashlightOff else AppIcons.FlashlightOn
                     Icon(icon) {
                         isFlashEnabled = !isFlashEnabled
@@ -197,13 +201,17 @@ fun startCameraAndPreviewView(
     lifecycleOwner: LifecycleOwner
 ): Camera {
 
-    // Indicate the cameraProvider that we want to get the preview of the camera
-    val previewUseCase = Preview.Builder().build().also {
-        it.setSurfaceProvider(cameraPreviewView.surfaceProvider)
-    }
+    // Create a Preview (UseCase) to tell the cameraProvider that we want to preview the camera
+    val previewUseCase = Preview.Builder().apply {
+            cameraProvider.isHdrSupported?.let { setDynamicRange(it) }
+        }
+        .build().apply {
+            surfaceProvider = cameraPreviewView.surfaceProvider
+        }
 
-    // Not needed for flash, but can be used later
+    // Not needed, but can be used later
     val imageCaptureUseCase = ImageCapture.Builder()
+        .setTargetAspectRatio(cameraPreviewRatio.toInt())
         .build()
 
     // We close any currently open camera just in case, then open up

@@ -2,12 +2,17 @@ package p4ulor.mediapipe.data.sources
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
@@ -16,15 +21,18 @@ import io.ktor.http.isSuccess
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import p4ulor.mediapipe.data.domains.gemini.DummyJsonTest
-import p4ulor.mediapipe.data.domains.gemini.DummyJsonTestPostResp
+import p4ulor.mediapipe.data.sources.gemini.DummyJsonTest
+import p4ulor.mediapipe.data.sources.gemini.DummyJsonTestPostResp
+import p4ulor.mediapipe.i
 
 /**
  * An HTTP client with some easy to use methods ready to send and receive data in JSON format
- * Note: [hostName] cannot contain the URL scheme)
+ * Notes:
+ * - [hostName] cannot contain the URL scheme)
+ * - Consider using [close] when closing the app
  */
 class KtorClient(private val hostName: String) {
-    private val httpClient = HttpClient {
+    private val httpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -38,12 +46,30 @@ class KtorClient(private val hostName: String) {
                 host = hostName
             }
         }
+        install(HttpTimeout){
+            requestTimeoutMillis = 10000
+        }
+        install(HttpRequestRetry){
+            delayMillis { retryCount ->
+                i("Retrying HTTP request")
+                1000L
+            }
+            retryOnServerErrors(maxRetries = 1)
+        }
+        HttpResponseValidator {
+            validateResponse { response -> // This is a like a response interceptor
+                if(!response.status.isSuccess()){
+                    i("KtorClient: status: ${response.status} error: ${response.bodyAsText()}")
+                }
+            }
+        }
     }
 
     suspend fun get(path: String, queryParams: QueryParams = emptyList()): DummyJsonTest? {
         val response = httpClient.get {
             withUrl(path, queryParams)
         }
+
         return if (response.status.isSuccess()) {
             response.body<DummyJsonTest>()
         } else {
@@ -62,6 +88,8 @@ class KtorClient(private val hostName: String) {
         }
     }
 
+    fun close() = httpClient.close()
+
     private fun HttpRequestBuilder.withUrl(
         path: String,
         queryParams: QueryParams = emptyList(),
@@ -71,7 +99,7 @@ class KtorClient(private val hostName: String) {
             contentType(ContentType.Application.Json)
             path(path)
             queryParams.forEach {
-                parameters.append(it.first, it.second.toString())
+                parameters.append(it.first, it.second)
             }
             extraConfig()
         }
@@ -87,4 +115,4 @@ class KtorClient(private val hostName: String) {
     })
 }
 
-private typealias QueryParams = List<Pair<String, Any>>
+typealias QueryParams = List<Pair<String, String>>

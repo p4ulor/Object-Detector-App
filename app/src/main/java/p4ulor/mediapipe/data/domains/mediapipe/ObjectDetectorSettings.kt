@@ -18,8 +18,8 @@ data class ObjectDetectorSettings(
 
     companion object {
         // Use later
-        val MAX_OBJECT_DETECTION = 10
-        val MIN_OBJECT_DETECTION = 1
+        const val MAX_OBJECT_DETECTION = 10
+        const val MIN_OBJECT_DETECTION = 1
     }
 }
 

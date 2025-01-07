@@ -28,12 +28,14 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true // shrinks code
+            isShrinkResources = true // removes resources that ProGuard flagged as unused
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        debug {  }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -79,6 +81,7 @@ dependencies {
     // Added:
     // Camera https://developer.android.com/jetpack/androidx/releases/camera
     implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2) // CameraX is built on top of camera2
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
@@ -93,10 +96,9 @@ dependencies {
 
     // Ktor HTTP client, to make HTTP requests to the Gemini API
     implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio) // Coroutine-based I/O Engine for processing network requests https://ktor.io/docs/faq.html#cio
+    implementation(libs.ktor.client.cio) // Coroutine-based I/O Engine for processing network requests https://ktor.io/docs/client-engines.html#jvm-android-native
     implementation(libs.ktor.client.content.negotiation) // https://ktor.io/docs/client-serialization.html
     implementation(libs.ktor.serialization.kotlinx.json) // ^. But still requires the Serialization Gradle Plugin
-    implementation(libs.ktor.client.resources) // https://ktor.io/docs/client-resources.html
 
     // Mockk
     testImplementation(libs.mockk)

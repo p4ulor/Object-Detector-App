@@ -21,7 +21,6 @@ class OverlayScaler(
     /**
      * Scales the given bounding box dimensions and positions to fit inside a container, like a
      * [BoxWithConstraints].
-     *
      * @param bounds The original bounding box dimensions and position in the frame.
      * @return A [ScaledBox] containing the scaled width, height, left offset, and top offset.
      */

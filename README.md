@@ -12,6 +12,7 @@
 - Change detection sensitivity (TODO)
 - Change model settings (TODO)
 - Achivements list for the 80 Media Pipe objects (TODO)
+- Notification on new object detected (TODO)
 
 ## Primary Technologies 🛠️
 | MediaPipe | Gemini API | Ktor | Firebase |
@@ -46,8 +47,8 @@ one and monitor the use of your API key
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
 ## Secondary Technologies 🛠️
-| Koin | Lottie | Mockk |
-|:----:|:------:|:-----:|
+| Koin | Lottie | Mockk | Coil |
+|:----:|:------:|:-----:|-----:|
 
 ### Other Dependencies & Plugins Used 🔌
 - Gradle Plugin -> [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite AI/ML models
@@ -74,6 +75,11 @@ one and monitor the use of your API key
 ## Todo 🕒
 - Check if viewmodel uses are correct and clean, use dependency injection
 - Review and clean up the architecture
+- Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
+- Replace hardcoded strings with string resources
+- Support light and dark theme and store it in Datastore<Preferences> https://developer.android.com/topic/libraries/architecture/datastore#kts
+- Add support having gemma locally, download using DownloadManager or https://github.com/tonyofrancis/Fetch
+- Add loading states and loading animations
 - Make more composables previewable
 - Fix not using deprecated resolution selector causing
 ```

@@ -1,5 +1,6 @@
 package p4ulor.mediapipe.ui.screens.root
 
+import android.content.res.Configuration
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,7 +61,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun RootScreen() = AppTheme {
-    var currentDestination by remember { mutableStateOf<NavItem?>(null) }
+    var currentDestination by rememberSaveable { mutableStateOf<NavItem?>(null) }
     val navController = rememberNavController()
 
     BoxWithBackground(R.drawable.background_default) {
@@ -174,7 +176,10 @@ enum class Screens(
 }
 
 /** If it's failing, comment out uses of [LocalContext.current]. Find a solution for this */
-@Preview
+@Preview(
+    showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
 fun RootScreenPreview(){
     RootScreen()

@@ -38,6 +38,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 
 # Added
 androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref="camerax_version" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref="camerax_version" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref="camerax_version" }
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref="camerax_version" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
@@ -54,5 +55,6 @@ ktor-client-resources = { group = "io.ktor", name = "ktor-client-resources", ver
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# Added
 de-undercouch-gradle-download = { id = "de.undercouch.download", version.ref = "gradleDownload" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

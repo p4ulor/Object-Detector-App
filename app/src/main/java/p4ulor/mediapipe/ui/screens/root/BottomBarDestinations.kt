@@ -26,7 +26,7 @@ internal val bottomBarDestinations
         NavItem(
             title = it.name,
             selectedIcon = when {
-                it.icon?.resourceVectorId!=null -> ImageVector.vectorResource(id = it.icon?.resourceVectorId)
+                it.icon?.resourceVectorId!=null -> ImageVector.vectorResource(id = it.icon.resourceVectorId)
                 it.materialIcons!=null -> it.materialIcons
                 else -> error("Something wasn't setup properly here")
             },

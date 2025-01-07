@@ -1,8 +1,7 @@
 package p4ulor.mediapipe.unit
 
 import kotlinx.coroutines.test.runTest
-import p4ulor.mediapipe.data.domains.gemini.DummyJsonTestPostReq
-import p4ulor.mediapipe.data.domains.gemini.DummyTest
+import p4ulor.mediapipe.data.sources.gemini.DummyJsonTestPostReq
 import p4ulor.mediapipe.data.sources.KtorClient
 import kotlin.test.Test
 
@@ -12,7 +11,6 @@ class KtorClientTest {
     @Test
     fun `Get method`() = runTest {
         println(ktorClient.get("test"))
-        //println(ktorClient.get(DummyTest()))
     }
 
     @Test

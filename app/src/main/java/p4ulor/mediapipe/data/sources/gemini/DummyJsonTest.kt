@@ -1,6 +1,5 @@
-package p4ulor.mediapipe.data.domains.gemini
+package p4ulor.mediapipe.data.sources.gemini
 
-import io.ktor.resources.Resource
 import kotlinx.serialization.Serializable
 
 /** https://dummyjson.com/docs#intro-test */
@@ -23,12 +22,3 @@ data class DummyJsonTestPostResp(
     val title: String,
     val userId: Int
 )
-
-@Resource("/test")
-class DummyTest()
-
-@Resource("/posts")
-class DummyPosts() {
-    @Resource("add")
-    class Add(val parent: DummyPosts = DummyPosts())
-}

@@ -1,10 +1,15 @@
 package p4ulor.mediapipe.android.utils
 
+import android.hardware.Camera.getCameraInfo
 import androidx.camera.core.AspectRatio
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.DynamicRange
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.ui.geometry.Size
 import p4ulor.mediapipe.e
+import p4ulor.mediapipe.i
 
 
 /**
@@ -63,3 +68,30 @@ object CameraConstants {
         else -> { e("Unhandled case"); RATIO_16_9 }
     }
 }
+
+/** OpenGL pipeline supported dynamic range format */
+private val openGLPipelineSupportedDynamicRanges = setOf(
+    DynamicRange.SDR,
+    DynamicRange.HLG_10_BIT
+)
+
+/**
+ * @return true if the back camera supports HDR (High Dynamic Range)
+ * HLG10 (Hybrid log–gamma 10 Bit) is the baseline HDR standard that device makers must support on
+ * cameras with 10-bit output
+ * - https://android-developers.googleblog.com/2024/12/whats-new-in-camerax-140-and-jetpack-compose-support.html
+ */
+val ProcessCameraProvider.isHdrSupported: DynamicRange?
+    get() = run {
+        val range = DynamicRange.HDR10_10_BIT
+        val supports = getCameraInfo(CameraSelector.DEFAULT_BACK_CAMERA)
+                .querySupportedDynamicRanges(openGLPipelineSupportedDynamicRanges)
+                .contains(range)
+        if(supports) {
+            i("Supports $range")
+            range
+        } else {
+            i("Does not support $range")
+            null
+        }
+    }
