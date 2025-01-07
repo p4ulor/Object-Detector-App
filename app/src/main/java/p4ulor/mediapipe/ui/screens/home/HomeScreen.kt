@@ -4,7 +4,6 @@ import android.Manifest
 import androidx.annotation.OptIn
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.DynamicRange
 import androidx.camera.core.ExperimentalZeroShutterLag
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -22,10 +21,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,22 +36,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.common.util.concurrent.ListenableFuture
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
-import p4ulor.mediapipe.android.utils.getActivity
-import p4ulor.mediapipe.android.viewmodels.MainViewModel
-import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.components.CenteredContent
-import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.createImageAnalyser
+import p4ulor.mediapipe.android.utils.getActivity
+import p4ulor.mediapipe.android.utils.getCameraProvider
+import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.isHdrSupported
 import p4ulor.mediapipe.android.utils.requestPermission
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
-import p4ulor.mediapipe.ui.components.Icon
+import p4ulor.mediapipe.android.viewmodels.MainViewModel
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AppIcons
+import p4ulor.mediapipe.ui.components.CenteredContent
+import p4ulor.mediapipe.ui.components.Icon
 import p4ulor.mediapipe.ui.components.requestPermission
+import p4ulor.mediapipe.ui.components.requestUserToManuallyAddThePermission
 import java.util.concurrent.Executors
 
 @Composable
@@ -60,19 +62,35 @@ fun HomeScreen(viewModel: MainViewModel) {
     val isGranted = requestPermission(Manifest.permission.CAMERA, onPermissionNotGranted = {
         i("Permission not granted")
         CenteredContent {
+            /** See [requestPermission] */
+            var oneTimePermRequestWasUsed by rememberSaveable { mutableStateOf(false) }
             Text("No camera permission!")
             Button(onClick = {
-                context.getActivity()?.requestPermission()
+                if(!oneTimePermRequestWasUsed){
+                    context.getActivity()?.requestPermission()
+                    oneTimePermRequestWasUsed = true
+                } else {
+                    context.requestUserToManuallyAddThePermission()
+                }
             }) {
                 Text("Get permissions")
             }
         }
     })
 
-    if(!isGranted) return
-    i("Permission granted")
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-    CameraPreviewContainer(viewModel, cameraProviderFuture)
+    if(isGranted){
+        i("Permission granted")
+
+        var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
+
+        LaunchedEffect(Unit) {
+            cameraProvider = context.getCameraProvider()
+        }
+
+        if(cameraProvider!=null) {
+            CameraPreviewContainer(viewModel, cameraProvider!!)
+        }
+    }
 }
 
 /**
@@ -85,11 +103,10 @@ fun HomeScreen(viewModel: MainViewModel) {
 @Composable
 fun CameraPreviewContainer(
     viewModel: MainViewModel,
-    cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
+    cameraProvider: ProcessCameraProvider
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val cameraProvider = remember { cameraProviderFuture.get() } // is throwable, but let's not overcomplicate
     var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
     var isFlashEnabled by remember { mutableStateOf(false) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }

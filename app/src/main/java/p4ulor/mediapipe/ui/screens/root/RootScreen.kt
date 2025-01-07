@@ -13,8 +13,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Icon as AndroidIcon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -33,7 +31,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -43,25 +40,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.android.utils.MainViewModelFactory
-import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.components.Icon
+import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.BoxWithBackground
-import p4ulor.mediapipe.ui.components.IconDefaultSize
-import p4ulor.mediapipe.ui.screens.home.HomeScreen
-import p4ulor.mediapipe.ui.theme.AppTheme
+import p4ulor.mediapipe.ui.components.Icon
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.SmoothHorizontalDivider
 import p4ulor.mediapipe.ui.screens.about.AboutScreen
+import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
-import kotlin.math.absoluteValue
+import p4ulor.mediapipe.ui.theme.AppTheme
 import kotlin.math.roundToInt
+import androidx.compose.material3.Icon as AndroidIcon
 
 @Composable
 fun RootScreen() = AppTheme {
-    var currentDestination by rememberSaveable { mutableStateOf<NavItem?>(null) }
+    var currentDestination by rememberSaveable { mutableStateOf<String?>(null) }
     val navController = rememberNavController()
 
     BoxWithBackground(R.drawable.background_default) {
@@ -78,14 +73,13 @@ fun RootScreen() = AppTheme {
                 NavigationBar (Modifier.height(65.dp), containerColor = Color.Transparent) {
                     bottomBarDestinations.forEach { item ->
                         buildNavigationBarItem(item, currentDestination, this, onClick = {
-                            currentDestination = it
-                            navController.navigate(item.title)
+                            currentDestination = it.name
+                            navController.navigate(item.name)
                         })
                     }
                 }
             },
             content = { padding ->
-
                 NavHost(
                     modifier = Modifier.padding(padding),
                     navController = navController,
@@ -137,14 +131,14 @@ fun RootScreen() = AppTheme {
 @Composable
 private fun buildNavigationBarItem(
     item: NavItem,
-    currentDestination: NavItem?,
+    currentScreenId: String?,
     rowScope: RowScope,
     onClick: (item: NavItem) -> Unit,
 ) = with(rowScope) {
     NavigationBarItem(
-        selected = currentDestination == item,
+        selected = currentScreenId == item.name,
         onClick = { onClick(item) },
-        label = { Text(item.title) },
+        label = { Text(item.name) },
         alwaysShowLabel = false, // the label will only be shown when this item is selected
         icon = {
             BadgedBox(
@@ -156,7 +150,7 @@ private fun buildNavigationBarItem(
             ) {
                 AndroidIcon(
                     imageVector = item.selectedIcon,
-                    contentDescription = item.title,
+                    contentDescription = item.name,
                     modifier = Modifier.size(item.size)
                 )
             }

@@ -1,9 +1,9 @@
 package p4ulor.mediapipe.data.sources.gemini
 
 import io.ktor.http.HttpHeaders
-import p4ulor.mediapipe.data.sources.QueryParams
-import p4ulor.mediapipe.data.sources.KtorClient
 import io.ktor.http.headers
+import p4ulor.mediapipe.data.sources.KtorClient
+import p4ulor.mediapipe.data.sources.QueryParams
 
 /**
  * The Gemini HTTP endpoints used to send prompts.

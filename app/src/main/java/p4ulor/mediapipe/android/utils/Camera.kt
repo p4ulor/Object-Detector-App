@@ -1,6 +1,6 @@
 package p4ulor.mediapipe.android.utils
 
-import android.hardware.Camera.getCameraInfo
+import android.content.Context
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.DynamicRange
@@ -8,9 +8,24 @@ import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.ui.geometry.Size
+import androidx.core.content.ContextCompat
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
+/**
+ * Util function to get a camera provider, specially since the `get()` operation is blocking and can
+ * throw exception (although it might be very rare)
+ */
+suspend fun Context.getCameraProvider(): ProcessCameraProvider? = suspendCoroutine {
+    ProcessCameraProvider.getInstance(this).also { cameraProvider ->
+        cameraProvider.addListener({
+            val camera = runCatching { cameraProvider.get() }.getOrNull()
+            it.resume(camera)
+        }, ContextCompat.getMainExecutor(this))
+    }
+}
 
 /**
  * This function is used to calculate the size of a box (our camera preview) after scaling it

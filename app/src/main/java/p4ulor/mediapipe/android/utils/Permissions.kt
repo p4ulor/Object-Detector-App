@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 /**
  * https://developer.android.com/training/permissions/requesting#explain
  * https://composables.com/jetpack-compose-tutorials/permissions
+ * https://developer.android.com/about/versions/11/privacy/permissions
  * https://stackoverflow.com/questions/67825724/how-to-ask-again-for-permission-if-it-was-denied-in-android
  */
 fun Activity.requestPermission(permission: String = Manifest.permission.CAMERA){

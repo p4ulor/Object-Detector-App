@@ -1,5 +1,10 @@
 package p4ulor.mediapipe.ui.components
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -23,4 +28,16 @@ fun requestPermission(permission: String, onPermissionNotGranted: @Composable ()
         onPermissionNotGranted()
     }
     return isGranted
+}
+
+fun Context.requestUserToManuallyAddThePermission(){
+    AlertDialog.Builder(this)
+        .setTitle("Camera Permission Needed")
+        .setMessage("This app needs access to your camera to take photos.")
+        .setPositiveButton("Ok") { _, _ ->
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", packageName, null)
+            }
+            startActivity(intent)
+        }.show()
 }
