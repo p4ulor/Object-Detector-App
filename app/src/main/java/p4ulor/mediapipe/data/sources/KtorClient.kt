@@ -10,13 +10,18 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HeadersBuilder
+import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
+import io.ktor.http.headers
 import io.ktor.http.isSuccess
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
@@ -65,9 +70,14 @@ class KtorClient(private val hostName: String) {
         }
     }
 
-    suspend fun get(path: String, queryParams: QueryParams = emptyList()): DummyJsonTest? {
+    suspend fun get(
+        path: String,
+        queryParams: QueryParams = emptyList(),
+        headers: Headers = headers {}
+    ): DummyJsonTest? {
         val response = httpClient.get {
             withUrl(path, queryParams)
+            headers { addAll(headers) }
         }
 
         return if (response.status.isSuccess()) {
@@ -77,9 +87,14 @@ class KtorClient(private val hostName: String) {
         }
     }
 
-    suspend fun post(path: String, body: Any): DummyJsonTestPostResp? {
+    suspend fun post(
+        path: String,
+        body: Any, 
+        headers: Headers = headers {}
+    ): DummyJsonTestPostResp? {
         val response = httpClient.post {
             withUrlAndBody(path, body = body)
+            headers { addAll(headers) }
         }
         return if (response.status.isSuccess()) {
             response.body<DummyJsonTestPostResp>()
@@ -113,6 +128,12 @@ class KtorClient(private val hostName: String) {
         contentType(ContentType.Application.Json)
         setBody(body)
     })
+
+    private fun HeadersBuilder.addAll(headers: Headers){
+        headers.forEach { key, values ->
+            appendAll(key, values)
+        }
+    }
 }
 
 typealias QueryParams = List<Pair<String, String>>

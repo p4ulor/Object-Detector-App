@@ -78,11 +78,12 @@ one and monitor the use of your API key
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
 - Replace hardcoded strings with string resources
 - Support light and dark theme and store it in Datastore<Preferences> https://developer.android.com/topic/libraries/architecture/datastore#kts
-- Add support having gemma locally, download using DownloadManager or https://github.com/tonyofrancis/Fetch
-- Add loading states and loading animations
+- Support camera zoom, flip to front camera and maybe other camera extensions (use libs.androidx.camera.extensions)
+- Listen to networks changes to display gemini has available or not
 - Make more composables previewable
+- Support landscape mode when [rotating camera](https://developer.android.com/media/camera/camerax/orientation-rotation)
+### Fixes
 - Fix not using deprecated resolution selector causing
 ```
 java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer
 ```
-- Support landscape mode when [rotating camera](https://developer.android.com/media/camera/camerax/orientation-rotation)

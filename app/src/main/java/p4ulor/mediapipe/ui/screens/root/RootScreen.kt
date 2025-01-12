@@ -40,7 +40,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.MainViewModelFactory
+import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.BoxWithBackground
@@ -61,8 +61,8 @@ fun RootScreen() = AppTheme {
 
     BoxWithBackground(R.drawable.background_default) {
 
-        val viewModel: MainViewModel = viewModel(
-            factory = MainViewModelFactory(LocalContext.current)
+        val viewModel = viewModel<MainViewModel>(
+            factory = create(MainViewModel::class, LocalContext.current.applicationContext)
         )
 
         Scaffold(
@@ -72,7 +72,7 @@ fun RootScreen() = AppTheme {
                 SmoothHorizontalDivider()
                 NavigationBar (Modifier.height(65.dp), containerColor = Color.Transparent) {
                     bottomBarDestinations.forEach { item ->
-                        buildNavigationBarItem(item, currentDestination, this, onClick = {
+                        buildNavigationBarItem(item, currentDestination, onClick = {
                             currentDestination = it.name
                             navController.navigate(item.name)
                         })
@@ -129,13 +129,11 @@ fun RootScreen() = AppTheme {
 }
 
 @Composable
-private fun buildNavigationBarItem(
+private fun RowScope.buildNavigationBarItem(
     item: NavItem,
     currentScreenId: String?,
-    rowScope: RowScope,
     onClick: (item: NavItem) -> Unit,
-) = with(rowScope) {
-    NavigationBarItem(
+) = NavigationBarItem(
         selected = currentScreenId == item.name,
         onClick = { onClick(item) },
         label = { Text(item.name) },
@@ -156,7 +154,7 @@ private fun buildNavigationBarItem(
             }
         }
     )
-}
+
 
 /** This enum defines the order in which the destinations appear */
 enum class Screens(
@@ -172,7 +170,7 @@ enum class Screens(
 /** If it's failing, comment out uses of [LocalContext.current]. Find a solution for this */
 @Preview(
     showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
 fun RootScreenPreview(){

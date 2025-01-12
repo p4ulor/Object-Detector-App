@@ -13,13 +13,14 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-/** Converts a cold [Flow] into a hot [StateFlow] in the context of a ViewModel instance */
+/** Converts a cold [Flow] into a hot [StateFlow] in the context of a ViewModel */
 context(ViewModel)
 fun <T> Flow<T>.toStateFlow(
     initialValue: T,
     started: SharingStarted = SharingStarted.Lazily,
 ): StateFlow<T> = stateIn(viewModelScope, started, initialValue)
 
+/** Launches a coroutine using the [viewModelScope] in the context of a ViewModel */
 fun ViewModel.launch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,

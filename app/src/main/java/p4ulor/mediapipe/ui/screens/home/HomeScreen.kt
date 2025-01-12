@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,9 +41,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.createImageAnalyser
+import p4ulor.mediapipe.android.utils.enableFlash
 import p4ulor.mediapipe.android.utils.getActivity
 import p4ulor.mediapipe.android.utils.getCameraProvider
 import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
+import p4ulor.mediapipe.android.utils.hasFlash
 import p4ulor.mediapipe.android.utils.isHdrSupported
 import p4ulor.mediapipe.android.utils.requestPermission
 import p4ulor.mediapipe.android.utils.toInt
@@ -53,7 +57,6 @@ import p4ulor.mediapipe.ui.components.CenteredContent
 import p4ulor.mediapipe.ui.components.Icon
 import p4ulor.mediapipe.ui.components.requestPermission
 import p4ulor.mediapipe.ui.components.requestUserToManuallyAddThePermission
-import java.util.concurrent.Executors
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
@@ -89,6 +92,10 @@ fun HomeScreen(viewModel: MainViewModel) {
 
         if(cameraProvider!=null) {
             CameraPreviewContainer(viewModel, cameraProvider!!)
+        } else {
+            CenteredContent {
+                CircularProgressIndicator(Modifier.size(100.dp))
+            }
         }
     }
 }
@@ -183,15 +190,13 @@ fun CameraPreviewContainer(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Row(Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp)) {
-            with(camera?.cameraInfo) {
-                if (this?.hasFlashUnit() == true) {
-                    i("Torch supported, state: ${torchState.value}")
+            camera?.apply {
+                if (hasFlash) {
+                    i("Torch supported, state: ${cameraInfo.torchState.value}")
                     val icon = if (isFlashEnabled) AppIcons.FlashlightOff else AppIcons.FlashlightOn
                     Icon(icon) {
                         isFlashEnabled = !isFlashEnabled
-                        camera?.cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
-                            i("Flashlight updated")
-                        }, Executors.newSingleThreadExecutor())
+                        enableFlash(isFlashEnabled)
                     }
                 } else {
                     i("Torch not supported")
@@ -231,9 +236,6 @@ fun startCameraAndPreviewView(
         .setTargetAspectRatio(cameraPreviewRatio.toInt())
         .build()
 
-    // We close any currently open camera just in case, then open up
-    // our own to display the live camera feed
-    // cameraProvider.unbindAll()
     return cameraProvider.bindToLifecycle(
         lifecycleOwner,
         CameraSelector.DEFAULT_BACK_CAMERA,

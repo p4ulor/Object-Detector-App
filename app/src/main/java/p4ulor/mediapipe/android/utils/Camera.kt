@@ -2,6 +2,7 @@ package p4ulor.mediapipe.android.utils
 
 import android.content.Context
 import androidx.camera.core.AspectRatio
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.DynamicRange
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
@@ -11,6 +12,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.core.content.ContextCompat
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -110,3 +112,12 @@ val ProcessCameraProvider.isHdrSupported: DynamicRange?
             null
         }
     }
+
+val Camera?.hasFlash: Boolean
+    get() = this?.cameraInfo?.hasFlashUnit() == true
+
+fun Camera.enableFlash(isFlashEnabled: Boolean) {
+    cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
+        i("Flashlight updated")
+    }, Executors.newSingleThreadExecutor())
+}

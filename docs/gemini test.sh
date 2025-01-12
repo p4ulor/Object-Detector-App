@@ -28,6 +28,7 @@ tmp_header_file=upload-response-headers.tmp
 
 # Initial resumable request defining metadata.
 # The upload url is in the response headers, dump them to a file.
+# with -d, it is a POST request
 curl "$BASE_URL/upload/v1beta/files?key=$GOOGLE_API_KEY" \
   -D upload-response-headers.tmp \
   -H "X-Goog-Upload-Protocol: resumable" \
@@ -43,6 +44,7 @@ echo "Image saved in $upload_url"
 # rm "${tmp_header_file}"
 
 # Upload the actual bytes (the image)
+# with --data-binary, it is a POST request
 curl "$upload_url" \
   -H "Content-Length: $NUM_BYTES" \
   -H "X-Goog-Upload-Offset: 0" \
