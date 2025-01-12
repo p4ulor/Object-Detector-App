@@ -75,7 +75,7 @@ private val DarkColorScheme = darkColorScheme(
     secondaryContainer = Color(0xFF2196F3), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
 
-    tertiary = Color(0xFF71BF00), // Used for accents or highlights
+    tertiary = Color(0x00FFFFFF), // Used for accents or highlights
     onTertiary = Color(0xFF888888), // For text/icons displayed on top of the tertiary color
     tertiaryContainer = Color(0xFF64DD17), // A tonal variation of the tertiary color for containers
     onTertiaryContainer = Color(0xFFFFFFFF), // Color for text/icons on tertiary containers
@@ -270,7 +270,7 @@ fun AppTheme(
             val context = LocalContext.current
             if (enableDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        enableDarkTheme -> DarkColorScheme
+        enableDarkTheme -> darkColorScheme()
         else -> LightColorScheme
     }
 

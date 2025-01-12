@@ -8,7 +8,6 @@ import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.camera.extensions.ExtensionMode
 import p4ulor.mediapipe.ui.screens.root.RootScreen
 
 class MainActivity : ComponentActivity() {

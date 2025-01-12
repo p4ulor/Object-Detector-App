@@ -92,6 +92,7 @@ fun HomeScreen(viewModel: MainViewModel) {
 
         if(cameraProvider!=null) {
             CameraPreviewContainer(viewModel, cameraProvider!!)
+            FloatingMultiActionButton()
         } else {
             CenteredContent {
                 CircularProgressIndicator(Modifier.size(100.dp))
