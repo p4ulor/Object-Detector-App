@@ -6,13 +6,13 @@
 - Save and manage results (TODO)
 
 ### Side features
-- Turn on flashlight
+- Toggle flashlight
 - Change camera ratio
 - Change max detection count (TODO)
 - Change detection sensitivity (TODO)
 - Change model settings (TODO)
 - Achivements list for the 80 Media Pipe objects (TODO)
-- Notification on new object detected (TODO)
+- Notification on new object detected as part of an achivement (TODO)
 
 ## Primary Technologies 🛠️
 | MediaPipe | Gemini API | Ktor | Firebase |
@@ -48,10 +48,12 @@ one and monitor the use of your API key
 
 ## Secondary Technologies 🛠️
 | Koin | Lottie | Mockk | Coil |
-|:----:|:------:|:-----:|-----:|
+|:----:|:------:|:-----:|:-----:|
+| <img width="50" src='https://insert-koin.io/img/koin_new_logo.png'> | <img width="50" src='https://airbnb.io/lottie/images/logo.webp'> | <img width="50" src='https://avatars.githubusercontent.com/u/34787540?s=200&v=4'> | <img width="50" src='https://avatars.githubusercontent.com/u/52722434?s=200&v=4'> |
+| Dependency injection | Animated graphics | Object mocking for tests | Image loading library  |
 
 ### Other Dependencies & Plugins Used 🔌
-- Gradle Plugin -> [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite AI/ML models
+- Gradle Plugin -> [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite ML models
 - Gradle Plugin -> [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin)
 - [androidx.camera.*dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
 - [google-accompanist](https://google.github.io/accompanist/) -> For permission utils
@@ -79,7 +81,7 @@ one and monitor the use of your API key
 - Replace hardcoded strings with string resources
 - Support light and dark theme and store it in Datastore<Preferences> https://developer.android.com/topic/libraries/architecture/datastore#kts
 - Support camera zoom, flip to front camera and maybe other camera extensions (use libs.androidx.camera.extensions)
-- Listen to networks changes to display gemini has available or not
+- Listen to networks changes to display gemini as available or not
 - Make more composables previewable
 - Support landscape mode when [rotating camera](https://developer.android.com/media/camera/camerax/orientation-rotation)
 ### Fixes
