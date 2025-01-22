@@ -13,14 +13,19 @@ fun<T> smooth(durationMillis: Int = 300) = tween<T>(
     easing = EaseInEaseOut
 )
 
-fun slideInVertSmooth(durationMillis: Int = 400) = slideInVertically(
+fun slideInVertSmooth(slideUp: Boolean = true, durationMillis: Int = 400) = slideInVertically(
     animationSpec = smooth(
         durationMillis = durationMillis,
-    )
+    ),
+    initialOffsetY = { fullHeight -> fullHeight.handleSlide(slideUp) }
 )
 
-fun slideOutVertSmooth(durationMillis: Int = 400) = slideOutVertically(
+fun slideOutVertSmooth(slideUp: Boolean = true, durationMillis: Int = 400) = slideOutVertically(
     animationSpec = smooth(
         durationMillis = durationMillis,
-    )
+    ),
+    targetOffsetY = { fullHeight -> fullHeight.handleSlide(!slideUp) } // targetOffsetY essentially inverts the logic of this parameter, but to keep the caller of this function aware of the inversion between the in and out transition, we invert the value here, making it more intuitive to the caller
 )
+
+private fun Int.handleSlide(slideUp: Boolean) =
+    if(slideUp) this / 2 else -this / 2

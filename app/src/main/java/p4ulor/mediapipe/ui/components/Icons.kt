@@ -1,17 +1,33 @@
 package p4ulor.mediapipe.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
+
+/** Todo, try to find a better solution, maybe */
+data class AnyIcon private constructor(
+    val appIcon: AppIcons? = null,
+    val materialIcon: ImageVector? = null
+){
+    constructor(appIcon: AppIcons) : this(appIcon, null)
+    constructor(materialIcon: ImageVector) : this(null, materialIcon)
+
+    fun isAppIcon() = appIcon!=null
+}
 
 /**
  * Drawable resources that are either .xml (can be created from an .svg, a vector image) or .png
@@ -19,13 +35,16 @@ import androidx.compose.material.icons.Icons as ComposeMaterialIcons
  * But it gave me errors, so I used https://svg2vector.com/ to convert .svg from
  * https://lucide.dev/icons/ to android .xml. All with stroke width 1.5px, size 300px (scaled up
  * by opening the .svg in Gimp)
+ * @param [resourceId] a .png
+ * @param [resourceVectorId] a .xml
  */
 enum class AppIcons(val resourceId: Int, val resourceVectorId: Int? = null) {
     FlashlightOff(R.drawable.flashlight_off),
     FlashlightOn(R.drawable.flashlight_on),
     Scale(R.drawable.scale),
     Settings(R.drawable.settings_vector, R.drawable.settings_vector),
-    Camera(R.drawable.camera)
+    Camera(R.drawable.camera),
+    Gemini(R.drawable.gemini)
 }
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */
@@ -34,7 +53,7 @@ val MaterialIcons = ComposeMaterialIcons.Default
 val IconDefaultSize = 44.dp
 
 @Composable
-fun Icon(icon: AppIcons, onClick: () -> Unit) = Icon(
+fun DefaultIcon(icon: AppIcons, onClick: () -> Unit) = Icon(
     painter = painterResource(icon.resourceId),
     contentDescription = icon.name,
     modifier = Modifier
@@ -45,10 +64,9 @@ fun Icon(icon: AppIcons, onClick: () -> Unit) = Icon(
     tint = Color.White // MaterialTheme.colorScheme.onBackground
 )
 
-
 /** Useful when using [MaterialIcons], which are [ImageVector]s */
 @Composable
-fun Icon(icon: ImageVector, onClick: () -> Unit) = Icon(
+fun DefaultIcon(icon: ImageVector, onClick: () -> Unit) = Icon(
     imageVector = icon,
     contentDescription = icon.name,
     modifier = Modifier
@@ -59,3 +77,61 @@ fun Icon(icon: ImageVector, onClick: () -> Unit) = Icon(
         },
     tint = Color.White
 )
+
+val IconInContainerDefaultSize = 40.dp
+val IconContainerDefaultSize = 55.dp
+
+@Composable
+fun DefaultIconWithBorder(
+    icon: AnyIcon,
+    onClick: () -> Unit,
+    onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
+){
+    if(icon.isAppIcon()) {
+        DefaultIconWithBorder(icon.appIcon!!, onClick, onDrag)
+    } else {
+        DefaultIconWithBorder(icon.materialIcon!!, onClick, onDrag)
+    }
+}
+
+@Composable
+fun DefaultIconWithBorder(
+    icon: AppIcons,
+    onClick: () -> Unit,
+    onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
+){
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = Modifier.size(IconContainerDefaultSize).pointerInput(Unit) {
+            detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
+        }
+    ) {
+        Icon(
+            painter = painterResource(icon.resourceId),
+            icon.name,
+            Modifier.size(IconInContainerDefaultSize),
+            tint = Color.White // MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+@Composable
+fun DefaultIconWithBorder(
+    icon: ImageVector,
+    onClick: () -> Unit,
+    onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
+){
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = Modifier.size(IconContainerDefaultSize).pointerInput(Unit) {
+            detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
+        }
+    ) {
+        Icon(
+            imageVector = icon,
+            icon.name,
+            Modifier.size(IconInContainerDefaultSize),
+            tint = Color.White // MaterialTheme.colorScheme.onBackground
+        )
+    }
+}

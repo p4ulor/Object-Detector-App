@@ -1,0 +1,143 @@
+package p4ulor.mediapipe.ui.components
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import p4ulor.mediapipe.i
+import p4ulor.mediapipe.ui.animations.slideInVertSmooth
+import p4ulor.mediapipe.ui.animations.slideOutVertSmooth
+import p4ulor.mediapipe.ui.animations.smooth
+import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
+import p4ulor.mediapipe.ui.theme.AppTheme
+import kotlin.math.roundToInt
+
+private val ExtraPadding = 50.dp
+private val PaddingBetweenButtons = 2.dp
+
+/** 
+ * A Floating Action Button that opens up or down depending on the screen size and it's position
+ * and stays within the bounds of the screen. It also takes into consideration the [IconDefaultSize],
+ * [BottomNavigationBarHeight] and [ExtraPadding]
+ *
+ * Everything regarding the button offset and it's dragging position must be in pixels (not dp)
+ * or it doesn't work since detectDragGestures uses px
+ *
+ * todo: fix closing direction when switching openUpwards possibility
+ */
+@Composable
+fun ExpandableFAB(
+    listOpenerFAB: FloatingActionButton,
+    fabs: List<FloatingActionButton>,
+    initialPosition: FabPosition = FabPosition.Bottom
+) {
+    val context = LocalContext.current
+    val density = LocalDensity.current
+    val display = context.resources.displayMetrics
+    val bottomBarHeight = with(density) { BottomNavigationBarHeight.toPx() }
+    val iconContainerSizePx = with(density) { IconContainerDefaultSize.toPx() }
+    val paddingBetweenButtonsPx = with(density) { PaddingBetweenButtons.toPx() }
+    val extraPaddingPx = with(density) { ExtraPadding.toPx() }
+    val maxAvailableWidthPx = display.widthPixels - iconContainerSizePx
+    val maxAvailableHeightPx = display.heightPixels - bottomBarHeight - iconContainerSizePx
+
+    val initialOffset = if(initialPosition== FabPosition.Top){
+        IntOffset(x = maxAvailableWidthPx.toInt() - extraPaddingPx.toInt(), y = extraPaddingPx.toInt())
+    } else {
+        IntOffset(x = maxAvailableWidthPx.toInt() - extraPaddingPx.toInt(), y = maxAvailableHeightPx.toInt())
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        var isExpanded by remember { mutableStateOf(false) }
+        var openerFabOffsetX by remember { mutableFloatStateOf(initialOffset.x.toFloat()) } //px
+        var openerFabOffsetY by remember { mutableFloatStateOf(initialOffset.y.toFloat()) } //px
+
+        val openUpwards = run {
+            val maxSizeOfTheFabs = openerFabOffsetY + iconContainerSizePx + fabs.size * (iconContainerSizePx + paddingBetweenButtonsPx)
+            maxSizeOfTheFabs >= maxAvailableHeightPx
+        }
+
+        val openerFAB: @Composable () -> Unit = {
+            DefaultIconWithBorder(
+                listOpenerFAB.icon,
+                onClick = { isExpanded = !isExpanded },
+                onDrag = { change, dragAmount ->
+                    val current = Offset(openerFabOffsetX, openerFabOffsetY)
+                    val newPos = current + dragAmount
+                    openerFabOffsetX = newPos.x.coerceIn(0f, maxAvailableWidthPx)
+                    openerFabOffsetY = newPos.y.coerceIn(0f, maxAvailableHeightPx)
+                }
+            )
+        }
+
+        Box(Modifier.offset { IntOffset(openerFabOffsetX.toInt(), openerFabOffsetY.toInt()) }) {
+            openerFAB()
+
+            // Place the fabs either bellow or above the openerFab. Using columns causes the openerFab to move
+            val fabsYoffset = if (openUpwards) (-fabs.size * iconContainerSizePx) - paddingBetweenButtonsPx*2 else iconContainerSizePx + paddingBetweenButtonsPx
+            Box(Modifier.offset { IntOffset(0, fabsYoffset.roundToInt()) }.zIndex(-1f) ) {// zIndex(-1f) So the expanded buttons dont show on top of the opener
+                ExpandableFabs(fabs, openUpwards, isVisible = isExpanded)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolean, isVisible: Boolean) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(smooth()) + slideInVertSmooth(openUpwards),
+        exit = fadeOut(smooth()) + slideOutVertSmooth(!openUpwards)
+    ) {
+        LazyColumn (verticalArrangement = Arrangement.spacedBy(PaddingBetweenButtons)) {
+            items(fabs){
+                DefaultIconWithBorder(it.icon, it.onClick)
+            }
+        }
+    }
+}
+
+data class FloatingActionButton(
+    val icon: AnyIcon,
+    val onClick: () -> Unit = {}
+)
+
+enum class FabPosition{
+    Top,
+    Bottom
+}
+
+@Preview
+@Composable
+private fun ExpandableFABPreview() = AppTheme {
+    ExpandableFAB(
+        listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
+        listOf(
+            FloatingActionButton(AnyIcon(AppIcons.Camera)) { i("Edit clicked") },
+            FloatingActionButton(AnyIcon(AppIcons.Gemini)) { i("Share clicked") }
+        ),
+        initialPosition = FabPosition.Top
+    )
+}

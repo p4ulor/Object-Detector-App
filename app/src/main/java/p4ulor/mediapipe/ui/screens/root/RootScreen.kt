@@ -43,7 +43,7 @@ import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
 import androidx.compose.material3.Icon as AndroidIcon
 
-val BottomBarHeight = 65.dp
+val BottomNavigationBarHeight = 65.dp
 
 @Composable
 fun RootScreen() = AppTheme {
@@ -61,7 +61,7 @@ fun RootScreen() = AppTheme {
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 SmoothHorizontalDivider()
-                NavigationBar (Modifier.height(BottomBarHeight), containerColor = Color.Transparent) {
+                NavigationBar (Modifier.height(BottomNavigationBarHeight), containerColor = Color.Transparent) {
                     bottomBarDestinations.forEach { item ->
                         buildNavigationBarItem(item, currentDestination, onClick = {
                             currentDestination = it.name

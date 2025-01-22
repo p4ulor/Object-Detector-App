@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -52,9 +53,14 @@ import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.i
+import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.CenteredContent
-import p4ulor.mediapipe.ui.components.Icon
+import p4ulor.mediapipe.ui.components.DefaultIcon
+import p4ulor.mediapipe.ui.components.ExpandableFAB
+import p4ulor.mediapipe.ui.components.FabPosition
+import p4ulor.mediapipe.ui.components.FloatingActionButton
+import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.requestPermission
 import p4ulor.mediapipe.ui.components.requestUserToManuallyAddThePermission
 
@@ -92,7 +98,14 @@ fun HomeScreen(viewModel: MainViewModel) {
 
         if(cameraProvider!=null) {
             CameraPreviewContainer(viewModel, cameraProvider!!)
-            FloatingMultiActionButton()
+            ExpandableFAB(
+                listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
+                listOf(
+                    FloatingActionButton(AnyIcon(AppIcons.Camera)) { i("Edit clicked") },
+                    FloatingActionButton(AnyIcon(AppIcons.Gemini)) { i("Share clicked") }
+                ),
+                initialPosition = FabPosition.Top
+            )
         } else {
             CenteredContent {
                 CircularProgressIndicator(Modifier.size(100.dp))
@@ -195,7 +208,7 @@ fun CameraPreviewContainer(
                 if (hasFlash) {
                     i("Torch supported, state: ${cameraInfo.torchState.value}")
                     val icon = if (isFlashEnabled) AppIcons.FlashlightOff else AppIcons.FlashlightOn
-                    Icon(icon) {
+                    DefaultIcon(icon) {
                         isFlashEnabled = !isFlashEnabled
                         enableFlash(isFlashEnabled)
                     }
@@ -204,7 +217,7 @@ fun CameraPreviewContainer(
                 }
             }
 
-            Icon(AppIcons.Scale) {
+            DefaultIcon(AppIcons.Scale) {
                 cameraPreviewRatio = cameraPreviewRatio.toggle()
             }
         }
