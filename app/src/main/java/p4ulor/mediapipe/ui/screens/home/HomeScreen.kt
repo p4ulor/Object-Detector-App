@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.launch
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.createImageAnalyser
@@ -64,6 +66,7 @@ import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.requestPermission
 import p4ulor.mediapipe.ui.components.requestUserToManuallyAddThePermission
 import p4ulor.mediapipe.ui.components.toast
+import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
@@ -120,12 +123,14 @@ fun CameraPreviewContainer(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val ctx = LocalContext.current
+    val scope = rememberCoroutineScope() // for calling things that require UI thread
 
     var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
     var isFlashEnabled by remember { mutableStateOf(false) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
     var isAppMinimized by remember { mutableStateOf(false) }
+
 
     // Contains the data necessary to outline an object into the screen
     val resultsBundle by viewModel.results.collectAsState()
@@ -145,7 +150,7 @@ fun CameraPreviewContainer(
     )
 
     BoxWithConstraints(
-        Modifier.fillMaxSize(),
+        Modifier.fillMaxSize().padding(bottom = BottomNavigationBarHeight * 2),
         contentAlignment = Alignment.TopCenter
     ) {
         val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer(
@@ -196,40 +201,45 @@ fun CameraPreviewContainer(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Row(Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp)) {
+    ExpandableFAB(
+        listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
+        fabs = buildList {
+            add(
+                FloatingActionButton(AnyIcon(AppIcons.Camera)) {
+                    imageCaptureUseCase.takePic(ctx) { outputFile, location ->
+                        scope.launch {
+                            ctx.toast("Image saved in $location")
+                        }
+                    }
+                }
+            )
+            add(
+                FloatingActionButton(AnyIcon(AppIcons.Gemini)) {
+                    i("This about to get LIT")
+                }
+            )
+            add(
+                FloatingActionButton(AnyIcon(AppIcons.Scale)) {
+                    cameraPreviewRatio = cameraPreviewRatio.toggle()
+                    imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
+                }
+            )
+
             camera?.apply {
                 if (hasFlash) {
                     i("Torch supported, state: ${cameraInfo.torchState.value}")
                     val icon = if (isFlashEnabled) AppIcons.FlashlightOff else AppIcons.FlashlightOn
-                    DefaultIcon(icon) {
-                        isFlashEnabled = !isFlashEnabled
-                        enableFlash(isFlashEnabled)
-                    }
+                    add(
+                        FloatingActionButton(AnyIcon(icon)) {
+                            isFlashEnabled = !isFlashEnabled
+                            enableFlash(isFlashEnabled)
+                        }
+                    )
                 } else {
                     i("Torch not supported")
                 }
             }
-
-            DefaultIcon(AppIcons.Scale) {
-                cameraPreviewRatio = cameraPreviewRatio.toggle()
-                imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
-            }
         }
-    }
-
-    ExpandableFAB(
-        listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
-        fabs = listOf(
-            FloatingActionButton(AnyIcon(AppIcons.Camera)) {
-                imageCaptureUseCase.takePic(ctx) { outputFile ->
-                    ctx.toast("Image saved in ${outputFile.savedUri}")
-                }
-            },
-            FloatingActionButton(AnyIcon(AppIcons.Gemini)) {
-                i("This about to get LIT")
-            }
-        )
     )
 }
 

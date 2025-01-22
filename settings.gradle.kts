@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Object-Detector-App-w-MediaPipe"
+rootProject.name = "Object-Detector-App"
 include(":app")

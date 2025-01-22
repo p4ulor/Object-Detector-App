@@ -2,14 +2,14 @@ package p4ulor.mediapipe.android.utils
 
 import android.content.ContentValues
 import android.content.Context
-import android.location.Location
 import android.provider.MediaStore
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.resolutionselector.ResolutionSelector
+import p4ulor.mediapipe.R
+import p4ulor.mediapipe.data.sources.gemini.SupportedMimeTypes
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
-import java.util.concurrent.Executors
 
 fun createImageCaptureUseCase(cameraPreviewRatio: ResolutionSelector) = ImageCapture.Builder()
     .setTargetAspectRatio(cameraPreviewRatio.toInt())
@@ -18,21 +18,22 @@ fun createImageCaptureUseCase(cameraPreviewRatio: ResolutionSelector) = ImageCap
 
 fun ImageCapture.takePic(
     ctx: Context,
-    onImageSaved: (outputFileResults: ImageCapture.OutputFileResults) -> Unit
+    onImageSaved: (outputFileResults: ImageCapture.OutputFileResults, location: String) -> Unit
 ){
     val fileName = "${System.currentTimeMillis()}.jpg"
+    val picturesFolder = "Pictures/${ctx.getString(R.string.app_name)}"
+
     val contentValues = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+        put(MediaStore.Images.Media.MIME_TYPE, SupportedMimeTypes.JPEG.value)
+        put(MediaStore.Images.Media.RELATIVE_PATH, picturesFolder)
     }
-
-    val metadata = ImageCapture.Metadata()
-    metadata.location = Location("World")
 
     val outputFileOptions = ImageCapture.OutputFileOptions.Builder(
         ctx.contentResolver,
         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
         contentValues
-    ).setMetadata(metadata).build()
+    ).build()
 
     takePicture(
         outputFileOptions,
@@ -43,8 +44,8 @@ fun ImageCapture.takePic(
             }
 
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                i("Image saved successfully at: ${outputFileResults.savedUri}")
-                onImageSaved(outputFileResults)
+                i("Image saved successfully at: $picturesFolder")
+                onImageSaved(outputFileResults, picturesFolder)
             }
         }
     )
