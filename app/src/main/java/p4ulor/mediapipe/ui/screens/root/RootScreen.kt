@@ -47,7 +47,7 @@ val BottomNavigationBarHeight = 65.dp
 
 @Composable
 fun RootScreen() = AppTheme {
-    var currentDestination by rememberSaveable { mutableStateOf<String?>(null) }
+    var currentScreenId by rememberSaveable { mutableStateOf(Screens.Home.name) }
     val navController = rememberNavController()
 
     BoxWithBackground(R.drawable.background_default) {
@@ -63,9 +63,11 @@ fun RootScreen() = AppTheme {
                 SmoothHorizontalDivider()
                 NavigationBar (Modifier.height(BottomNavigationBarHeight), containerColor = Color.Transparent) {
                     bottomBarDestinations.forEach { item ->
-                        buildNavigationBarItem(item, currentDestination, onClick = {
-                            currentDestination = it.name
-                            navController.navigate(item.name)
+                        buildNavigationBarItem(item, currentScreenId, onClick = { barItem ->
+                            if(currentScreenId != barItem.name){
+                                currentScreenId = barItem.name
+                                navController.navigate(item.name)
+                            }
                         })
                     }
                 }
@@ -88,7 +90,7 @@ fun RootScreen() = AppTheme {
 @Composable
 private fun RowScope.buildNavigationBarItem(
     item: NavItem,
-    currentScreenId: String?,
+    currentScreenId: String,
     onClick: (item: NavItem) -> Unit,
 ) = NavigationBarItem(
         selected = currentScreenId == item.name,
@@ -113,7 +115,10 @@ private fun RowScope.buildNavigationBarItem(
     )
 
 
-/** This enum defines the order in which the destinations appear */
+/**
+ * This enum defines the order in which the destinations appear.
+ * The names of the enums are also the id of the each screen
+ */
 enum class Screens(
     val icon: AppIcons? = null,
     val materialIcons: ImageVector? = null,

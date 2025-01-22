@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.data.domains.mediapipe.objectName
 import p4ulor.mediapipe.ui.animations.HueShiftLooper
-import p4ulor.mediapipe.ui.shapes.RoundRectangleShape
+import p4ulor.mediapipe.ui.components.RoundRectangleShape
 import p4ulor.mediapipe.ui.theme.rainbowWith
 import kotlin.random.Random
 

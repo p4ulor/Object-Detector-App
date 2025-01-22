@@ -46,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // Added after the tests failing with: com.android.builder.errors.EvalIssueException: defaultConfig contains custom BuildConfig fields, but the feature is disabled
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -55,6 +56,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    // Added:
+    println("Building version: ${defaultConfig.versionName})")
 }
 
 dependencies {

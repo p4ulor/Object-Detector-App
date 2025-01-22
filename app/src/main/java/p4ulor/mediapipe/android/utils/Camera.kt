@@ -9,10 +9,8 @@ import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.ui.geometry.Size
-import androidx.core.content.ContextCompat
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
-import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -25,7 +23,7 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider? = suspendCorouti
         cameraProvider.addListener({
             val camera = runCatching { cameraProvider.get() }.getOrNull()
             it.resume(camera)
-        }, ContextCompat.getMainExecutor(this))
+        }, executor)
     }
 }
 
@@ -119,5 +117,5 @@ val Camera?.hasFlash: Boolean
 fun Camera.enableFlash(isFlashEnabled: Boolean) {
     cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
         i("Flashlight updated")
-    }, Executors.newSingleThreadExecutor())
+    }, executor)
 }

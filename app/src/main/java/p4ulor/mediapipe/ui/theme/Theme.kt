@@ -59,8 +59,10 @@ import p4ulor.mediapipe.ui.components.CenteredRow
  * Containers are: boxes, columns, rows, scaffold, cards and others
  */
 
-// High contrast color to use in UI segments that haven't been figured out what color should have
-// or what they even are
+/**
+ * High contrast color to use in UI segments that haven't been figured out what color should have
+ * or what they even are
+ */
 private val unset = Color(0xFF2FFF00)
 
 private val DarkColorScheme = darkColorScheme(

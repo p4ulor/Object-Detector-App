@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.sample
+import p4ulor.mediapipe.android.utils.executor
 import p4ulor.mediapipe.android.utils.launch
 import p4ulor.mediapipe.android.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
@@ -14,11 +15,8 @@ import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
 import p4ulor.mediapipe.data.sources.KtorClient
 import p4ulor.mediapipe.e
-import java.util.concurrent.Executors
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
-    private val executor = Executors.newSingleThreadExecutor()
-
     private lateinit var imageAnalysisSettings: ImageAnalysis
     private lateinit var myImageAnalyser: MyImageAnalyser
     var animateResults = true
@@ -55,9 +53,5 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             myImageAnalyser
         )
         return this.imageAnalysisSettings
-    }
-
-    fun getDummyJson() = launch {
-        ktorClient.get("test")
     }
 }

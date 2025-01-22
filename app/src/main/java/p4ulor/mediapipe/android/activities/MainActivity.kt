@@ -8,6 +8,7 @@ import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.screens.root.RootScreen
 
 class MainActivity : ComponentActivity() {
@@ -21,6 +22,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             RootScreen()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        i("Stopped")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        i("Destroyed")
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

@@ -8,7 +8,6 @@ import androidx.camera.core.ExperimentalZeroShutterLag
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
-import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -42,6 +41,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.createImageAnalyser
+import p4ulor.mediapipe.android.utils.createImageCaptureUseCase
 import p4ulor.mediapipe.android.utils.enableFlash
 import p4ulor.mediapipe.android.utils.getActivity
 import p4ulor.mediapipe.android.utils.getCameraProvider
@@ -49,6 +49,7 @@ import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.hasFlash
 import p4ulor.mediapipe.android.utils.isHdrSupported
 import p4ulor.mediapipe.android.utils.requestPermission
+import p4ulor.mediapipe.android.utils.takePic
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
@@ -58,15 +59,15 @@ import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.CenteredContent
 import p4ulor.mediapipe.ui.components.DefaultIcon
 import p4ulor.mediapipe.ui.components.ExpandableFAB
-import p4ulor.mediapipe.ui.components.FabPosition
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.requestPermission
 import p4ulor.mediapipe.ui.components.requestUserToManuallyAddThePermission
+import p4ulor.mediapipe.ui.components.toast
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
-    val context = LocalContext.current
+    val ctx = LocalContext.current
 
     val isGranted = requestPermission(Manifest.permission.CAMERA, onPermissionNotGranted = {
         i("Permission not granted")
@@ -76,10 +77,10 @@ fun HomeScreen(viewModel: MainViewModel) {
             Text("No camera permission!")
             Button(onClick = {
                 if(!oneTimePermRequestWasUsed){
-                    context.getActivity()?.requestPermission()
+                    ctx.getActivity()?.requestPermission()
                     oneTimePermRequestWasUsed = true
                 } else {
-                    context.requestUserToManuallyAddThePermission()
+                    ctx.requestUserToManuallyAddThePermission()
                 }
             }) {
                 Text("Get permissions")
@@ -89,23 +90,14 @@ fun HomeScreen(viewModel: MainViewModel) {
 
     if(isGranted){
         i("Permission granted")
-
         var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
 
         LaunchedEffect(Unit) {
-            cameraProvider = context.getCameraProvider()
+            cameraProvider = ctx.getCameraProvider()
         }
 
         if(cameraProvider!=null) {
             CameraPreviewContainer(viewModel, cameraProvider!!)
-            ExpandableFAB(
-                listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
-                listOf(
-                    FloatingActionButton(AnyIcon(AppIcons.Camera)) { i("Edit clicked") },
-                    FloatingActionButton(AnyIcon(AppIcons.Gemini)) { i("Share clicked") }
-                ),
-                initialPosition = FabPosition.Top
-            )
         } else {
             CenteredContent {
                 CircularProgressIndicator(Modifier.size(100.dp))
@@ -115,7 +107,7 @@ fun HomeScreen(viewModel: MainViewModel) {
 }
 
 /**
- * We're using CameraX to use the phone's camera, and since it doesn't have a prebuilt
+ * I'm using CameraX to use the phone's camera, and since it doesn't have a prebuilt
  * composable in Jetpack Compose, we use AndroidView to implement it.
  * We are using CameraProvider and not CameraController for more customization
  * https://developer.android.com/media/camera/camerax/architecture#cameraprovider
@@ -127,10 +119,12 @@ fun CameraPreviewContainer(
     cameraProvider: ProcessCameraProvider
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
+    val ctx = LocalContext.current
 
     var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
     var isFlashEnabled by remember { mutableStateOf(false) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
+    var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
     var isAppMinimized by remember { mutableStateOf(false) }
 
     // Contains the data necessary to outline an object into the screen
@@ -180,8 +174,8 @@ fun CameraPreviewContainer(
                         camera = startCameraAndPreviewView(
                             cameraProvider,
                             cameraPreviewView,
+                            imageCaptureUseCase,
                             imageAnalysisSettings,
-                            cameraPreviewRatio,
                             lifecycleOwner
                         )
 
@@ -219,9 +213,24 @@ fun CameraPreviewContainer(
 
             DefaultIcon(AppIcons.Scale) {
                 cameraPreviewRatio = cameraPreviewRatio.toggle()
+                imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
             }
         }
     }
+
+    ExpandableFAB(
+        listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
+        fabs = listOf(
+            FloatingActionButton(AnyIcon(AppIcons.Camera)) {
+                imageCaptureUseCase.takePic(ctx) { outputFile ->
+                    ctx.toast("Image saved in ${outputFile.savedUri}")
+                }
+            },
+            FloatingActionButton(AnyIcon(AppIcons.Gemini)) {
+                i("This about to get LIT")
+            }
+        )
+    )
 }
 
 /**
@@ -229,32 +238,28 @@ fun CameraPreviewContainer(
  * [UseCase]s (max 3), that are used with the camera
  * @return The created [Camera]
  */
-fun startCameraAndPreviewView(
+private fun startCameraAndPreviewView(
     cameraProvider: ProcessCameraProvider,
     cameraPreviewView: PreviewView,
+    imageCaptureUseCase: ImageCapture,
     imageAnalysisSettings: ImageAnalysis,
-    cameraPreviewRatio: ResolutionSelector,
     lifecycleOwner: LifecycleOwner
 ): Camera {
 
     // Create a Preview (UseCase) to tell the cameraProvider that we want to preview the camera
     val previewUseCase = Preview.Builder().apply {
-            cameraProvider.isHdrSupported?.let { setDynamicRange(it) }
-        }
-        .build().apply {
-            surfaceProvider = cameraPreviewView.surfaceProvider
-        }
-
-    // Not needed, but can be used later
-    val imageCaptureUseCase = ImageCapture.Builder()
-        .setTargetAspectRatio(cameraPreviewRatio.toInt())
-        .build()
+        cameraProvider.isHdrSupported?.let { setDynamicRange(it) }
+    }.build().apply {
+        surfaceProvider = cameraPreviewView.surfaceProvider
+    }
 
     return cameraProvider.bindToLifecycle(
         lifecycleOwner,
         CameraSelector.DEFAULT_BACK_CAMERA,
-        previewUseCase,
-        imageCaptureUseCase,
-        imageAnalysisSettings
+        useCases = arrayOf(
+            previewUseCase,
+            imageCaptureUseCase,
+            imageAnalysisSettings
+        )
     )
 }

@@ -32,7 +32,7 @@ import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 import p4ulor.mediapipe.ui.theme.AppTheme
 
-private val ExtraPadding = 50.dp
+private val ExtraPadding = 10.dp
 private val PaddingBetweenButtons = 2.dp
 
 /** 
@@ -42,14 +42,12 @@ private val PaddingBetweenButtons = 2.dp
  * Preferably, the FABs open downwards.
  * Everything regarding the button offset and it's dragging position must be in pixels (not dp)
  * or it doesn't work since detectDragGestures uses px
- *
- * todo: fix closing direction when switching openUpwards possibility
  */
 @Composable
 fun ExpandableFAB(
     listOpenerFAB: FloatingActionButton,
     fabs: List<FloatingActionButton>,
-    initialPosition: FabPosition = FabPosition.Bottom
+    initialPosition: FabPosition = FabPosition.Top
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
