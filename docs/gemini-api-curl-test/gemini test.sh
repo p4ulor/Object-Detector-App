@@ -30,7 +30,7 @@ tmp_header_file=upload-response-headers.tmp
 # The upload url is in the response headers, dump them to a file.
 # with -d, it is a POST request
 curl "$BASE_URL/upload/v1beta/files?key=$GOOGLE_API_KEY" \
-  -D upload-response-headers.tmp \
+  -D "$tmp_header_file" \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
   -H "X-Goog-Upload-Header-Content-Length: $NUM_BYTES" \
