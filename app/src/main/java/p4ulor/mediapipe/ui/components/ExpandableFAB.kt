@@ -5,8 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +13,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,16 +31,15 @@ import p4ulor.mediapipe.ui.animations.slideOutVertSmooth
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 import p4ulor.mediapipe.ui.theme.AppTheme
-import kotlin.math.roundToInt
 
 private val ExtraPadding = 50.dp
 private val PaddingBetweenButtons = 2.dp
 
 /** 
- * A Floating Action Button that opens up or down depending on the screen size and it's position
- * and stays within the bounds of the screen. It also takes into consideration the [IconDefaultSize],
- * [BottomNavigationBarHeight] and [ExtraPadding]
- *
+ * A Floating Action Button that opens up or down depending on the screen size and it's position.
+ * and stays within the bounds of the screen. It also takes into consideration the
+ * [IconDefaultSize], [BottomNavigationBarHeight] and [ExtraPadding]
+ * Preferably, the FABs open downwards.
  * Everything regarding the button offset and it's dragging position must be in pixels (not dp)
  * or it doesn't work since detectDragGestures uses px
  *
@@ -63,20 +61,26 @@ fun ExpandableFAB(
     val maxAvailableWidthPx = display.widthPixels - iconContainerSizePx
     val maxAvailableHeightPx = display.heightPixels - bottomBarHeight - iconContainerSizePx
 
-    val initialOffset = if(initialPosition== FabPosition.Top){
-        IntOffset(x = maxAvailableWidthPx.toInt() - extraPaddingPx.toInt(), y = extraPaddingPx.toInt())
+    val initialOffset = if(initialPosition.isTop){
+        IntOffset(x = (maxAvailableWidthPx - extraPaddingPx).toInt(), y = extraPaddingPx.toInt())
     } else {
-        IntOffset(x = maxAvailableWidthPx.toInt() - extraPaddingPx.toInt(), y = maxAvailableHeightPx.toInt())
+        IntOffset(x = (maxAvailableWidthPx - extraPaddingPx).toInt(), y = maxAvailableHeightPx.toInt())
     }
 
+    // Cover the max area available
     Box(Modifier.fillMaxSize()) {
         var isExpanded by remember { mutableStateOf(false) }
         var openerFabOffsetX by remember { mutableFloatStateOf(initialOffset.x.toFloat()) } //px
         var openerFabOffsetY by remember { mutableFloatStateOf(initialOffset.y.toFloat()) } //px
+        var canOpenUpwards by remember { mutableStateOf(initialPosition.isBottom) }
 
-        val openUpwards = run {
-            val maxSizeOfTheFabs = openerFabOffsetY + iconContainerSizePx + fabs.size * (iconContainerSizePx + paddingBetweenButtonsPx)
-            maxSizeOfTheFabs >= maxAvailableHeightPx
+        canOpenUpwards = run {
+            val maxYreachOfTheFabs = openerFabOffsetY + iconContainerSizePx + fabs.size * (iconContainerSizePx + paddingBetweenButtonsPx)
+            if(isExpanded) {
+                canOpenUpwards
+            } else {
+                maxYreachOfTheFabs >= maxAvailableHeightPx
+            }
         }
 
         val openerFAB: @Composable () -> Unit = {
@@ -92,13 +96,36 @@ fun ExpandableFAB(
             )
         }
 
+        // FAB opener + fabs
         Box(Modifier.offset { IntOffset(openerFabOffsetX.toInt(), openerFabOffsetY.toInt()) }) {
+            var fabsYoffset by remember { mutableIntStateOf((iconContainerSizePx + paddingBetweenButtonsPx).toInt()) }
+            var hasOpenedUpwards = remember { object {
+                    var value = false
+                }
+            }
+
+            // Used to place the fabs either bellow or above the openerFab. Using columns causes the openerFab to move
+            fabsYoffset = if (isExpanded) { // Mazurka logic to make the opening/closing of the fabs be done correctly when moving it through the screen through various states
+                run {
+                    if (canOpenUpwards && !hasOpenedUpwards.value) {
+                        hasOpenedUpwards.value = true
+                        (-fabs.size * iconContainerSizePx) - paddingBetweenButtonsPx*2
+                    } else if(!canOpenUpwards) {
+                        hasOpenedUpwards.value = false
+                        iconContainerSizePx + paddingBetweenButtonsPx
+                    } else {
+                        fabsYoffset
+                    }
+                }.toInt()
+            } else {
+                fabsYoffset
+            }
+
             openerFAB()
 
-            // Place the fabs either bellow or above the openerFab. Using columns causes the openerFab to move
-            val fabsYoffset = if (openUpwards) (-fabs.size * iconContainerSizePx) - paddingBetweenButtonsPx*2 else iconContainerSizePx + paddingBetweenButtonsPx
-            Box(Modifier.offset { IntOffset(0, fabsYoffset.roundToInt()) }.zIndex(-1f) ) {// zIndex(-1f) So the expanded buttons dont show on top of the opener
-                ExpandableFabs(fabs, openUpwards, isVisible = isExpanded)
+            // The fabs
+            Box(Modifier.offset { IntOffset(0, fabsYoffset) }.zIndex(-1f) ) {// zIndex(-1f) So the expanded buttons dont show on top of the opener
+                ExpandableFabs(fabs, canOpenUpwards, isVisible = isExpanded)
             }
         }
     }
@@ -126,7 +153,13 @@ data class FloatingActionButton(
 
 enum class FabPosition{
     Top,
-    Bottom
+    Bottom;
+
+    val isTop: Boolean
+        get() = this == Top
+
+    val isBottom: Boolean
+        get() = this == Bottom
 }
 
 @Preview
