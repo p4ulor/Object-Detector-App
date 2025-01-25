@@ -19,6 +19,7 @@ tasksVision = "0.10.16"
 gradleDownload = "5.6.0"
 mockk = "1.13.14"
 ktorGlobalVerion = "2.3.13"
+dokka = "1.9.20"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,7 +52,6 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorGlobalVerion" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorGlobalVerion" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorGlobalVerion" }
-ktor-client-resources = { group = "io.ktor", name = "ktor-client-resources", version.ref = "ktorGlobalVerion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -59,3 +59,4 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 # Added
 de-undercouch-gradle-download = { id = "de.undercouch.download", version.ref = "gradleDownload" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

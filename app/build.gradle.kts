@@ -1,3 +1,4 @@
+import org.jetbrains.dokka.DokkaConfiguration.*
 import org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -7,6 +8,7 @@ plugins {
     // Added:
     alias(libs.plugins.de.undercouch.gradle.download)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.dokka)
 }
 
 android {
@@ -18,7 +20,7 @@ android {
         minSdk = 28
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -154,3 +156,19 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOfNotNull("-Xcontext-receivers")
     }
 }
+
+/** https://kotlinlang.org/docs/dokka-gradle.html */
+tasks.dokkaHtml {
+    moduleName.set(rootProject.name)
+    moduleVersion.set("${android.defaultConfig.versionName}")
+
+    dokkaSourceSets.configureEach {
+        perPackageOption {
+            reportUndocumented.set(true)
+            documentedVisibilities.set(Visibility.values().toSet())
+        }
+    }
+
+    outputDirectory.set(project.rootDir.resolve("docs/dokka-generated"))
+}
+

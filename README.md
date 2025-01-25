@@ -6,13 +6,10 @@
 - Save and manage results (TODO)
 
 ### Side features
-- Toggle flashlight
-- Change camera ratio
-- Change max detection count (TODO)
-- Change detection sensitivity (TODO)
-- Change model settings (TODO)
-- Achivements list for the 80 Media Pipe objects (TODO)
-- Notification on new object detected as part of an achivement (TODO)
+- Change camera settings: Ratio and flashlight
+- Change model settings: sensitivity, max detection count, etc  (TODO)
+- Achievements list for the 80 Media Pipe objects (TODO)
+- Notification on new object detected as part of an achievement (TODO)
 
 ## Primary Technologies 🛠️
 | MediaPipe | Gemini API | Ktor | Firebase |
@@ -38,11 +35,11 @@ one and monitor the use of your API key
 
 ### 3. [Ktor (client)](https://ktor.io/docs/client-create-new-application.html)
 - An open-source framework developed by JetBrains to create HTTP servers or clients
-- I only use it's client components, in order to make HTTP calls to the Gemini API
-- I use the built-in JSON serializer
+- I only use it's client component, in order to make HTTP calls to the Gemini API
+- I use the built-in JSON serializer for sending and receiving objects
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
-- A cloud platform or BaaS (Backend As A Service) that provides a range of utilities for diferent enviornments (and programming languages) via SDK's (Software Development Kits)
+- A cloud platform or BaaS (Backend As A Service) that provides a range of utilities for different environments (and programming languages) via SDK's (Software Development Kits)
 - I use it to store the results of prompts from the Gemini API
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
@@ -53,8 +50,11 @@ one and monitor the use of your API key
 | Dependency injection | Animated graphics | Object mocking for tests | Image loading library  |
 
 ### Other Dependencies & Plugins Used 🔌
-- Gradle Plugin -> [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite ML models
-- Gradle Plugin -> [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin)
+#### Gradle Plugins 🐘
+- [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite ML models. It is ran automatically after building the project. In gradle tool window, access it in the task category "other"
+- [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin) -> to think
+- [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> API documentation engine for Kotlin. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
+#### Other
 - [androidx.camera.*dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
 - [google-accompanist](https://google.github.io/accompanist/) -> For permission utils
 
@@ -62,6 +62,10 @@ one and monitor the use of your API key
 ### Getting API Keys 🔑
 - Gemini API -> https://aistudio.google.com/app/apikey
 - Firebase -> 
+
+### Installing ⬇️
+- a) From .apk file: Download in releases
+- b) With source code: Run with a terminal in the root directory `./gradlew app:installDebug`
 
 ## Notes 📝
 - The Machine Learning models used with MediaPipe need to be a compatible with it, the compatability depends on the feature used
@@ -75,6 +79,7 @@ one and monitor the use of your API key
 > License: © 2024-currentYear, Paulo Rosa, [all reserved to me](https://choosealicense.com/no-permission/). Do not distribute to any public the entirety or individual parts (files and text) of the project without my consent. Do not claim you're the original author. Downloading / git cloning is inevitably allowed, in order to only build the artifacts and modify the project locally and privately for non-commercial use. Pull requests are welcomed. If a fork was done do not modify this current file, specially this license.
 
 ## Todo 🕒
+- Add some mermaid diagrams
 - Check if viewmodel uses are correct and clean, use dependency injection
 - Review and clean up the architecture
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
@@ -84,6 +89,7 @@ one and monitor the use of your API key
 - Listen to networks changes to display gemini as available or not
 - Make more composables previewable
 - Support landscape mode when [rotating camera](https://developer.android.com/media/camera/camerax/orientation-rotation)
+- add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
 ### Fixes
 - Fix not using deprecated resolution selector causing
 ```

@@ -1,11 +1,13 @@
+# UPDATE: It turns out this is the process for submitting images that are greater than 20MB
+# https://ai.google.dev/gemini-api/docs/vision?lang=rest#upload-image
+
 # README: The process of submitting an image for Gemini to analyse is has follows:
 # curl request 1 - Sends information about the file you want to upload. This includes the file size, content type (MIME type), and a display name
 # curl request 2 - based on the response headers placed in the file "upload-header.tmp", upload the file to the upload_url indicated by google
 # curl request 3 - prompt Gemini along with the file_uri in mind
-# https://ai.google.dev/gemini-api/docs/vision?lang=rest#upload-image
 # https://ai.google.dev/api/generate-content
 # https://ai.google.dev/api/files#files_create_image-SHELL
-# 2> /dev/null is used to redirect stderr to a permanently delete destination
+# 2> /dev/null is used to redirect stderr to a special directory in linux that permanently deletes the contents sent to it
 # sudo apt install jq
 # Put key in API_KEY_FILE before using
 
