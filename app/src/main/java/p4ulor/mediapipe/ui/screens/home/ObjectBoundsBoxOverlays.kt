@@ -34,6 +34,7 @@ import com.google.mediapipe.tasks.components.containers.Category
 import com.google.mediapipe.tasks.components.containers.Detection
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import p4ulor.mediapipe.data.domains.mediapipe.certaintyScore
 import p4ulor.mediapipe.data.domains.mediapipe.objectName
 import p4ulor.mediapipe.ui.animations.HueShiftLooper
 import p4ulor.mediapipe.ui.components.RoundRectangleShape
@@ -95,21 +96,18 @@ fun ObjectBoundsBoxOverlays(
             }
 
             // Text field with grey background with the name of the object
-            Box(
-                Modifier
-                    .offset(box.xLeft.dp, box.yTop.dp)
-                    .background(Color(0x4E4F4F4F), shape = RoundRectangleShape)) {
-                val obj = detection.categories().first()
-                Column {
-                    Text(
-                        text = "${obj.categoryName()} ${obj.score().toString().take(4)}",
-                        modifier = Modifier
-                            .width(box.width.dp)
-                            .padding(borderWidth * 1.5f),
-                        color = Color.White,
-                        textAlign = TextAlign.Center
-                    )
-                }
+            Box(Modifier
+                .offset(box.xLeft.dp, box.yTop.dp)
+                .background(Color(0x9F4F4F4F), shape = RoundRectangleShape)
+            ) {
+                Text(
+                    text = "${detection.objectName} ${detection.certaintyScore}",
+                    modifier = Modifier
+                        .width(box.width.dp)
+                        .padding(borderWidth * 2),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
             }
 
             val hueShiftLooper = remember { HueShiftLooper() }

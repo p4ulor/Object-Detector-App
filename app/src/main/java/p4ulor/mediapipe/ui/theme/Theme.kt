@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,6 +23,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -53,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.CenteredRow
+import p4ulor.mediapipe.ui.components.MaterialIcons
 
 /**
  * Run in interactive mode to see the animations
@@ -67,29 +71,29 @@ private val unset = Color(0xFF2FFF00)
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF0073FF), // Primary color used for prominent components like buttons, sliders, radio buttons, and important text.
-    onPrimary = Color(0xFFFFFFFF), // For text/icons displayed on top of the primary color
+    onPrimary = Color(0xFFFFEFEF), // For text/circle widget (in switch)/checkmark displayed on top of the primary color
     primaryContainer = Color(0xFF005BBB), // A tonal variation of the primary color for containers
-    onPrimaryContainer = Color(0xFFFFFFFF), // For text/icons on primary containers
-    inversePrimary = Color(0xFFBB86FC), // Inverse of the primary color for contrasting UI elements
+    onPrimaryContainer = Color(0xFFFFEFEF), // For text/icons on primary containers
+    inversePrimary = unset, // Inverse of the primary color for contrasting UI elements
 
-    secondary = Color(0xFA004184), // Secondary color used for less prominent components
+    secondary = Color(0xAA80C1FF), // Secondary color used for less prominent components
     onSecondary = Color(0xFFB1B1B1), // Color for text/icons displayed on top of the secondary color
-    secondaryContainer = Color(0xFF2196F3), // A tonal variation of the secondary color for containers
+    secondaryContainer = Color(0x77005BBB), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
 
-    tertiary = Color(0x00FFFFFF), // Used for accents or highlights
-    onTertiary = Color(0xFF888888), // For text/icons displayed on top of the tertiary color
-    tertiaryContainer = Color(0xFF64DD17), // A tonal variation of the tertiary color for containers
-    onTertiaryContainer = Color(0xFFFFFFFF), // Color for text/icons on tertiary containers
+    tertiary = unset, // Used for accents or highlights
+    onTertiary = unset, // For text/icons displayed on top of the tertiary color
+    tertiaryContainer = unset, // A tonal variation of the tertiary color for containers
+    onTertiaryContainer = unset, // Color for text/icons on tertiary containers
 
     background = Color(0xFA5A5E24), // Background color for screens and larger components
-    onBackground = Color(0xFFFFFFFF), // Color for text/icons displayed on top of the background color
+    onBackground = unset, // Color for text/icons displayed on top of the background color
 
     surface = Color(0xFF151313), // For surfaces, cards and menus
-    onSurface = Color(0xFFDBDBDB), // For text/icons displayed on top of the surface color
-    surfaceVariant = Color(0xFF303030), // Another surface color variant for differentiation
-    onSurfaceVariant = Color(0xFF000000), // For text/icons on surface variant
-    surfaceTint = Color(0xFF303030), // Overlay color for elevated surfaces to create a tint effect
+    onSurface = Color(0xFFFFFFFF), // For text/icons displayed on top of the surface color
+    surfaceVariant = unset, // Another surface color variant for differentiation
+    onSurfaceVariant = Color(0xFFFFFFFF), // For "Label" in labelled boxes, icons and surface variants
+    surfaceTint = unset, // Overlay color for elevated surfaces to create a tint effect
 
     inverseSurface = unset, // Inverse of the surface color for contrasting UI elements
     inverseOnSurface = unset, // For text/icons on inverse surfaces
@@ -99,7 +103,7 @@ private val DarkColorScheme = darkColorScheme(
     errorContainer = Color(0xFFB00020),
     onErrorContainer = Color(0xFF2E000B),
 
-    outline = Color(0xFFA1A1A1), // For outlines/borders of OutlinedTextField and OutlinedButton
+    outline = Color(0xFF69BAFF), // For outlines/borders of OutlinedTextField and OutlinedButton
     outlineVariant = Color(0xFFDFDFDF), // For HorizontalDivider
 
     scrim = Color(0xFF737373), // Applied on the background of unfocused content, when some popup/dialog is shown
@@ -107,7 +111,7 @@ private val DarkColorScheme = darkColorScheme(
     surfaceBright = unset,
     surfaceContainer = unset,
     surfaceContainerHigh = unset,
-    surfaceContainerHighest = Color(0xFF007CD7),
+    surfaceContainerHighest = Color(0xFF007CD7), //for card
     surfaceContainerLow = unset,
     surfaceContainerLowest = unset,
     surfaceDim = unset,
@@ -120,7 +124,7 @@ private val LightColorScheme = lightColorScheme(
     onPrimaryContainer = Color(0xFFFFFFFF), // For text/icons on primary containers
     inversePrimary = Color(0xFFBB86FC), // Inverse of the primary color for contrasting UI elements
 
-    secondary = Color(0xFA004184), // Secondary color used for less prominent components
+    secondary = Color(0xFA0E1A24), // Secondary color used for less prominent components
     onSecondary = Color(0xFFB1B1B1), // Color for text/icons displayed on top of the secondary color
     secondaryContainer = Color(0xFF2196F3), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
@@ -133,10 +137,10 @@ private val LightColorScheme = lightColorScheme(
     background = Color(0xFA5A5E24), // Background color for screens and larger components
     onBackground = Color(0xFFFFFFFF), // Color for text/icons displayed on top of the background color
 
-    surface = Color(0xFFDEDEDE), // For surfaces, cards and menus
-    onSurface = Color(0xFFDBDBDB), // For text/icons displayed on top of the surface color
+    surface = Color(0xFFE2E2E2), // For surfaces, cards and menus
+    onSurface = Color(0xFF000000), // For text/icons displayed on top of the surface color
     surfaceVariant = Color(0xFF303030), // Another surface color variant for differentiation
-    onSurfaceVariant = Color(0xFF000000), // For text/icons on surface variant
+    onSurfaceVariant = Color(0xFFE2E2E2), // For text/icons on surface variant
     surfaceTint = Color(0xFF303030), // Overlay color for elevated surfaces to create a tint effect
 
     inverseSurface = unset, // Inverse of the surface color for contrasting UI elements
@@ -155,7 +159,7 @@ private val LightColorScheme = lightColorScheme(
     surfaceBright = unset,
     surfaceContainer = unset,
     surfaceContainerHigh = unset,
-    surfaceContainerHighest = Color(0xFF007CD7),
+    surfaceContainerHighest = Color(0xFF007CD7), //for card
     surfaceContainerLow = unset,
     surfaceContainerLowest = unset,
     surfaceDim = unset,
@@ -175,7 +179,22 @@ private fun SampleComposable(){
             HorizontalDivider()
             HorizontalDivider(thickness = 10.dp)
 
-            OutlinedTextField(value = "Input", onValueChange = {}, label = { Text("Label") })
+            var isVisible by remember { mutableStateOf(false) }
+
+            OutlinedTextField(
+                value = "Input",
+                onValueChange = {},
+                label = { Text("Label") },
+                trailingIcon = { // Add the toggle button
+                    val image = if (isVisible) MaterialIcons.VisibilityOff else MaterialIcons.Visibility
+
+                    val description = if (isVisible) "Hide password" else "Show password"
+
+                    IconButton(onClick = { isVisible = !isVisible }) {
+                        Icon(imageVector = image, description)
+                    }
+                }
+            )
 
             Button(onClick = {}) {
                 Text("Button")
@@ -234,7 +253,7 @@ private fun SampleComposable(){
             Card(elevation = CardDefaults.outlinedCardElevation(defaultElevation = 5.dp)) {
                 Column(Modifier.padding(8.dp)) {
                     Text("Card Title", style = MaterialTheme.typography.titleMedium)
-                    Text("Card Content")
+                    Text("Card Content", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -250,13 +269,13 @@ private fun SampleComposable(){
 
 @Preview
 @Composable
-private fun LightColorSchemePreview() = AppTheme(enableDarkTheme = false){
+private fun DarkColorSchemePreview() = AppTheme(enableDarkTheme = true){
     SampleComposable()
 }
 
 @Preview
 @Composable
-private fun DarkColorSchemePreview() = AppTheme(enableDarkTheme = true){
+private fun LightColorSchemePreview() = AppTheme(enableDarkTheme = false){
     SampleComposable()
 }
 
@@ -272,7 +291,7 @@ fun AppTheme(
             val context = LocalContext.current
             if (enableDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        enableDarkTheme -> darkColorScheme()
+        enableDarkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 

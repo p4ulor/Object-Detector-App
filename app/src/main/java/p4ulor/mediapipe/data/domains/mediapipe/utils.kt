@@ -30,3 +30,6 @@ data class ResultBundle(
  */
 val Detection.objectName: String
     get() = categories().first().categoryName()
+
+val Detection.certaintyScore: String
+    get() = categories().first().score().toString().take(4)

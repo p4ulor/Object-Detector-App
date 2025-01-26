@@ -18,6 +18,8 @@ fun rainbowWith(hueShift: Float, saturation: Float = 1f, lightness: Float = 0.5f
     1f to Color.hsl((300f + hueShift) % 360f, saturation, lightness)
 )
 
+val GeminiLikeGradient = listOf(Color(0xFF4285F4), Color(0xFFF76744)) // Blue to Red (Similar to Gemini colors)
+
 // Might be useful
 val ColorInvertFilter = ColorFilter.colorMatrix(
     ColorMatrix(

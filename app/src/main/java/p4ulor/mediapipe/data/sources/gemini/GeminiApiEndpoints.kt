@@ -42,10 +42,10 @@ class GeminiApiEndpoints(private val apiKey: String) {
     }
 
     /** @return a [Pair] where [Pair.first] = path and [Pair.second] = [QueryParams]*/
-    fun get(endpoint: Endpoint) = Pair(
-        endpoint.path,
-        listOf(QueryParam(QueryKeys.key.name, apiKey))
-    )
+    fun postTo(endpoint: Endpoint) = run {
+        require(endpoint.method == HttpMethod.Post)
+        Pair(endpoint.path, listOf(QueryParam(QueryKeys.key.name, apiKey)))
+    }
 
     companion object {
         /** Should only be used to configure [HttpClient] */

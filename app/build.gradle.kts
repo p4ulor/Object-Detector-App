@@ -99,6 +99,8 @@ dependencies {
 
     // Permission utils
     implementation(libs.accompanist.permissions)
+    // More MaterialIcons
+    implementation(libs.androidx.material.icons.extended.android)
 
     // Ktor HTTP client, to make HTTP requests to the Gemini API
     implementation(libs.ktor.client.core)

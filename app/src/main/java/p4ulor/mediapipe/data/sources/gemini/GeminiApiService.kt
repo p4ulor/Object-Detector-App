@@ -20,7 +20,7 @@ class GeminiApiService(apiKey: String) {
     private val endpoints = GeminiApiEndpoints(apiKey)
 
     suspend fun promptWithImage(prompt: GeminiPrompt): GeminiResponse? {
-        val (path, queryParams) = endpoints.get(Resources.Model.GenerateContent)
+        val (path, queryParams) = endpoints.postTo(Resources.Model.GenerateContent)
         val body = with(prompt) { GenerateContentRequest(text, imageBase64, format) }
         return runCatching {
             http.post(path, queryParams, body, defaultHeaders)?.let { response ->
@@ -34,7 +34,7 @@ class GeminiApiService(apiKey: String) {
             }
         }.onFailure {
             e("promptWithImage: $it")
-            e("promptWithImage: stacktrace: ${it.stackTrace.asList()}:")
+            e("promptWithImage stacktrace: ${it.stackTrace.asList()}:")
         }.getOrNull()
     }
 }

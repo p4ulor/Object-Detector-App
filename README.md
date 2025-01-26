@@ -80,6 +80,7 @@ one and monitor the use of your API key
 
 ## Todo 🕒
 - Add some mermaid diagrams
+- Add sfx
 - Check if viewmodel uses are correct and clean, use dependency injection
 - Review and clean up the architecture
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer

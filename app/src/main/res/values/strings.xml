@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Object Detector</string>
+    <string name="gemini" translatable="false">Gemini</string>
+    <string name="you">You</string>
+    <string name="gemini_api_key">Gemini API key</string>
+    <string name="enter_api_key">Enter API key</string>
+    <string name="save">Save</string>
 </resources>
