@@ -25,6 +25,8 @@ tempfile=$(mktemp)
 
 echo "Created temp file (will be deleted at the end): ${tempfile}"
 
+# cat <<EOF -> cat is used for reading a the next lines (starting at <<EOF) until it encounters a line containing only EOF
+# > "$tempfile" -> is used to redirect the output of cat (what it read) to the file
 cat <<EOF > "$tempfile"
 {
   "contents": [{

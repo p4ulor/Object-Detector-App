@@ -76,7 +76,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.tasks.vision)
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -87,12 +86,12 @@ dependencies {
     // Added:
     // Camera https://developer.android.com/jetpack/androidx/releases/camera
     implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2) // CameraX is built on top of camera2
+    implementation(libs.androidx.camera.camera2) // CameraX is built on top of camera2, so it's required
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions) // https://developer.android.com/media/camera/camera-extensions
 
-    // MediaPipe
+    // MediaPipe - vision tasks
     // - https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android
     // - https://ai.google.dev/edge/api/mediapipe/java/com/google/mediapipe/tasks/vision/objectdetector/package-summary
     // - https://mvnrepository.com/artifact/com.google.mediapipe/tasks-vision
@@ -113,9 +112,19 @@ dependencies {
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))
     testImplementation(libs.coroutines.test)
+
+    // JUnit (5 AKA Jupiter) so I can use BeforeAllCallback and AfterAllCallback
+    testRuntimeOnly(libs.jupiter.engine) // core
+    testImplementation(libs.jupiter.api) // has the api.extensions
 }
 
 // Added:
+
+// Necessary to run tests with JUnit Jupiter (JUnit 5), but also recognizes Kotlin test annotations
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 private val ASSET_DIR = "$projectDir/src/main/assets"
 
 // The tasks have an underscore to appear at the top of the gradle task list in the gradle tab,

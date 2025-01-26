@@ -1,0 +1,23 @@
+Created temp file (will be deleted at the end): /tmp/tmp.LunupYjQaL
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Here are a few caption options for the image:\n\n**Short & Sweet:**\n\n* Digital Vision.\n* Pixel Perfect.\n* Future of Photography.\n* Tech & Art.\n* See the Future.\n\n**More Descriptive:**\n\n* A vibrant fusion of technology and photography.  The future of image capture.\n* This mesmerizing design blends intricate circuitry with a stunning camera lens, symbolizing the intersection of technology and art.\n* Experience photography like never before.  This innovative design showcases the power of digital imaging.\n* Witness the convergence of advanced technology and creative vision. This image encapsulates the spirit of modern photography.\n\n**Playful:**\n\n* My camera's got more circuits than your brain! (Or a similar playful tone.)\n* This is not your grandpa's camera app.\n\nThe best caption will depend on where you plan to use the image and your target audience.  If it's for a technology company, a more descriptive or technical caption might be suitable.  If it's for social media, a shorter, catchier caption might be better.\n"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "avgLogprobs": -0.44667157873643182
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 262,
+    "candidatesTokenCount": 226,
+    "totalTokenCount": 488
+  },
+  "modelVersion": "gemini-1.5-flash"
+

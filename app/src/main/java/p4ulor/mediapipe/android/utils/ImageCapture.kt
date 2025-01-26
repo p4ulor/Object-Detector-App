@@ -7,7 +7,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.data.sources.gemini.SupportedMimeTypes
+import p4ulor.mediapipe.data.sources.gemini.MimeTypes
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 
@@ -25,7 +25,7 @@ fun ImageCapture.takePic(
 
     val contentValues = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-        put(MediaStore.Images.Media.MIME_TYPE, SupportedMimeTypes.JPEG.value)
+        put(MediaStore.Images.Media.MIME_TYPE, MimeTypes.JPEG.value)
         put(MediaStore.Images.Media.RELATIVE_PATH, picturesFolder)
     }
 

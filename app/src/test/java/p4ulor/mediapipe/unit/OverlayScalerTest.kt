@@ -3,8 +3,8 @@ package p4ulor.mediapipe.unit
 import android.graphics.RectF
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Test
 import p4ulor.mediapipe.ui.screens.home.OverlayScaler
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
