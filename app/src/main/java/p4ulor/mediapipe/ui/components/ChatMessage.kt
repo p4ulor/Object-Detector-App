@@ -28,9 +28,10 @@ private val PaddingInsideCard = 16.dp
 
 @Composable
 fun ChatMessage(
-    message: String = "",
+    text: String = "",
     authorisUser: Boolean = false,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (authorisUser) {
         MaterialTheme.colorScheme.secondaryContainer
@@ -42,7 +43,7 @@ fun ChatMessage(
 
     Column(
         horizontalAlignment = horizontalAlignment,
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = HorizontalPadding, vertical = GeneralPadding)
             .fillMaxWidth()
     ) {
@@ -68,7 +69,7 @@ fun ChatMessage(
                     CircularProgressIndicator(Modifier.padding(PaddingInsideCard))
                 } else {
                     Text(
-                        text = message,
+                        text = text,
                         Modifier.padding(PaddingInsideCard)
                     )
                 }
@@ -76,8 +77,6 @@ fun ChatMessage(
         }
     }
 }
-
-
 
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,

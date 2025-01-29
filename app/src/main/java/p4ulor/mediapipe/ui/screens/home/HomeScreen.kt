@@ -12,7 +12,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,13 +58,13 @@ import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.CenteredContent
-import p4ulor.mediapipe.ui.components.DefaultIcon
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.requestPermission
 import p4ulor.mediapipe.ui.components.requestUserToManuallyAddThePermission
 import p4ulor.mediapipe.ui.components.toast
+import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 @Composable
@@ -133,7 +132,7 @@ fun CameraPreviewContainer(
 
 
     // Contains the data necessary to outline an object into the screen
-    val resultsBundle by viewModel.results.collectAsState()
+    val resultsBundle by viewModel.objDetectionResults.collectAsState()
 
     CameraUseBinder(
         lifecycleOwner,

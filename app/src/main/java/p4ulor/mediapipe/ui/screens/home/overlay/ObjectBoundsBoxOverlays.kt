@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.screens.home
+package p4ulor.mediapipe.ui.screens.home.overlay
 
 import android.graphics.RectF
 import androidx.compose.animation.core.Animatable
@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -146,19 +145,26 @@ fun ObjectBoundsBoxOverlays(
     }
 }
 
+/**
+ * Run in interactive mode
+ * @see [simulateMovement]
+ * @see [animate]
+ */
 @Preview
 @Composable
-private fun ObjectBoundsBoxOverlayPreview() {
+private fun ObjectBoundsBoxOverlayPreview(
+    simulateMovement: Boolean = true,
+    animate: Boolean = true
+) {
     var cameraMovement by remember { mutableIntStateOf(0) }
     var score by remember { mutableFloatStateOf(0f) }
-    val simulateMovement = false
 
     LaunchedEffect(Unit) {
         while (this.isActive) {
             if(simulateMovement){
                 score = Random.nextFloat()
                 cameraMovement = (Random.nextFloat()*40).toInt()
-                delay(1000) // Update every 500ms
+                delay(1000) // Update every 1000ms
             }
         }
     }
@@ -185,6 +191,7 @@ private fun ObjectBoundsBoxOverlayPreview() {
                     )
                 }
             )
-        )
+        ),
+        animate = animate
     )
 }

@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.sample
 import p4ulor.mediapipe.android.utils.executor
-import p4ulor.mediapipe.android.utils.launch
 import p4ulor.mediapipe.android.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
@@ -21,10 +20,10 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private lateinit var myImageAnalyser: MyImageAnalyser
     var animateResults = true
 
-    private val _results = MutableStateFlow<ResultBundle?>(null)
-    val results: StateFlow<ResultBundle?> get() = _results.let {
+    private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
+    val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if(animateResults) it.sample(500L) else it
-    }.toStateFlow(_results.value)
+    }.toStateFlow(_objDetectionResults.value)
 
     private val ktorClient = KtorClient("dummyjson.com")
 
@@ -41,7 +40,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         myImageAnalyser = MyImageAnalyser(application.applicationContext, objectDetectorSettings)
         myImageAnalyser.callbacks = object : ObjectDetectorCallbacks {
             override fun onResults(resultBundle: ResultBundle) {
-                _results.value = resultBundle
+                _objDetectionResults.value = resultBundle
             }
 
             override fun onError(error: String) {

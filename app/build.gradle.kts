@@ -77,7 +77,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.tasks.vision)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)

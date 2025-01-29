@@ -1,7 +1,6 @@
 package p4ulor.mediapipe
 
 import android.util.Log
-import p4ulor.mediapipe.BuildConfig
 
 private val versionName = BuildConfig.VERSION_NAME
 val TAG = "p4ulor"

@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.screens.home
+package p4ulor.mediapipe.ui.screens.home.overlay
 
 import android.graphics.RectF
 import androidx.compose.foundation.layout.BoxWithConstraints
