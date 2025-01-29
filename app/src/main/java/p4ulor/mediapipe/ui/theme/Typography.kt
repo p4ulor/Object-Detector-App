@@ -58,6 +58,21 @@ fun geminiLikeText(text: String) = buildAnnotatedString {
     }
 }
 
+fun mediaPipeLikeText(text: String) = buildAnnotatedString {
+    withStyle(
+        style = SpanStyle(
+            brush = Brush.linearGradient(
+                colors = MediaPipeLikeGradient,
+                start = Offset(100f, 0f),
+                end = Offset(500f, -100f)
+            ),
+            shadow = Shadow(blurRadius = 20f)
+        ),
+    ) {
+        append(text)
+    }
+}
+
 @Preview
 @Composable
 fun geminiLikeTextPreview(){

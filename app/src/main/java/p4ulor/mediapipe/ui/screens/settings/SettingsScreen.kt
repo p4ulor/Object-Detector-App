@@ -32,6 +32,7 @@ import p4ulor.mediapipe.R
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.theme.AppTheme
 import p4ulor.mediapipe.ui.theme.geminiLikeText
+import p4ulor.mediapipe.ui.theme.mediaPipeLikeText
 
 private val GeneralPadding = 12.dp
 
@@ -40,6 +41,14 @@ fun SettingsScreen() = Box(Modifier.fillMaxSize()) {
     Column(
         Modifier.padding(GeneralPadding)
     ) {
+
+        Text(
+            mediaPipeLikeText(stringResource(R.string.mediapipe)),
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(bottom = GeneralPadding)
+        )
 
         Text(
             geminiLikeText(stringResource(R.string.gemini_api_key)),

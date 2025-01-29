@@ -8,10 +8,12 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Visibility
@@ -57,6 +59,7 @@ import kotlinx.coroutines.delay
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.CenteredRow
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.roundMessageBox
 
 /**
  * Run in interactive mode to see the animations
@@ -78,13 +81,13 @@ private val DarkColorScheme = darkColorScheme(
 
     secondary = Color(0xAA80C1FF), // Secondary color used for less prominent components
     onSecondary = Color(0xFFB1B1B1), // Color for text/icons displayed on top of the secondary color
-    secondaryContainer = Color(0x77005BBB), // A tonal variation of the secondary color for containers
+    secondaryContainer = Color(0x77004490), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
 
     tertiary = unset, // Used for accents or highlights
     onTertiary = unset, // For text/icons displayed on top of the tertiary color
-    tertiaryContainer = unset, // A tonal variation of the tertiary color for containers
-    onTertiaryContainer = unset, // Color for text/icons on tertiary containers
+    tertiaryContainer = Color(0x771A3C60), // A tonal variation of the tertiary color for containers
+    onTertiaryContainer = Color(0xFFFFFFFF), // Color for text/icons on tertiary containers
 
     background = Color(0xFA5A5E24), // Background color for screens and larger components
     onBackground = unset, // Color for text/icons displayed on top of the background color
@@ -126,12 +129,12 @@ private val LightColorScheme = lightColorScheme(
 
     secondary = Color(0xFA0E1A24), // Secondary color used for less prominent components
     onSecondary = Color(0xFFB1B1B1), // Color for text/icons displayed on top of the secondary color
-    secondaryContainer = Color(0xFF2196F3), // A tonal variation of the secondary color for containers
+    secondaryContainer = Color(0x77004490), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
 
-    tertiary = Color(0xFF71BF00), // Used for accents or highlights
-    onTertiary = Color(0xFF888888), // For text/icons displayed on top of the tertiary color
-    tertiaryContainer = Color(0xFF64DD17), // A tonal variation of the tertiary color for containers
+    tertiary = unset, // Used for accents or highlights
+    onTertiary = unset, // For text/icons displayed on top of the tertiary color
+    tertiaryContainer = Color(0x771A3C60), // A tonal variation of the tertiary color for containers
     onTertiaryContainer = Color(0xFFFFFFFF), // Color for text/icons on tertiary containers
 
     background = Color(0xFA5A5E24), // Background color for screens and larger components
@@ -250,10 +253,30 @@ private fun SampleComposable(){
                 }
             }
 
-            Card(elevation = CardDefaults.outlinedCardElevation(defaultElevation = 5.dp)) {
-                Column(Modifier.padding(8.dp)) {
-                    Text("Card Title", style = MaterialTheme.typography.titleMedium)
-                    Text("Card Content", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            CenteredRow {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    shape = roundMessageBox(true),
+                    modifier = Modifier.widthIn(0.dp, 30.dp)
+                ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
+
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    shape = roundMessageBox(true),
+                    modifier = Modifier.widthIn(0.dp, 30.dp)
+                ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
+
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    shape = roundMessageBox(true),
+                    modifier = Modifier.widthIn(0.dp, 30.dp)
+                ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
+
+                Card(elevation = CardDefaults.outlinedCardElevation(defaultElevation = 5.dp)) {
+                    Column(Modifier.padding(8.dp)) {
+                        Text("Card Title", style = MaterialTheme.typography.titleMedium)
+                        Text("Card Content", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
             }
 

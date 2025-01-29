@@ -1,6 +1,7 @@
 package p4ulor.mediapipe.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +14,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.ui.theme.AppTheme
 
@@ -31,18 +40,25 @@ fun ChatMessage(
     text: String = "",
     authorisUser: Boolean = false,
     isLoading: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isAnimationInProgress: (Boolean) -> Unit = {}
 ) {
-    val backgroundColor = if (authorisUser) {
-        MaterialTheme.colorScheme.secondaryContainer
-    } else {
-        MaterialTheme.colorScheme.primaryContainer
+    var animatedText by remember { mutableStateOf("") }
+
+    if (!authorisUser && !isLoading) {
+        isAnimationInProgress(true)
+        LaunchedEffect(text) {
+            animatedText = ""
+            text.forEachIndexed { index, _ ->
+                delay(10)
+                animatedText = text.substring(0, index + 1)
+            }
+            isAnimationInProgress(false)
+        }
     }
 
-    val horizontalAlignment = if (authorisUser) Alignment.End else Alignment.Start
-
     Column(
-        horizontalAlignment = horizontalAlignment,
+        horizontalAlignment = if (authorisUser) Alignment.End else Alignment.Start,
         modifier = modifier
             .padding(horizontal = HorizontalPadding, vertical = GeneralPadding)
             .fillMaxWidth()
@@ -60,6 +76,11 @@ fun ChatMessage(
         )
 
         BoxWithConstraints {
+            val backgroundColor = if (authorisUser) {
+                MaterialTheme.colorScheme.tertiaryContainer
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
+            }
             Card(
                 colors = CardDefaults.cardColors(containerColor = backgroundColor),
                 shape = roundMessageBox(authorisUser),
@@ -69,8 +90,8 @@ fun ChatMessage(
                     CircularProgressIndicator(Modifier.padding(PaddingInsideCard))
                 } else {
                     Text(
-                        text = text,
-                        Modifier.padding(PaddingInsideCard)
+                        if(authorisUser) text else animatedText,
+                        Modifier.padding(PaddingInsideCard).animateContentSize()
                     )
                 }
             }
