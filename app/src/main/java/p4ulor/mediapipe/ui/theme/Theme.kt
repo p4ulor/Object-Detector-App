@@ -8,7 +8,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -143,7 +142,7 @@ private val LightColorScheme = lightColorScheme(
     surface = Color(0xFFE2E2E2), // For surfaces, cards and menus
     onSurface = Color(0xFF000000), // For text/icons displayed on top of the surface color
     surfaceVariant = Color(0xFF303030), // Another surface color variant for differentiation
-    onSurfaceVariant = Color(0xFFE2E2E2), // For text/icons on surface variant
+    onSurfaceVariant = Color(0xFF242424), // For text/icons on surface variant
     surfaceTint = Color(0xFF303030), // Overlay color for elevated surfaces to create a tint effect
 
     inverseSurface = unset, // Inverse of the surface color for contrasting UI elements

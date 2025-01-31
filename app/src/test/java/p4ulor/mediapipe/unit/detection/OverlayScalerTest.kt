@@ -1,8 +1,9 @@
-package p4ulor.mediapipe.unit
+package p4ulor.mediapipe.unit.detection
 
 import android.graphics.RectF
 import io.mockk.every
 import io.mockk.mockk
+import p4ulor.mediapipe.data.utils.round
 import p4ulor.mediapipe.ui.screens.home.overlay.OverlayScaler
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -51,12 +52,6 @@ class OverlayScalerTest {
                 actual = (box16by9.width / box16by9.height).round(6)
             )
         }
-    }
-
-    private fun Float.round(decimals: Int): Float {
-        var multiplier = 1.0f
-        repeat(decimals) { multiplier *= 10 }
-        return kotlin.math.round(this * multiplier) / multiplier
     }
 }
 

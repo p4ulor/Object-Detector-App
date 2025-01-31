@@ -1,5 +1,7 @@
 package p4ulor.mediapipe.ui.theme
 
+import androidx.annotation.IntegerRes
+import androidx.annotation.StringRes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
@@ -42,45 +44,3 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
 )
-
-fun geminiLikeText(text: String) = buildAnnotatedString {
-    withStyle(
-        style = SpanStyle(
-            brush = Brush.linearGradient(
-                colors = GeminiLikeGradient,
-                start = Offset(100f, 0f),
-                end = Offset(500f, -100f)
-            ),
-            shadow = Shadow(blurRadius = 20f)
-        ),
-    ) {
-        append(text)
-    }
-}
-
-fun mediaPipeLikeText(text: String) = buildAnnotatedString {
-    withStyle(
-        style = SpanStyle(
-            brush = Brush.linearGradient(
-                colors = MediaPipeLikeGradient,
-                start = Offset(100f, 0f),
-                end = Offset(500f, -100f)
-            ),
-            shadow = Shadow(blurRadius = 20f)
-        ),
-    ) {
-        append(text)
-    }
-}
-
-@Preview
-@Composable
-fun geminiLikeTextPreview(){
-    Text(
-        geminiLikeText(stringResource(R.string.gemini_api_key)),
-        fontWeight = FontWeight.Bold,
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onPrimary
-    )
-}
-

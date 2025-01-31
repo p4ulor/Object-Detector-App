@@ -82,7 +82,7 @@ fun ExpandableFAB(
         }
 
         val openerFAB: @Composable () -> Unit = {
-            DefaultIconWithBorder(
+            QuickIconWithBorder(
                 listOpenerFAB.icon,
                 onClick = { isExpanded = !isExpanded },
                 onDrag = { change, dragAmount ->
@@ -138,7 +138,7 @@ private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolea
     ) {
         LazyColumn (verticalArrangement = Arrangement.spacedBy(PaddingBetweenButtons)) {
             items(fabs){
-                DefaultIconWithBorder(it.icon, it.onClick)
+                QuickIconWithBorder(it.icon, it.onClick)
             }
         }
     }

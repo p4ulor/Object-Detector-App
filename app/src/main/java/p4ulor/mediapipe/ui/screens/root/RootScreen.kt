@@ -13,6 +13,7 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,7 +47,7 @@ import androidx.compose.material3.Icon as AndroidIcon
 val BottomNavigationBarHeight = 65.dp
 
 @Composable
-fun RootScreen() = AppTheme {
+fun RootScreen() = Surface { // The surface is used to for theming to work
     var currentScreenId by rememberSaveable { mutableStateOf(Screens.Home.name) }
     val navController = rememberNavController()
 
@@ -114,7 +115,6 @@ private fun RowScope.buildNavigationBarItem(
         }
     )
 
-
 /**
  * This enum defines the order in which the destinations appear.
  * The names of the enums are also the id of the each screen
@@ -135,6 +135,6 @@ enum class Screens(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-fun RootScreenPreview(){
+fun RootScreenPreview() = AppTheme {
     RootScreen()
 }

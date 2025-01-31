@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.screens.root.RootScreen
+import p4ulor.mediapipe.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +21,9 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
 
         setContent {
-            RootScreen()
+            AppTheme {
+                RootScreen()
+            }
         }
     }
 

@@ -50,6 +50,7 @@ import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.hasFlash
 import p4ulor.mediapipe.android.utils.isHdrSupported
 import p4ulor.mediapipe.android.utils.requestPermission
+import p4ulor.mediapipe.android.utils.requestUserToManuallyAddThePermission
 import p4ulor.mediapipe.android.utils.takePic
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
@@ -62,7 +63,6 @@ import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.requestPermission
-import p4ulor.mediapipe.ui.components.requestUserToManuallyAddThePermission
 import p4ulor.mediapipe.ui.components.toast
 import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight

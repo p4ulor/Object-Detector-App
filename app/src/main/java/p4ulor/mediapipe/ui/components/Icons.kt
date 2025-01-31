@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
@@ -50,14 +51,17 @@ enum class AppIcons(val resourceId: Int, val resourceVectorId: Int? = null) {
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */
 val MaterialIcons = ComposeMaterialIcons.Default
 
+val PaddingAroundIcon = 10.dp
 val IconDefaultSize = 44.dp
+val IconSmallSize = 25.dp
 
 @Composable
-fun DefaultIcon(icon: AppIcons, onClick: () -> Unit) = Icon(
+fun QuickIcon(icon: AppIcons, onClick: () -> Unit) = Icon(
     painter = painterResource(icon.resourceId),
     contentDescription = icon.name,
     modifier = Modifier
         .size(IconDefaultSize)
+        .padding(PaddingAroundIcon)
         .clickable {
             onClick()
         },
@@ -66,12 +70,12 @@ fun DefaultIcon(icon: AppIcons, onClick: () -> Unit) = Icon(
 
 /** Useful when using [MaterialIcons], which are [ImageVector]s */
 @Composable
-fun DefaultIcon(icon: ImageVector, onClick: () -> Unit) = Icon(
+fun QuickIcon(icon: ImageVector, size: Dp? = null, onClick: () -> Unit) = Icon(
     imageVector = icon,
     contentDescription = icon.name,
     modifier = Modifier
-        .padding(bottom = 24.dp)
-        .size(IconDefaultSize)
+        .padding(PaddingAroundIcon)
+        .size(size ?: IconDefaultSize)
         .clickable {
             onClick()
         },
@@ -82,20 +86,20 @@ val IconInContainerDefaultSize = 40.dp
 val IconContainerDefaultSize = 55.dp
 
 @Composable
-fun DefaultIconWithBorder(
+fun QuickIconWithBorder(
     icon: AnyIcon,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
 ){
     if(icon.isAppIcon()) {
-        DefaultIconWithBorder(icon.appIcon!!, onClick, onDrag)
+        QuickIconWithBorder(icon.appIcon!!, onClick, onDrag)
     } else {
-        DefaultIconWithBorder(icon.materialIcon!!, onClick, onDrag)
+        QuickIconWithBorder(icon.materialIcon!!, onClick, onDrag)
     }
 }
 
 @Composable
-fun DefaultIconWithBorder(
+fun QuickIconWithBorder(
     icon: AppIcons,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
@@ -116,7 +120,7 @@ fun DefaultIconWithBorder(
 }
 
 @Composable
-fun DefaultIconWithBorder(
+fun QuickIconWithBorder(
     icon: ImageVector,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
