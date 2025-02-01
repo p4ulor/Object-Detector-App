@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components
+package p4ulor.mediapipe.ui.components.utils
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

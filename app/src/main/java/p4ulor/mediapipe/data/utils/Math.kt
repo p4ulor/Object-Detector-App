@@ -1,7 +1,5 @@
 package p4ulor.mediapipe.data.utils
 
-import java.math.RoundingMode
-import java.text.DecimalFormat
 import kotlin.math.pow
 
 fun Float.round(decimals: Int): Float {
@@ -16,13 +14,12 @@ fun Float.trimToDecimals(decimals: Int): Float {
 }
 
 /**
- * Formats a float to a string up to a specified number of decimal places,
- * and the last digit is repeated up to that number of decimal places
+ * Formats a float to a string and extends the decimals up the specified number of
+ * decimal places by it with 0
  */
 fun Float.toStringUpTo(decimals: Int): String {
     val parts = this.toString().split(".")
     val decimalPart = parts[1]
-    val lastDigit = decimalPart.lastOrNull() ?: '0'
-    val repeatedDecimals = decimalPart.padEnd(decimals, lastDigit)
+    val repeatedDecimals = decimalPart.padEnd(decimals, '0')
     return "${parts[0]}.$repeatedDecimals"
 }

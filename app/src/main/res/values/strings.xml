@@ -6,6 +6,7 @@
     <string name="enter_api_key">Enter API key</string>
     <string name="save">Save</string>
     <string name="mediapipe">MediaPipe</string>
-    <string name="detection_sensitivity">Detection sensitivity:\u00A0</string>
-    <string name="maximum_simultaneous_object_detection">Maximum simultaneous object detection:</string>
+    <string name="minimum_detection_certainty">Minimum detection certainty:\u00A0</string>
+    <string name="maximum_simultaneous_object_detections">Maximum simultaneous object detections:\u00A0</string>
+    <string name="detection_animations">Detection animations</string>
 </resources>

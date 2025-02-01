@@ -35,17 +35,16 @@ data class AnyIcon private constructor(
  * To convert .svg to .xml, you can use [Android's Asset Studio](https://stackoverflow.com/a/56276118/28417805)
  * But it gave me errors, so I used https://svg2vector.com/ to convert .svg from
  * https://lucide.dev/icons/ to android .xml. All with stroke width 1.5px, size 300px (scaled up
- * by opening the .svg in Gimp)
- * @param [resourceId] a .png
- * @param [resourceVectorId] a .xml
+ * by opening the .svg in Gimp and saving it as .png)
+ * @param [resourceId] a .png or .xml
  */
-enum class AppIcons(val resourceId: Int, val resourceVectorId: Int? = null) {
+enum class AppIcons(val resourceId: Int) {
     FlashlightOff(R.drawable.flashlight_off),
     FlashlightOn(R.drawable.flashlight_on),
     Scale(R.drawable.scale),
-    Settings(R.drawable.settings_vector, R.drawable.settings_vector),
+    Settings(R.drawable.settings_vector),
     Camera(R.drawable.camera),
-    Gemini(R.drawable.gemini)
+    Gemini(R.drawable.gemini);
 }
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */

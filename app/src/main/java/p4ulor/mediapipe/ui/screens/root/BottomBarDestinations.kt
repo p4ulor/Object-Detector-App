@@ -1,19 +1,21 @@
 package p4ulor.mediapipe.ui.screens.root
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * An abstraction over [Screens]. Specially to aid in the transformation of the icons
+ * An abstraction over [Screens]. Specially to aid in the transformation of the icons. [Painter] is
+ * used to support Image and Vector resources and ImageVectors
  * @param [name] is also the identifier of the screen
  */
 data class NavItem(
     val name: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector? = null,
+    val selectedIcon: Painter,
+    val unselectedIcon: Painter? = null,
     val hasNews: Boolean,
     val size: Dp = 30.dp
 ) {
@@ -27,8 +29,8 @@ val bottomBarDestinations
         NavItem(
             name = it.name,
             selectedIcon = when {
-                it.icon?.resourceVectorId!=null -> ImageVector.vectorResource(id = it.icon.resourceVectorId)
-                it.materialIcons!=null -> it.materialIcons
+                it.icon?.resourceId!=null -> painterResource(id = it.icon.resourceId)
+                it.materialIcons!=null -> rememberVectorPainter(it.materialIcons)
                 else -> error("Something wasn't setup properly here")
             },
             hasNews = false,

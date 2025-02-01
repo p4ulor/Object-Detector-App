@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components
+package p4ulor.mediapipe.ui.components.utils
 
 import android.content.Context
 import android.widget.Toast

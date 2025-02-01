@@ -97,19 +97,16 @@ fun ExpandableFAB(
         // FAB opener + fabs
         Box(Modifier.offset { IntOffset(openerFabOffsetX.toInt(), openerFabOffsetY.toInt()) }) {
             var fabsYoffset by remember { mutableIntStateOf((iconContainerSizePx + paddingBetweenButtonsPx).toInt()) }
-            var hasOpenedUpwards = remember { object {
-                    var value = false
-                }
-            }
+            var hasOpenedUpwards by remember { mutableStateOf(false) }
 
             // Used to place the fabs either bellow or above the openerFab. Using columns causes the openerFab to move
             fabsYoffset = if (isExpanded) { // Mazurka logic to make the opening/closing of the fabs be done correctly when moving it through the screen through various states
                 run {
-                    if (canOpenUpwards && !hasOpenedUpwards.value) {
-                        hasOpenedUpwards.value = true
+                    if (canOpenUpwards && !hasOpenedUpwards) {
+                        hasOpenedUpwards = true
                         (-fabs.size * iconContainerSizePx) - paddingBetweenButtonsPx*2
                     } else if(!canOpenUpwards) {
-                        hasOpenedUpwards.value = false
+                        hasOpenedUpwards = false
                         iconContainerSizePx + paddingBetweenButtonsPx
                     } else {
                         fabsYoffset
@@ -166,6 +163,8 @@ private fun ExpandableFABPreview() = AppTheme {
     ExpandableFAB(
         listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
         listOf(
+            FloatingActionButton(AnyIcon(AppIcons.Camera)) { i("Edit clicked") },
+            FloatingActionButton(AnyIcon(AppIcons.Gemini)) { i("Share clicked") },
             FloatingActionButton(AnyIcon(AppIcons.Camera)) { i("Edit clicked") },
             FloatingActionButton(AnyIcon(AppIcons.Gemini)) { i("Share clicked") }
         ),

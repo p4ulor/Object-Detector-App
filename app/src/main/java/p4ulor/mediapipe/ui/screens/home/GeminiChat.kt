@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
-import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.ChatMessage
 import p4ulor.mediapipe.ui.theme.AppTheme

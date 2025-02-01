@@ -1,15 +1,16 @@
 package p4ulor.mediapipe.ui.screens.settings
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Visibility
@@ -21,6 +22,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,32 +33,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.data.utils.round
-import p4ulor.mediapipe.data.utils.toStringUpTo
 import p4ulor.mediapipe.data.utils.trimToDecimals
+import p4ulor.mediapipe.ui.components.CircleThumb
 import p4ulor.mediapipe.ui.components.IconSmallSize
-import p4ulor.mediapipe.ui.components.QuickIcon
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.QuickIcon
 import p4ulor.mediapipe.ui.components.QuickText
+import p4ulor.mediapipe.ui.components.SliderTrack
 import p4ulor.mediapipe.ui.components.geminiLikeText
 import p4ulor.mediapipe.ui.components.mediaPipeLikeText
 import p4ulor.mediapipe.ui.theme.AppTheme
-import p4ulor.mediapipe.ui.theme.ColorSchemeGradient
 
 private val GeneralPadding = 12.dp
 
@@ -63,6 +62,7 @@ private val GeneralPadding = 12.dp
 fun SettingsScreen() = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
     Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
         MediaPipeSettings()
+        Spacer(Modifier.size(GeneralPadding))
         GeminiSettings()
     }
 }
@@ -70,63 +70,68 @@ fun SettingsScreen() = Surface(Modifier.fillMaxSize(), color = Color.Transparent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColumnScope.MediaPipeSettings() {
+    val SliderTrackHeight = 10.dp
+
     SettingsHeader(mediaPipeLikeText(R.string.mediapipe))
 
-    var detectionSensitivity by remember { mutableFloatStateOf(0.5f) }
+    var minDetectCertainty by remember { mutableFloatStateOf(0.5f) }
+
     Row {
-        QuickText(R.string.detection_sensitivity)
-                                    // this seems to be wrong
-        Text(detectionSensitivity.toStringUpTo(decimals = 2), fontWeight = FontWeight.Bold)
+        QuickText(R.string.minimum_detection_certainty)
+        val textMeasurer = rememberTextMeasurer()
+        val maxTextSize = with(LocalDensity.current) { textMeasurer.measure("%%%%%").size.width.toDp() }
+        Text(
+            "${(minDetectCertainty*100).toInt()}%",
+            Modifier.width(maxTextSize),
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
+        )
     }
     BoxWithConstraints {
         Slider(
-            value = detectionSensitivity,
-            onValueChange = { detectionSensitivity = it.trimToDecimals(2) }, // this seems to be wrong
+            value = minDetectCertainty,
+            onValueChange = { minDetectCertainty = it.trimToDecimals(2) },
             Modifier.padding(GeneralPadding).widthIn(0.dp, maxWidth * 0.8f),
             valueRange = 0f..1f,
-            track = { sliderPosition ->
-                val trackColor = ColorSchemeGradient()
-                Canvas(Modifier.fillMaxWidth().height(10.dp)) {
-                    drawRoundRect(
-                        brush = trackColor,
-                        size = Size(size.width * sliderPosition.value, size.height),
-                        cornerRadius = CornerRadius(5.dp.toPx(), 5.dp.toPx())
-                    )
-                    drawRoundRect(
-                        brush = trackColor,
-                        size = Size(size.width, size.height),
-                        cornerRadius = CornerRadius(5.dp.toPx(), 5.dp.toPx()),
-                        blendMode = BlendMode.Overlay
-                    )
-                }
-            }
+            track = { it.SliderTrack(SliderTrackHeight) }
         )
     }
 
-    var maximumObjectsDetection by remember { mutableStateOf(1f) }
-    val maxOfMaximumObjectsDetection = 4
+    var maximumObjectsDetection by remember { mutableFloatStateOf(5f) }
+    val maxOfMaximumObjectsDetection = 5
 
     Row {
-        QuickText(R.string.maximum_simultaneous_object_detection)
-        Text(maxOfMaximumObjectsDetection.toString(), fontWeight = FontWeight.Bold)
+        QuickText(R.string.maximum_simultaneous_object_detections)
+        Text(maximumObjectsDetection.toInt().toString(), fontWeight = FontWeight.Bold)
     }
 
     BoxWithConstraints {
-        val color = MaterialTheme.colorScheme.primary
         Slider(
             value = maximumObjectsDetection,
             onValueChange = { maximumObjectsDetection = it },
             Modifier.padding(GeneralPadding).widthIn(0.dp, maxWidth * 0.8f),
             valueRange = 1f..maxOfMaximumObjectsDetection.toFloat(),
-            steps = maxOfMaximumObjectsDetection,
-            thumb = {
-                Canvas(Modifier.size(23.dp))  {
-                    drawCircle(color)
-                }
-            },
+            steps = maxOfMaximumObjectsDetection - 2, // I don't know why slider puts 2 extra positions
+            thumb = { CircleThumb() },
             track = {
-                SliderDefaults.Track(it, thumbTrackGapSize = 0.dp, trackInsideCornerSize = 0.dp)
+                SliderDefaults.Track(
+                    it,
+                    modifier = Modifier.size(width = maxWidth * 0.8f, height = SliderTrackHeight),
+                    thumbTrackGapSize = 0.dp
+                )
             }
+        )
+    }
+
+    var areAnimationsEnabled by remember { mutableStateOf(true) }
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+        QuickText(R.string.detection_animations)
+        Switch(
+            checked = areAnimationsEnabled,
+            onCheckedChange = { areAnimationsEnabled = !areAnimationsEnabled },
+            colors = SwitchDefaults.colors(
+                uncheckedTrackColor = MaterialTheme.colorScheme.scrim
+            )
         )
     }
 }
@@ -145,7 +150,10 @@ private fun ColumnScope.GeminiSettings(){
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = GeneralPadding),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done // Input Method Editor Action
+        ),
         singleLine = true,
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {

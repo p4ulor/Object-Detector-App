@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components
+package p4ulor.mediapipe.ui.components.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -26,7 +26,7 @@ fun SmoothHorizontalDivider(
 ) {
     BoxWithConstraints {
         Box(
-            modifier = modifier
+            modifier
                 .fillMaxWidth()
                 .height(thickness)
                 .clip(RoundedCornerShape(cornerRadius))

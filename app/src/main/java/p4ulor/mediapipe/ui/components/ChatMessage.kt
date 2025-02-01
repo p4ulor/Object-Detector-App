@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.ui.components.utils.roundMessageBox
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 private val GeneralPadding = 4.dp

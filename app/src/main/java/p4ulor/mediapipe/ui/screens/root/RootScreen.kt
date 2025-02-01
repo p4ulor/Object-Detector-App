@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -35,14 +36,13 @@ import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.ui.components.AppIcons
-import p4ulor.mediapipe.ui.components.BoxWithBackground
 import p4ulor.mediapipe.ui.components.MaterialIcons
-import p4ulor.mediapipe.ui.components.SmoothHorizontalDivider
+import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
+import p4ulor.mediapipe.ui.components.utils.SmoothHorizontalDivider
 import p4ulor.mediapipe.ui.screens.about.AboutScreen
 import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
-import androidx.compose.material3.Icon as AndroidIcon
 
 val BottomNavigationBarHeight = 65.dp
 
@@ -106,8 +106,8 @@ private fun RowScope.buildNavigationBarItem(
                     }
                 }
             ) {
-                AndroidIcon(
-                    imageVector = item.selectedIcon,
+                Icon(
+                    painter = item.selectedIcon,
                     contentDescription = item.name,
                     modifier = Modifier.size(item.size)
                 )

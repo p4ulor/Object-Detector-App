@@ -2,7 +2,7 @@ package p4ulor.mediapipe.ui.screens.about
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import p4ulor.mediapipe.ui.components.CenteredContent
+import p4ulor.mediapipe.ui.components.utils.CenteredContent
 
 @Composable
 fun AboutScreen(){

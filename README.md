@@ -47,7 +47,7 @@ one and monitor the use of your API key
 | Koin | Lottie | Mockk | Coil | [Jetpack Compose UI Test](https://developer.android.com/develop/ui/compose/testing) | 
 |:----:|:------:|:-----:|:-----:|:-----:|
 | <img width="50" src='https://insert-koin.io/img/koin_new_logo.png'> | <img width="50" src='https://airbnb.io/lottie/images/logo.webp'> | <img width="50" src='https://avatars.githubusercontent.com/u/34787540?s=200&v=4'> | <img width="50" src='https://avatars.githubusercontent.com/u/52722434?s=200&v=4'> | <img width="50" src='https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/jetpackcompose/jetpackcompose-original.svg'> |
-| Dependency injection | Animated graphics | Object mocking for tests | Image loading library  | For UI tests
+| For dependency injection | For animated graphics | For object mocking in tests | For efficient image loading  | For UI tests
 
 ### Other Dependencies & Plugins Used 🔌
 #### Gradle Plugins 🐘

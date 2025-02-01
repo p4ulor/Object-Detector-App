@@ -56,9 +56,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import p4ulor.mediapipe.ui.animations.smooth
-import p4ulor.mediapipe.ui.components.CenteredRow
 import p4ulor.mediapipe.ui.components.MaterialIcons
-import p4ulor.mediapipe.ui.components.roundMessageBox
+import p4ulor.mediapipe.ui.components.utils.CenteredRow
+import p4ulor.mediapipe.ui.components.utils.roundMessageBox
 
 /**
  * Run in interactive mode to see the animations
@@ -78,7 +78,7 @@ private val DarkColorScheme = darkColorScheme(
     onPrimaryContainer = Color(0xFFFFEFEF), // For text/icons on primary containers
     inversePrimary = unset, // Inverse of the primary color for contrasting UI elements
 
-    secondary = Color(0xAA80C1FF), // Secondary color used for less prominent components
+    secondary = Color(0xAA6797C6), // Secondary color used for less prominent components
     onSecondary = Color(0xFFB1B1B1), // Color for text/icons displayed on top of the secondary color
     secondaryContainer = Color(0x77004490), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
@@ -105,7 +105,7 @@ private val DarkColorScheme = darkColorScheme(
     errorContainer = Color(0xFFB00020),
     onErrorContainer = Color(0xFF2E000B),
 
-    outline = Color(0xFF69BAFF), // For outlines/borders of OutlinedTextField and OutlinedButton
+    outline = Color(0xFF36424B), // For outlines/borders of OutlinedTextField and OutlinedButton
     outlineVariant = Color(0xFFDFDFDF), // For HorizontalDivider
 
     scrim = Color(0xFF737373), // Applied on the background of unfocused content, when some popup/dialog is shown

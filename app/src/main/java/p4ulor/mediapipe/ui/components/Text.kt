@@ -15,9 +15,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.material3.Text as ComposeText
 import p4ulor.mediapipe.ui.theme.GeminiLikeGradient
 import p4ulor.mediapipe.ui.theme.MediaPipeLikeGradient
+import androidx.compose.material3.Text as ComposeText
 
 @Composable
 fun QuickText(

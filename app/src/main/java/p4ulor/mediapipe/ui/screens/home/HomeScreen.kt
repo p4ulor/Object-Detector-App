@@ -10,9 +10,11 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +36,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
@@ -58,12 +63,12 @@ import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcons
-import p4ulor.mediapipe.ui.components.CenteredContent
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
-import p4ulor.mediapipe.ui.components.requestPermission
-import p4ulor.mediapipe.ui.components.toast
+import p4ulor.mediapipe.ui.components.utils.toast
+import p4ulor.mediapipe.ui.components.utils.CenteredContent
+import p4ulor.mediapipe.ui.components.utils.requestPermission
 import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
@@ -148,8 +153,15 @@ fun CameraPreviewContainer(
         }
     )
 
+    val density = LocalDensity.current
+    val display = ctx.resources.displayMetrics
+    val maxAvailableHeightDp = with(density) { display.heightPixels.toDp() } - BottomNavigationBarHeight
+    val ratio4_3Padding = maxAvailableHeightDp / 3
+
     BoxWithConstraints(
-        Modifier.fillMaxSize().padding(bottom = BottomNavigationBarHeight * 2),
+        Modifier.fillMaxSize().padding(
+            bottom = if(cameraPreviewRatio==CameraConstants.RATIO_4_3) ratio4_3Padding else 0.dp
+        ),
         contentAlignment = Alignment.TopCenter
     ) {
         val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer(
@@ -158,6 +170,8 @@ fun CameraPreviewContainer(
                 Size(width = width, height = height)
             }
         )
+
+        EdgeBars(cameraPreviewSize, isAppMinimized)
 
         Box(
             Modifier
@@ -271,4 +285,19 @@ private fun startCameraAndPreviewView(
             imageAnalysisSettings
         )
     )
+}
+
+@Composable
+private fun EdgeBars(cameraPreviewSize: Size, isAppMinimized: Boolean) {
+    // Add bars so the background doesn't show, per example, when camera ratio == 4:3
+    // if(isAppMinimized) is used to avoid displaying this background when changing screens
+    Box(Modifier
+        .fillMaxWidth()
+        .height(cameraPreviewSize.height.dp)
+        .background(if(isAppMinimized) {
+            Color.Transparent
+        } else {
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+        })
+    ){}
 }
