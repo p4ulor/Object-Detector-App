@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.tasks.vision)
+    implementation(libs.androidx.datastore.preferences)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -104,11 +105,8 @@ dependencies {
     // Ktor HTTP client, to make HTTP requests to the Gemini API
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio) // Coroutine-based I/O Engine for processing network requests https://ktor.io/docs/client-engines.html#jvm-android-native
-    implementation(libs.ktor.client.content.negotiation) // https://ktor.io/docs/client-serialization.html
-    implementation(libs.ktor.serialization.kotlinx.json) // ^. But still requires the Serialization Gradle Plugin
-
-    // Mockk
-    testImplementation(libs.mockk)
+    implementation(libs.ktor.client.content.negotiation) // Used for Serialization of JSONs https://ktor.io/docs/client-serialization.html
+    implementation(libs.ktor.serialization.kotlinx.json) // Used for Serialization. The annotations are processed by the kotlinxSerialization Gradle Plugin
 
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))
@@ -117,6 +115,9 @@ dependencies {
     // JUnit (5 AKA Jupiter) so I can use BeforeAllCallback and AfterAllCallback
     testRuntimeOnly(libs.jupiter.engine) // core
     testImplementation(libs.jupiter.api) // has the api.extensions
+
+    // Mockk
+    testImplementation(libs.mockk)
 }
 
 // Added:
@@ -167,7 +168,10 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-/** https://kotlinlang.org/docs/dokka-gradle.html */
+/**
+ *  Configurs the dokkaHtml gradle task, to generate the documentation pages
+ *  https://kotlinlang.org/docs/dokka-gradle.html
+ */
 tasks.dokkaHtml {
     moduleName.set(rootProject.name)
     moduleVersion.set("${android.defaultConfig.versionName}")

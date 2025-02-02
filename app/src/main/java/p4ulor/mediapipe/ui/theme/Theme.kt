@@ -56,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import p4ulor.mediapipe.ui.animations.smooth
+import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.utils.CenteredRow
 import p4ulor.mediapipe.ui.components.utils.roundMessageBox
@@ -70,6 +71,7 @@ import p4ulor.mediapipe.ui.components.utils.roundMessageBox
  * or what they even are
  */
 private val unset = Color(0xFF2FFF00)
+private val unset2 = Color(0xFFFF0000)
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF0073FF), // Primary color used for prominent components like buttons, sliders, radio buttons, and important text.
@@ -111,7 +113,7 @@ private val DarkColorScheme = darkColorScheme(
     scrim = Color(0xFF737373), // Applied on the background of unfocused content, when some popup/dialog is shown
 
     surfaceBright = unset,
-    surfaceContainer = unset,
+    surfaceContainer = Color(0xFF262E37), // Used in dropdown menus
     surfaceContainerHigh = unset,
     surfaceContainerHighest = Color(0xFF007CD7), //for card
     surfaceContainerLow = unset,
@@ -159,7 +161,7 @@ private val LightColorScheme = lightColorScheme(
     scrim = Color(0xFF737373), // Applied on the background of unfocused content, when some popup/dialog is shown
 
     surfaceBright = unset,
-    surfaceContainer = unset,
+    surfaceContainer = Color(0xFFC3C3C3), // Used in dropdown menus
     surfaceContainerHigh = unset,
     surfaceContainerHighest = Color(0xFF007CD7), //for card
     surfaceContainerLow = unset,
@@ -284,6 +286,14 @@ private fun SampleComposable(){
                 "Add",
                 Modifier.size(50.dp),
                 MaterialTheme.colorScheme.secondary
+            )
+
+            DropdownOptions(
+                label = "Model",
+                preSelectedOption = "Model1",
+                options = listOf("Model1", "Model2"),
+                horizontalPadding = 8.dp,
+                onNewOption = {}
             )
         }
     }

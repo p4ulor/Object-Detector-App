@@ -25,23 +25,40 @@ fun SmoothHorizontalDivider(
     cornerRadius: Dp = 2.dp
 ) {
     BoxWithConstraints {
-        Box(
-            modifier
-                .fillMaxWidth()
-                .height(thickness)
-                .clip(RoundedCornerShape(cornerRadius))
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            color, // Opaque at the center
-                            color.copy(alpha = 0f) // Transparent at the edges
-                        ),
-                        radius = this.maxWidth.value * 2 - (this.maxWidth.value/2)
-                    )
-                )
-                .padding(3.dp)
+        SmoothHorizontalDividerCustom(
+            this.maxWidth,
+            color,
+            modifier,
+            thickness,
+            cornerRadius
         )
     }
+}
+
+@Composable
+fun SmoothHorizontalDividerCustom(
+    width: Dp,
+    color: Color = Color.White,
+    modifier: Modifier = Modifier,
+    thickness: Dp = 1.dp,
+    cornerRadius: Dp = 2.dp
+) {
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(thickness)
+            .clip(RoundedCornerShape(cornerRadius))
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        color, // Opaque at the center
+                        color.copy(alpha = 0f) // Transparent at the edges
+                    ),
+                    radius = width.value * 2 - (width.value/2)
+                )
+            )
+            .padding(3.dp)
+    )
 }
 
 @Preview

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.data.utils.trimToDecimals
 import p4ulor.mediapipe.ui.components.CircleThumb
+import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.IconSmallSize
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.QuickIcon
@@ -62,7 +63,7 @@ private val GeneralPadding = 12.dp
 fun SettingsScreen() = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
     Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
         MediaPipeSettings()
-        Spacer(Modifier.size(GeneralPadding))
+        Spacer(Modifier.size(GeneralPadding * 2))
         GeminiSettings()
     }
 }
@@ -91,7 +92,9 @@ private fun ColumnScope.MediaPipeSettings() {
         Slider(
             value = minDetectCertainty,
             onValueChange = { minDetectCertainty = it.trimToDecimals(2) },
-            Modifier.padding(GeneralPadding).widthIn(0.dp, maxWidth * 0.8f),
+            Modifier
+                .padding(GeneralPadding)
+                .widthIn(0.dp, maxWidth * 0.8f),
             valueRange = 0f..1f,
             track = { it.SliderTrack(SliderTrackHeight) }
         )
@@ -109,7 +112,9 @@ private fun ColumnScope.MediaPipeSettings() {
         Slider(
             value = maximumObjectsDetection,
             onValueChange = { maximumObjectsDetection = it },
-            Modifier.padding(GeneralPadding).widthIn(0.dp, maxWidth * 0.8f),
+            Modifier
+                .padding(GeneralPadding)
+                .widthIn(0.dp, maxWidth * 0.8f),
             valueRange = 1f..maxOfMaximumObjectsDetection.toFloat(),
             steps = maxOfMaximumObjectsDetection - 2, // I don't know why slider puts 2 extra positions
             thumb = { CircleThumb() },
@@ -124,7 +129,11 @@ private fun ColumnScope.MediaPipeSettings() {
     }
 
     var areAnimationsEnabled by remember { mutableStateOf(true) }
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         QuickText(R.string.detection_animations)
         Switch(
             checked = areAnimationsEnabled,
@@ -134,6 +143,16 @@ private fun ColumnScope.MediaPipeSettings() {
             )
         )
     }
+
+    Spacer(Modifier.size(GeneralPadding))
+
+    DropdownOptions(
+        label = "Model",
+        preSelectedOption = "Model1",
+        options = listOf("Model1", "Model2"),
+        horizontalPadding = 8.dp,
+        onNewOption = {}
+    )
 }
 
 @Composable
@@ -181,8 +200,9 @@ private fun ColumnScope.SettingsHeader(styledText: AnnotatedString){
         styledText,
         fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onPrimary,
-        modifier = Modifier.padding(bottom = GeneralPadding).align(Alignment.Start)
+        modifier = Modifier
+            .padding(bottom = GeneralPadding)
+            .align(Alignment.Start)
     )
 }
 

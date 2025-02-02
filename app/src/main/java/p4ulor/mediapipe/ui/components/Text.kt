@@ -1,6 +1,11 @@
 package p4ulor.mediapipe.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -14,7 +19,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
+import p4ulor.mediapipe.R
+import p4ulor.mediapipe.ui.theme.AppTheme
 import p4ulor.mediapipe.ui.theme.GeminiLikeGradient
 import p4ulor.mediapipe.ui.theme.MediaPipeLikeGradient
 import androidx.compose.material3.Text as ComposeText
@@ -42,7 +50,7 @@ fun geminiLikeText(@StringRes text: Int) = buildAnnotatedString {
                 end = Offset(500f, -100f)
             ),
             shadow = Shadow(blurRadius = 20f)
-        ),
+        )
     ) {
         append(stringResource(text))
     }
@@ -58,8 +66,28 @@ fun mediaPipeLikeText(@StringRes text: Int) = buildAnnotatedString {
                 end = Offset(500f, -100f)
             ),
             shadow = Shadow(blurRadius = 20f)
-        ),
+        )
     ) {
         append(stringResource(text))
+    }
+}
+
+@Preview
+@Composable
+private fun TextPreviews() = AppTheme(enableDarkTheme = false){
+    Surface {
+        Column(Modifier.fillMaxWidth()) {
+            Text(
+                mediaPipeLikeText(R.string.mediapipe),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+
+            Text(
+                geminiLikeText(R.string.gemini_api_key),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
     }
 }

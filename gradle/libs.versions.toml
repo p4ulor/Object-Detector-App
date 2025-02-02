@@ -20,6 +20,7 @@ mockk = "1.13.14"
 ktorGlobalVerion = "2.3.13" # ktor 3.0.3 is only compatible with Kotlin 2.0+
 dokka = "1.9.20"
 materialIconsExtended = "1.7.6"
+datastorePreferences = "1.1.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensi
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-material-icons-extended-android = { group = "androidx.compose.material", name = "material-icons-extended-android", version.ref = "materialIconsExtended" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 tasks-vision = { group = "com.google.mediapipe", name = "tasks-vision", version.ref = "tasksVision" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorGlobalVerion" }
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorGlobalVerion" }
