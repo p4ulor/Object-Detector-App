@@ -66,7 +66,7 @@ android {
 
 dependencies {
 
-    // Default:
+    // Default (with some things removed):
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -111,9 +111,9 @@ dependencies {
     // https://insert-koin.io/docs/setup/koin#android
     // https://insert-koin.io/docs/setup/annotations#android--ktor-app-ksp-setup
     implementation(libs.koin.android) // Core lib for Android
-    implementation(libs.koin.androidx.compose) // To get the dependencies in compose
+    implementation(libs.koin.androidx.compose) // https://insert-koin.io/docs/quickstart/android-compose/#injecting-viewmodel-in-compose
     implementation(libs.koin.annotations)
-    ksp(libs.koin.ksp.compiler) // Indicate gradle to use Koin's KSP compiler to generate code
+    ksp(libs.koin.ksp.compiler) // Indicate gradle to use Koin's KSP compiler with KSP to generate code, as use that code as a dependency
 
     // Datastore
     implementation(libs.androidx.datastore.preferences)
@@ -132,7 +132,12 @@ dependencies {
 
 // Added:
 
-// Necessary to run tests with JUnit Jupiter (JUnit 5), but also recognizes Kotlin test annotations
+/**
+ * Necessary to run tests with JUnit Jupiter (JUnit 5), while still recognizing Kotlin test
+ * annotations. Make sure to also remove:
+ * - testImplementation(libs.junit)
+ * - androidTestImplementation(libs.androidx.junit)
+ */
 tasks.withType<Test> {
     useJUnitPlatform()
 }

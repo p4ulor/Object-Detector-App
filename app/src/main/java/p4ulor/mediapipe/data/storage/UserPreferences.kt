@@ -9,14 +9,15 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
-import p4ulor.mediapipe.data.domains.mediapipe.Model
+import p4ulor.mediapipe.data.domains.mediapipe.Models
+import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.e
 
 data class UserPreferences(
-    val minDetectCertainty: Float,
-    val maxObjectsDetections: Int,
-    val enableAnimations: Boolean,
-    val selectedModel: String
+    var minDetectCertainty: Float = Default.minDetectCertainty,
+    var maxObjectsDetections: Int = Default.maxObjectsDetections,
+    var enableAnimations: Boolean = Default.enableAnimations,
+    var selectedModel: String = Default.selectedModel
 ) {
     companion object {
         object Key {
@@ -27,23 +28,29 @@ data class UserPreferences(
         }
 
         object Default {
-            val minDetectCertainty = 50f
+            val minDetectCertainty = 0.50f
             val maxObjectsDetections = 3
             val enableAnimations = true
-            val selectedModel = Model.EFFICIENTDETV0.name
+            val selectedModel = Models.EFFICIENTDETV0.name
         }
 
-        suspend fun getFrom(storage: DataStore<Preferences>) : UserPreferences? {
+        object Ranges {
+            val detectionCertainty = ObjectDetectorSettings.detectionCertaintyRange
+            val objectDetections = 1..ObjectDetectorSettings.maxObjectDetection
+            val models = Models.values().map { it.name }
+        }
+
+        suspend fun getFrom(storage: DataStore<Preferences>) : UserPreferences {
             return storage.data
                 .catch {
                     e("Error reading preferences: $it")
                 }
-                .firstOrNull()?.run {
+                .firstOrNull().run {
                     UserPreferences(
-                        this[Key.minDetectCertainty] ?: Default.minDetectCertainty,
-                        this[Key.maxObjectsDetections] ?: Default.maxObjectsDetections,
-                        this[Key.enableAnimations] ?: Default.enableAnimations,
-                        this[Key.selectedModel] ?: Default.selectedModel,
+                        this?.get(Key.minDetectCertainty) ?: Default.minDetectCertainty,
+                        this?.get(Key.maxObjectsDetections) ?: Default.maxObjectsDetections,
+                        this?.get(Key.enableAnimations) ?: Default.enableAnimations,
+                        this?.get(Key.selectedModel) ?: Default.selectedModel,
                     )
                 }
         }

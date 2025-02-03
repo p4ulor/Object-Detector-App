@@ -53,6 +53,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
 
     BoxWithBackground(R.drawable.background_default) {
 
+        // I'll keep this here for demo purposes, the other VM's are injected with Koin
         val viewModel = viewModel<MainViewModel>(
             factory = create(MainViewModel::class, LocalContext.current.applicationContext)
         )

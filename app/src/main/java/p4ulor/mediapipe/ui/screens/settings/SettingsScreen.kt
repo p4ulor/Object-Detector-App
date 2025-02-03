@@ -26,8 +26,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,7 +49,10 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
+import p4ulor.mediapipe.data.storage.UserPreferences
+import p4ulor.mediapipe.data.storage.UserSecretPreferences
 import p4ulor.mediapipe.data.utils.trimToDecimals
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.CircleThumb
 import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.IconSmallSize
@@ -64,22 +69,37 @@ private val GeneralPadding = 12.dp
 @Composable
 fun SettingsScreen() = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
     val viewModel = koinViewModel<SettingsViewModel>()
+    val currentPrefs by viewModel.getUserPrefs().collectAsState()
+    val currentSecretPrefs by viewModel.getUserSecretPrefs().collectAsState()
 
     Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
-        MediaPipeSettings()
+        MediaPipeSettings(
+            currPrefs = currentPrefs,
+            onNewPrefs = { viewModel.saveUserPrefs(it) }
+        )
         Spacer(Modifier.size(GeneralPadding * 2))
-        GeminiSettings()
+        GeminiSettings(
+            currPrefs = currentSecretPrefs,
+            onNewPrefs = { viewModel.saveUserSecretPrefs(it) }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ColumnScope.MediaPipeSettings() {
+private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserPreferences) -> Unit) {
     val SliderTrackHeight = 10.dp
 
     SettingsHeader(mediaPipeLikeText(R.string.mediapipe))
 
-    var minDetectCertainty by remember { mutableFloatStateOf(0.5f) }
+    var minDetectCertainty by remember { mutableFloatStateOf(currPrefs.minDetectCertainty) }
+    var maxObjectsDetections by remember { mutableIntStateOf(currPrefs.maxObjectsDetections) }
+    var enableAnimations by remember { mutableStateOf(currPrefs.enableAnimations) }
+    var selectedModel by remember { mutableStateOf(currPrefs.selectedModel) }
+
+    val detectionCertaintyRange = UserPreferences.Companion.Ranges.detectionCertainty
+    val objectDetectionsRange = UserPreferences.Companion.Ranges.objectDetections
+    val models = UserPreferences.Companion.Ranges.models
 
     Row {
         QuickText(R.string.minimum_detection_certainty)
@@ -96,31 +116,36 @@ private fun ColumnScope.MediaPipeSettings() {
         Slider(
             value = minDetectCertainty,
             onValueChange = { minDetectCertainty = it.trimToDecimals(2) },
-            Modifier
+            onValueChangeFinished = {
+                onNewPrefs(currPrefs.apply { this.minDetectCertainty = minDetectCertainty })
+            },
+            modifier = Modifier
                 .padding(GeneralPadding)
                 .widthIn(0.dp, maxWidth * 0.8f),
-            valueRange = 0f..1f,
+            valueRange = detectionCertaintyRange.start..detectionCertaintyRange.endInclusive,
             track = { it.SliderTrack(SliderTrackHeight) }
         )
     }
 
-    var maximumObjectsDetection by remember { mutableFloatStateOf(5f) }
-    val maxOfMaximumObjectsDetection = 5
-
     Row {
         QuickText(R.string.maximum_simultaneous_object_detections)
-        Text(maximumObjectsDetection.toInt().toString(), fontWeight = FontWeight.Bold)
+        Text(maxObjectsDetections.toString(), fontWeight = FontWeight.Bold)
     }
 
     BoxWithConstraints {
         Slider(
-            value = maximumObjectsDetection,
-            onValueChange = { maximumObjectsDetection = it },
-            Modifier
+            value = maxObjectsDetections.toFloat(),
+            onValueChange = {
+                maxObjectsDetections = it.toInt()
+            },
+            onValueChangeFinished = {
+                onNewPrefs(currPrefs.apply { this.maxObjectsDetections = maxObjectsDetections })
+            },
+            modifier = Modifier
                 .padding(GeneralPadding)
                 .widthIn(0.dp, maxWidth * 0.8f),
-            valueRange = 1f..maxOfMaximumObjectsDetection.toFloat(),
-            steps = maxOfMaximumObjectsDetection - 2, // I don't know why slider puts 2 extra positions
+            valueRange = objectDetectionsRange.first.toFloat()..objectDetectionsRange.last.toFloat(),
+            steps = objectDetectionsRange.last - 2, // I don't know why slider puts 2 extra positions
             thumb = { CircleThumb() },
             track = {
                 SliderDefaults.Track(
@@ -132,7 +157,6 @@ private fun ColumnScope.MediaPipeSettings() {
         )
     }
 
-    var areAnimationsEnabled by remember { mutableStateOf(true) }
     Row(
         Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -140,8 +164,11 @@ private fun ColumnScope.MediaPipeSettings() {
     ) {
         QuickText(R.string.detection_animations)
         Switch(
-            checked = areAnimationsEnabled,
-            onCheckedChange = { areAnimationsEnabled = !areAnimationsEnabled },
+            checked = enableAnimations,
+            onCheckedChange = {
+                enableAnimations = !enableAnimations
+                onNewPrefs(currPrefs.apply { this.enableAnimations = it })
+            },
             colors = SwitchDefaults.colors(
                 uncheckedTrackColor = MaterialTheme.colorScheme.scrim
             )
@@ -152,18 +179,18 @@ private fun ColumnScope.MediaPipeSettings() {
 
     DropdownOptions(
         label = "Model",
-        preSelectedOption = "Model1",
-        options = listOf("Model1", "Model2"),
+        preSelectedOption = selectedModel,
+        options = models,
         horizontalPadding = 8.dp,
-        onNewOption = {}
+        onNewOption = { onNewPrefs(currPrefs.apply { this.selectedModel = it }) }
     )
 }
 
 @Composable
-private fun ColumnScope.GeminiSettings(){
+private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (UserSecretPreferences) -> Unit) {
     SettingsHeader(geminiLikeText(R.string.gemini_api_key))
 
-    var apiKey by remember { mutableStateOf("") }
+    var apiKey by remember { mutableStateOf(currPrefs.geminiApiKey ?: "") }
     var isVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
@@ -191,7 +218,8 @@ private fun ColumnScope.GeminiSettings(){
 
     Button(
         onClick = {
-            println("Saving API Key: $apiKey") //todo in shared preferences, encrypted
+            i("Saving API Key")
+            onNewPrefs(UserSecretPreferences(apiKey))
         }
     ) {
         QuickText(R.string.save)

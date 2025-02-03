@@ -2,8 +2,6 @@ package p4ulor.mediapipe.data.storage
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
@@ -11,8 +9,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import p4ulor.mediapipe.data.storage.UserPreferences.Companion.Default
-import p4ulor.mediapipe.data.storage.UserPreferences.Companion.Key
 import p4ulor.mediapipe.e
 import java.io.InputStream
 import java.io.OutputStream
@@ -24,12 +20,10 @@ data class UserSecretPreferences(
     companion object {
         const val secretId = "gemini"
 
-        suspend fun getFrom(storage: DataStore<UserSecretPreferences>) : UserSecretPreferences? {
+        suspend fun getFrom(storage: DataStore<UserSecretPreferences>) : UserSecretPreferences {
             return storage.data
-                .catch {
-                    e("Error reading preferences: $it")
-                }
-                .firstOrNull()
+                .catch { e("Error reading preferences: $it") }
+                .firstOrNull() ?: UserSecretPreferences()
         }
     }
 

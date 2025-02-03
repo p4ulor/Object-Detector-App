@@ -10,21 +10,21 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
  */
 data class ObjectDetectorSettings(
     val processor: Delegate = Delegate.GPU,
-    val maxObjectDetection: Int = 5,
+    val maxObjectDetection: Int = ObjectDetectorSettings.maxObjectDetection,
     val mediaTypeToAnalyze: RunningMode = RunningMode.LIVE_STREAM,
-    val model: Model = Model.EFFICIENTDETV0,
+    val model: Models = Models.EFFICIENTDETV0,
     val sensitivityThreshold: Float = 0.5F,
 ) {
 
     companion object {
         // Use later
-        const val MAX_OBJECT_DETECTION = 10
-        const val MIN_OBJECT_DETECTION = 1
+        val detectionCertaintyRange = 0f..1f
+        const val maxObjectDetection = 5
     }
 }
 
 /** These files should be in the assets folder */
-enum class Model(val id: String) {
+enum class Models(val id: String) {
     EFFICIENTDETV0("efficientdet-lite0.tflite"),
     EFFICIENTDETV2("efficientdet-lite2.tflite")
 }
