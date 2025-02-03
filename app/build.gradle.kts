@@ -5,10 +5,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    // Added:
+    // Added (read docs):
     alias(libs.plugins.de.undercouch.gradle.download)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -75,8 +76,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.tasks.vision)
-    implementation(libs.androidx.datastore.preferences)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -107,6 +106,17 @@ dependencies {
     implementation(libs.ktor.client.cio) // Coroutine-based I/O Engine for processing network requests https://ktor.io/docs/client-engines.html#jvm-android-native
     implementation(libs.ktor.client.content.negotiation) // Used for Serialization of JSONs https://ktor.io/docs/client-serialization.html
     implementation(libs.ktor.serialization.kotlinx.json) // Used for Serialization. The annotations are processed by the kotlinxSerialization Gradle Plugin
+
+    // Koin
+    // https://insert-koin.io/docs/setup/koin#android
+    // https://insert-koin.io/docs/setup/annotations#android--ktor-app-ksp-setup
+    implementation(libs.koin.android) // Core lib for Android
+    implementation(libs.koin.androidx.compose) // To get the dependencies in compose
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler) // Indicate gradle to use Koin's KSP compiler to generate code
+
+    // Datastore
+    implementation(libs.androidx.datastore.preferences)
 
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))
@@ -184,5 +194,10 @@ tasks.dokkaHtml {
     }
 
     outputDirectory.set(project.rootDir.resolve("docs/dokka-generated"))
+}
+
+// https://insert-koin.io/docs/reference/koin-annotations/start#compile-safety---check-your-koin-config-at-compile-time-since-130
+ksp {
+    arg("KOIN_CONFIG_CHECK","true")
 }
 

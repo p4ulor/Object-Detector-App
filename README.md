@@ -52,8 +52,10 @@ one and monitor the use of your API key
 ### Other Dependencies & Plugins Used 🔌
 #### Gradle Plugins 🐘
 - [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite ML models. It is ran automatically after building the project. In gradle tool window, access it in the task category "other"
-- [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin) -> to think
+- [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) -> Used to process Kotlin's @Serialization annonations
+- [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-quickstart.html#add-a-processor) -> Used to process Koin's annonations and build the dependencies
 - [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> API documentation engine for Kotlin. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
+- [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin) -> to think
 #### Other
 - [androidx.camera.*dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
 - [google-accompanist](https://google.github.io/accompanist/) -> For permission utils
@@ -73,6 +75,8 @@ one and monitor the use of your API key
 - MediaPipe's runs the model on your phone's CPU or GPU.
 - I'm using: Jetpack Compose, Gradle's Kotlin DSL, [Gradle version catalogs](https://developer.android.com/build/migrate-to-catalogs)
 - If the object detection overlay isn't smooth, it's because you have toggled on the "Reduce Animations" in your Android's settings
+
+## Technical notes & Project structure
 
 > [!NOTE]  
 > License: © 2024-currentYear, Paulo Rosa, [all reserved to me](https://choosealicense.com/no-permission/). Do not distribute to any public the entirety or individual parts (files and text) of the project without my consent. Do not claim you're the original author. Downloading / git cloning is inevitably allowed, in order to only build the artifacts and modify the project locally and privately for non-commercial use. Pull requests are welcomed. If a fork was done do not modify this current file, specially this license.

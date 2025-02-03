@@ -10,17 +10,25 @@ composeBom = "2024.04.01"
 material3 = "1.3.1"
 
 # Added
+# Plugins
+gradleDownload = "5.6.0"
+ksp = "1.9.20-1.0.14" # Make sure you use a version compatible with your kotlin version https://mvnrepository.com/artifact/com.google.devtools.ksp/symbol-processing-common-deps/1.9.20-1.0.14
+dokka = "1.9.20"
+
+# Libraries
 camerax_version = "1.4.1"
 navigationCompose = "2.8.2"
 accompanistPermissions = "0.36.0"
 coroutines = "1.9.0"
 tasksVision = "0.10.16"
-gradleDownload = "5.6.0"
 mockk = "1.13.14"
 ktorGlobalVerion = "2.3.13" # ktor 3.0.3 is only compatible with Kotlin 2.0+
-dokka = "1.9.20"
 materialIconsExtended = "1.7.6"
 datastorePreferences = "1.1.2"
+koinAndroid = "4.0.2"
+koinAnnotations = "1.4.0"
+koinKspCompiler = "1.4.0"
+koinAndroidxCompose = "4.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +59,10 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorGlobalVerion" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorGlobalVerion" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorGlobalVerion" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koinAndroid" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinAndroidxCompose" }
+koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koinAnnotations" }
+koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koinKspCompiler" }
 
 ## For tests
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
@@ -64,4 +76,5 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 # Added
 de-undercouch-gradle-download = { id = "de.undercouch.download", version.ref = "gradleDownload" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

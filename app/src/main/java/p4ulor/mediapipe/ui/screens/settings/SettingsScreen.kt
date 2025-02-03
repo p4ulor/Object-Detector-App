@@ -44,7 +44,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.data.utils.trimToDecimals
 import p4ulor.mediapipe.ui.components.CircleThumb
 import p4ulor.mediapipe.ui.components.DropdownOptions
@@ -61,6 +63,8 @@ private val GeneralPadding = 12.dp
 
 @Composable
 fun SettingsScreen() = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
+    val viewModel = koinViewModel<SettingsViewModel>()
+
     Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
         MediaPipeSettings()
         Spacer(Modifier.size(GeneralPadding * 2))

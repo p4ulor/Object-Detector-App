@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 
 /** Read docs of [dataStore] */
-val Context.secretDataStore by dataStore(
+val Context.secretDataStore: DataStore<UserSecretPreferences> by dataStore(
     fileName = "secret-user-preferences",
     serializer = UserSecretPreferencesSerializer
 )
