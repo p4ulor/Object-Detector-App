@@ -115,7 +115,7 @@ dependencies {
     implementation(libs.koin.annotations)
     ksp(libs.koin.ksp.compiler) // Indicate gradle to use Koin's KSP compiler with KSP to generate code, as use that code as a dependency
 
-    // Datastore
+    // Datastore, to store app settings
     implementation(libs.androidx.datastore.preferences)
 
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not

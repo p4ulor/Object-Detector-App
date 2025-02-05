@@ -14,6 +14,8 @@ import p4ulor.mediapipe.i
  * This contains the logic of the lifecycle stages where the camera should be un-binded (which is
  * when the app is "minimized", in Android terms, in [Lifecycle.Event.ON_PAUSE]) and returned on
  * [Lifecycle.Event.ON_RESUME]
+ * @param [onUnbind] a callback that's called when [Lifecycle.Event.ON_PAUSE] occurs
+ * @param [onBind] a callback that's called when [Lifecycle.Event.ON_RESUME] occurs
  */
 @Composable
 @NonRestartableComposable // Just like DisposableEffect has

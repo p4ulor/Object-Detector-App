@@ -3,7 +3,7 @@ package p4ulor.mediapipe.unit.gemini
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import p4ulor.mediapipe.android.utils.encodeToBase64
+import p4ulor.mediapipe.data.utils.encodeToBase64
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.sources.gemini.GeminiApiService
 import p4ulor.mediapipe.data.sources.gemini.MimeTypes

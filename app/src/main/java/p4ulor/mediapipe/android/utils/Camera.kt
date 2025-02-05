@@ -9,6 +9,7 @@ import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.ui.geometry.Size
+import p4ulor.mediapipe.data.utils.executor
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 import kotlin.coroutines.resume
@@ -17,6 +18,8 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * Util function to get a camera provider, specially since the `get()` operation is blocking and can
  * throw exception (although it might be very rare)
+ * [suspendCoroutine] is used to treat this blocking and synchronous `get()` call to an asynchronous
+ * call that can be used with coroutines
  */
 suspend fun Context.getCameraProvider(): ProcessCameraProvider? = suspendCoroutine {
     ProcessCameraProvider.getInstance(this).also { cameraProvider ->

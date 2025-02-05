@@ -2,7 +2,6 @@ package p4ulor.mediapipe.utils
 
 import android.util.Log
 import io.mockk.every
-import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback

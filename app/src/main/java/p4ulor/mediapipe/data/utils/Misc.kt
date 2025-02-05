@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.android.utils
+package p4ulor.mediapipe.data.utils
 
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -15,4 +15,5 @@ fun getTodaysDate(): String {
     return formatter.format(date)
 }
 
-fun encodeToBase64(bytes: ByteArray) = Base64.getEncoder().withoutPadding().encodeToString(bytes)
+fun encodeToBase64(bytes: ByteArray): String =
+    Base64.getEncoder().withoutPadding().encodeToString(bytes)

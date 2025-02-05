@@ -61,6 +61,8 @@ one and monitor the use of your API key
 - [google-accompanist](https://google.github.io/accompanist/) -> For permission utils
 
 ## Getting Started / Setup Guide 🙌
+- [Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
+
 ### Getting API Keys 🔑
 - Gemini API -> https://aistudio.google.com/app/apikey
 
@@ -92,7 +94,6 @@ one and monitor the use of your API key
 - Support camera zoom, flip to front camera and maybe other camera extensions (use libs.androidx.camera.extensions)
 - Listen to networks changes to display gemini as available or not
 - Make more composables previewable
-- Support landscape mode when [rotating camera](https://developer.android.com/media/camera/camerax/orientation-rotation)
 - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
 ### Fixes
 - Fix not using deprecated resolution selector causing

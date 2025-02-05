@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -26,6 +27,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -46,7 +49,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.data.storage.UserPreferences
@@ -62,26 +66,46 @@ import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.SliderTrack
 import p4ulor.mediapipe.ui.components.geminiLikeText
 import p4ulor.mediapipe.ui.components.mediaPipeLikeText
+import p4ulor.mediapipe.ui.components.utils.CenteredContent
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 private val GeneralPadding = 12.dp
 
 @Composable
-fun SettingsScreen() = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
-    val viewModel = koinViewModel<SettingsViewModel>()
-    val currentPrefs by viewModel.getUserPrefs().collectAsState()
-    val currentSecretPrefs by viewModel.getUserSecretPrefs().collectAsState()
+fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
+    var currentPrefs by remember { mutableStateOf(UserPreferences()) }
+    var currentSecretPrefs by remember { mutableStateOf(UserSecretPreferences()) }
+    val areSettingsLoaded by vm.areSettingsLoaded.asStateFlow().collectAsState()
 
-    Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
-        MediaPipeSettings(
-            currPrefs = currentPrefs,
-            onNewPrefs = { viewModel.saveUserPrefs(it) }
-        )
-        Spacer(Modifier.size(GeneralPadding * 2))
-        GeminiSettings(
-            currPrefs = currentSecretPrefs,
-            onNewPrefs = { viewModel.saveUserSecretPrefs(it) }
-        )
+    LaunchedEffect(Unit) { // Collect only on first composition rendering
+        currentPrefs = vm.getUserPrefs().first()
+        currentSecretPrefs = vm.getUserSecretPrefs().first()
+        vm.areSettingsLoaded.value = true
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            i("onDispose")
+            vm.areSettingsLoaded.value = false
+        }
+    }
+
+    if(areSettingsLoaded) {
+        Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
+            MediaPipeSettings(
+                currPrefs = currentPrefs,
+                onNewPrefs = { vm.saveUserPrefs(it) }
+            )
+            Spacer(Modifier.size(GeneralPadding * 2))
+            GeminiSettings(
+                currPrefs = currentSecretPrefs,
+                onNewPrefs = { vm.saveUserSecretPrefs(it) }
+            )
+        }
+    } else {
+        CenteredContent {
+            CircularProgressIndicator(Modifier.size(100.dp))
+        }
     }
 }
 
@@ -242,6 +266,6 @@ private fun ColumnScope.SettingsHeader(styledText: AnnotatedString){
 @Composable
 fun SettingsScreenPreview() = AppTheme(enableDarkTheme = true) {
     Surface {
-        SettingsScreen()
+        //SettingsScreen()
     }
 }

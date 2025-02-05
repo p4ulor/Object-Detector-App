@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -48,7 +49,9 @@ fun BoxWithBackground(
             painter = painterResource(resourceId),
             contentDescription = "Background",
             contentScale = contentScale,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().graphicsLayer {
+                scaleX = -1f // Flip horizontally
+            }
         )
         content()
     }

@@ -32,9 +32,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
+import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
@@ -51,16 +53,28 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
     var currentScreenId by rememberSaveable { mutableStateOf(Screens.Home.name) }
     val navController = rememberNavController()
 
-    BoxWithBackground(R.drawable.background_default) {
+    BoxWithBackground(R.drawable.background_light_2) {
 
         // I'll keep this here for demo purposes, the other VM's are injected with Koin
-        val viewModel = viewModel<MainViewModel>(
+        val mainVM = viewModel<MainViewModel>(
             factory = create(MainViewModel::class, LocalContext.current.applicationContext)
         )
+        val settingsVM = koinViewModel<SettingsViewModel>()
 
         Scaffold(
-            containerColor = Color.Transparent,
             modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Transparent,
+            content = {
+                NavHost(
+                    modifier = Modifier.padding(it), // Important so that NavHost can make the screens automatically take in consideration the bottom bar
+                    navController = navController,
+                    startDestination = Screens.Home.name,
+                ) {
+                    composable(route = Screens.About.name) { AboutScreen() }
+                    composable(route = Screens.Home.name) { HomeScreen(mainVM) }
+                    composable(route = Screens.Settings.name) { SettingsScreen(settingsVM) }
+                }
+            },
             bottomBar = {
                 SmoothHorizontalDivider()
                 NavigationBar (Modifier.height(BottomNavigationBarHeight), containerColor = Color.Transparent) {
@@ -72,17 +86,6 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
                             }
                         })
                     }
-                }
-            },
-            content = {
-                NavHost(
-                    modifier = Modifier.padding(it), // Important so the screens automatically take in consideration the bottom bar
-                    navController = navController,
-                    startDestination = Screens.Home.name,
-                ) {
-                    composable(route = Screens.About.name) { AboutScreen() }
-                    composable(route = Screens.Home.name) { HomeScreen(viewModel) }
-                    composable(route = Screens.Settings.name) { SettingsScreen() }
                 }
             }
         )

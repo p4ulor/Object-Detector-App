@@ -60,6 +60,7 @@ import p4ulor.mediapipe.android.utils.takePic
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
+import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcons
@@ -98,13 +99,15 @@ fun HomeScreen(viewModel: MainViewModel) {
     if(isGranted){
         i("Permission granted")
         var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
+        val prefs by viewModel.prefs.collectAsState()
 
         LaunchedEffect(Unit) {
+            viewModel.loadPrefs()
             cameraProvider = ctx.getCameraProvider()
         }
 
-        if(cameraProvider!=null) {
-            CameraPreviewContainer(viewModel, cameraProvider!!)
+        if(cameraProvider!=null && prefs!=null) {
+            CameraPreviewContainer(viewModel, cameraProvider!!, prefs!!)
         } else {
             CenteredContent {
                 CircularProgressIndicator(Modifier.size(100.dp))
@@ -123,18 +126,18 @@ fun HomeScreen(viewModel: MainViewModel) {
 @Composable
 fun CameraPreviewContainer(
     viewModel: MainViewModel,
-    cameraProvider: ProcessCameraProvider
+    cameraProvider: ProcessCameraProvider,
+    prefs: UserPreferences
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope() // for calling things that require UI thread
 
     var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
-    var isFlashEnabled by remember { mutableStateOf(false) }
+    var isFlashEnabled by rememberSaveable { mutableStateOf(false) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
-    var isAppMinimized by remember { mutableStateOf(false) }
-
+    var isAppMinimized by rememberSaveable { mutableStateOf(false) }
 
     // Contains the data necessary to outline an object into the screen
     val resultsBundle by viewModel.objDetectionResults.collectAsState()
@@ -185,7 +188,7 @@ fun CameraPreviewContainer(
                     factory = { ctx ->
                         val cameraPreviewView = PreviewView(ctx)
 
-                        val imageAnalysisSettings  =viewModel.initObjectDetector(createImageAnalyser(
+                        val imageAnalysisSettings = viewModel.initObjectDetector(createImageAnalyser(
                             ratioDeprecated = cameraPreviewRatio.toInt()
                         ))
 
@@ -204,12 +207,14 @@ fun CameraPreviewContainer(
 
             // Show the detected objects overlays
             resultsBundle?.let {
-                ObjectBoundsBoxOverlays(
-                    detections = it.detectedObjects.detections() ?: emptyList(),
-                    frameWidth = it.inputImageWidth,
-                    frameHeight = it.inputImageHeight,
-                    animate = viewModel.animateResults
-                )
+                if(!isAppMinimized){ // Avoids showing the overlay for some milliseconds when changing screens
+                    ObjectBoundsBoxOverlays(
+                        detections = it.detectedObjects.detections() ?: emptyList(),
+                        frameWidth = it.inputImageWidth,
+                        frameHeight = it.inputImageHeight,
+                        animate = prefs.enableAnimations
+                    )
+                }
             }
         }
     }

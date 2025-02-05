@@ -1,12 +1,12 @@
 package p4ulor.mediapipe.data.sources.gemini
 
 import io.ktor.client.call.body
-import p4ulor.mediapipe.android.utils.getTodaysDate
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import p4ulor.mediapipe.data.sources.KtorClient
 import p4ulor.mediapipe.data.sources.gemini.GeminiApiEndpoints.*
 import p4ulor.mediapipe.data.sources.gemini.GeminiApiEndpoints.Companion.defaultHeaders
+import p4ulor.mediapipe.data.utils.getTodaysDate
 import p4ulor.mediapipe.e
 
 /**

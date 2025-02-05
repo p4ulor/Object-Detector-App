@@ -7,8 +7,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withContext
 import p4ulor.mediapipe.data.domains.mediapipe.Models
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.e
@@ -20,17 +22,16 @@ data class UserPreferences(
     var selectedModel: String = Default.selectedModel
 ) {
     companion object {
-        object Key {
-            val minDetectCertainty = floatPreferencesKey("minDetectCertainty")
-            val maxObjectsDetections = intPreferencesKey("enableAnimations")
-            val enableAnimations = booleanPreferencesKey("enableAnimations")
-            val selectedModel = stringPreferencesKey("selectedModel")
-        }
+        // Don't put this inside an object like the other things, or these will be null
+        val minDetectCertaintyKey = floatPreferencesKey("minDetectCertainty")
+        val maxObjectsDetectionsKey = intPreferencesKey("maxObjectsDetections")
+        val enableAnimationsKey = booleanPreferencesKey("enableAnimations")
+        val selectedModelKey = stringPreferencesKey("selectedModel")
 
         object Default {
-            val minDetectCertainty = 0.50f
-            val maxObjectsDetections = 3
-            val enableAnimations = true
+            const val minDetectCertainty = 0.50f
+            const val maxObjectsDetections = 3
+            const val enableAnimations = false
             val selectedModel = Models.EFFICIENTDETV0.name
         }
 
@@ -40,28 +41,28 @@ data class UserPreferences(
             val models = Models.values().map { it.name }
         }
 
-        suspend fun getFrom(storage: DataStore<Preferences>) : UserPreferences {
-            return storage.data
+        suspend fun getFrom(storage: DataStore<Preferences>) = withContext(Dispatchers.IO) {
+            return@withContext storage.data
                 .catch {
                     e("Error reading preferences: $it")
                 }
                 .firstOrNull().run {
                     UserPreferences(
-                        this?.get(Key.minDetectCertainty) ?: Default.minDetectCertainty,
-                        this?.get(Key.maxObjectsDetections) ?: Default.maxObjectsDetections,
-                        this?.get(Key.enableAnimations) ?: Default.enableAnimations,
-                        this?.get(Key.selectedModel) ?: Default.selectedModel,
+                        this?.get(minDetectCertaintyKey) ?: Default.minDetectCertainty,
+                        this?.get(maxObjectsDetectionsKey) ?: Default.maxObjectsDetections,
+                        this?.get(enableAnimationsKey) ?: Default.enableAnimations,
+                        this?.get(selectedModelKey) ?: Default.selectedModel,
                     )
                 }
         }
     }
 
-    suspend fun saveIn(storage: DataStore<Preferences>) {
+    suspend fun saveIn(storage: DataStore<Preferences>) = withContext(Dispatchers.IO) {
         storage.edit { preferences ->
-            preferences[Key.minDetectCertainty] = this.minDetectCertainty
-            preferences[Key.maxObjectsDetections] = this.maxObjectsDetections
-            preferences[Key.enableAnimations] = this.enableAnimations
-            preferences[Key.selectedModel] = this.selectedModel
+            preferences[minDetectCertaintyKey] = this@UserPreferences.minDetectCertainty
+            preferences[maxObjectsDetectionsKey] = this@UserPreferences.maxObjectsDetections
+            preferences[enableAnimationsKey] = this@UserPreferences.enableAnimations
+            preferences[selectedModelKey] = this@UserPreferences.selectedModel
         }
     }
 }
