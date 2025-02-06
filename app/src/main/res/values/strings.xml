@@ -2,11 +2,14 @@
     <string name="app_name">Object Detector</string>
     <string name="gemini" translatable="false">Gemini</string>
     <string name="you">You</string>
-    <string name="gemini_api_key">Gemini API key</string>
+    <string name="gemini_api">Gemini API</string>
     <string name="enter_api_key">Enter API key</string>
     <string name="save">Save</string>
     <string name="mediapipe">MediaPipe</string>
     <string name="minimum_detection_certainty">Minimum detection certainty:\u00A0</string>
     <string name="maximum_simultaneous_object_detections">Maximum simultaneous object detections:\u00A0</string>
     <string name="detection_animations">Detection animations</string>
+    <string name="about">About</string>
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
 </resources>

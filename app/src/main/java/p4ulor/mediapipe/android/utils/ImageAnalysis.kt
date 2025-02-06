@@ -11,8 +11,8 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
  * that are captured
  */
 fun createImageAnalyser(
-    ratio: ResolutionSelector? = null,
-    @AspectRatio.Ratio ratioDeprecated: Int? = null
+    @AspectRatio.Ratio ratioDeprecated: Int? = null,
+    ratio: ResolutionSelector? = null
 ) = ImageAnalysis.Builder().apply {
     if(ratio!=null) {
         setResolutionSelector(ratio) // Using this was causing "java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer"

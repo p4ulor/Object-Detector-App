@@ -21,7 +21,7 @@ fun rainbowWith(hueShift: Float, saturation: Float = 1f, lightness: Float = 0.5f
 )
 
 val GeminiLikeGradient = listOf(Color(0xFF2E78F4), Color(0xFFF76744)) // Blue to Red (Similar to Gemini colors)
-val MediaPipeLikeGradient = listOf(Color(0xFF73C8CD), Color(0xFF08949C))
+val MediaPipeLikeGradient = listOf(Color(0xFF5FFFB2), Color(0xFF00FF91))
 
 @Composable
 fun ColorSchemeGradient() = Brush.horizontalGradient(listOf(

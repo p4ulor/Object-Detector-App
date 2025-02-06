@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
@@ -60,6 +61,7 @@ import p4ulor.mediapipe.android.utils.takePic
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
+import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AnyIcon
@@ -99,10 +101,10 @@ fun HomeScreen(viewModel: MainViewModel) {
     if(isGranted){
         i("Permission granted")
         var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
-        val prefs by viewModel.prefs.collectAsState()
+        var prefs by remember { mutableStateOf<UserPreferences?>(null) }
 
         LaunchedEffect(Unit) {
-            viewModel.loadPrefs()
+            prefs = viewModel.loadPrefs().first()
             cameraProvider = ctx.getCameraProvider()
         }
 
@@ -188,9 +190,12 @@ fun CameraPreviewContainer(
                     factory = { ctx ->
                         val cameraPreviewView = PreviewView(ctx)
 
-                        val imageAnalysisSettings = viewModel.initObjectDetector(createImageAnalyser(
-                            ratioDeprecated = cameraPreviewRatio.toInt()
-                        ))
+                        val imageAnalysisSettings = viewModel.initObjectDetector(
+                            createImageAnalyser(cameraPreviewRatio.toInt()),
+                            ObjectDetectorSettings(
+                                sensitivityThreshold = prefs.minDetectCertainty
+                            )
+                        )
 
                         camera = startCameraAndPreviewView(
                             cameraProvider,

@@ -68,7 +68,7 @@ one and monitor the use of your API key
 
 ### Installing ⬇️
 - a) From .apk file: Download in releases
-- b) With source code: Run with a terminal in the root directory `./gradlew app:installDebug`
+- b) With source code: Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
 
 ## Notes 📝
 - The Machine Learning models used with MediaPipe need to be a compatible with it, the compatability depends on the feature used
@@ -86,13 +86,10 @@ one and monitor the use of your API key
 ## Todo 🕒
 - Add some mermaid diagrams
 - Add sfx
-- Check if viewmodel uses are correct and clean, use dependency injection
 - Review and clean up the architecture
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
-- Replace hardcoded strings with string resources
-- Support light and dark theme and store it in Datastore<Preferences> https://developer.android.com/topic/libraries/architecture/datastore#kts
-- Support camera zoom, flip to front camera and maybe other camera extensions (use libs.androidx.camera.extensions)
 - Listen to networks changes to display gemini as available or not
+- fix The application may be doing too much work on its main thread.
 - Make more composables previewable
 - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
 ### Fixes

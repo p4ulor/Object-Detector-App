@@ -46,8 +46,8 @@ fun geminiLikeText(@StringRes text: Int) = buildAnnotatedString {
         style = SpanStyle(
             brush = Brush.linearGradient(
                 colors = GeminiLikeGradient,
-                start = Offset(100f, 0f),
-                end = Offset(500f, -100f)
+                start = Offset(100f, 100f),
+                end = Offset(300f, -100f)
             ),
             shadow = Shadow(blurRadius = 20f)
         )
@@ -65,7 +65,7 @@ fun mediaPipeLikeText(@StringRes text: Int) = buildAnnotatedString {
                 start = Offset(100f, 0f),
                 end = Offset(500f, -100f)
             ),
-            shadow = Shadow(blurRadius = 20f)
+            shadow = Shadow(blurRadius = 10f)
         )
     ) {
         append(stringResource(text))
@@ -80,13 +80,13 @@ private fun TextPreviews() = AppTheme(enableDarkTheme = false){
             Text(
                 mediaPipeLikeText(R.string.mediapipe),
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineMedium,
             )
 
             Text(
-                geminiLikeText(R.string.gemini_api_key),
+                geminiLikeText(R.string.gemini_api),
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineMedium,
             )
         }
     }

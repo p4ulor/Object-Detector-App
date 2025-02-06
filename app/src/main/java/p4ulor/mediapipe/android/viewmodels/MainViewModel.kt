@@ -3,9 +3,11 @@ package p4ulor.mediapipe.android.viewmodels
 import android.app.Application
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.AndroidViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
 import p4ulor.mediapipe.android.utils.launch
 import p4ulor.mediapipe.android.utils.toStateFlow
@@ -23,11 +25,13 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private val _prefs = MutableStateFlow<UserPreferences?>(null)
     val prefs = _prefs.asStateFlow()
 
-    fun loadPrefs() {
-        launch { _prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore) }
+    fun loadPrefs() = flow {
+        _prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)
+        emit(_prefs.value)
     }
 
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
+    @OptIn(FlowPreview::class)
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if (prefs.value?.enableAnimations == true) it.sample(500L) else it
     }.toStateFlow(_objDetectionResults.value) // because [sample] returns a flow

@@ -1,6 +1,8 @@
 package p4ulor.mediapipe.ui.screens.root
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -25,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -37,6 +40,7 @@ import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
@@ -50,11 +54,22 @@ val BottomNavigationBarHeight = 65.dp
 
 @Composable
 fun RootScreen() = Surface { // The surface is used to for theming to work
-    var currentScreenId by rememberSaveable { mutableStateOf(Screens.Home.name) }
+    var currentScreen by rememberSaveable { mutableStateOf(Screens.Home) }
     val navController = rememberNavController()
+    val (background, isBgInverted) = if(isSystemInDarkTheme()) {
+        when(currentScreen) {
+            Screens.Settings -> R.drawable.background_dark_2 to false
+            Screens.About -> R.drawable.background_dark_2 to true
+            else -> R.drawable.background_dark to false
+        }
+    } else {
+        when(currentScreen) {
+            Screens.Home -> R.drawable.background_light to false
+            else ->  R.drawable.background_light_2 to false
+        }
+    }
 
-    BoxWithBackground(R.drawable.background_light_2) {
-
+    BoxWithBackground(background, invert = isBgInverted) {
         // I'll keep this here for demo purposes, the other VM's are injected with Koin
         val mainVM = viewModel<MainViewModel>(
             factory = create(MainViewModel::class, LocalContext.current.applicationContext)
@@ -79,10 +94,10 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
                 SmoothHorizontalDivider()
                 NavigationBar (Modifier.height(BottomNavigationBarHeight), containerColor = Color.Transparent) {
                     bottomBarDestinations.forEach { item ->
-                        buildNavigationBarItem(item, currentScreenId, onClick = { barItem ->
-                            if(currentScreenId != barItem.name){
-                                currentScreenId = barItem.name
-                                navController.navigate(item.name)
+                        buildNavigationBarItem(item, currentScreen, onClick = { barItem ->
+                            if(currentScreen.name != barItem.screen.name){
+                                currentScreen = barItem.screen
+                                navController.navigate(item.screen.name)
                             }
                         })
                     }
@@ -95,12 +110,12 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
 @Composable
 private fun RowScope.buildNavigationBarItem(
     item: NavItem,
-    currentScreenId: String,
+    currentScreen: Screens,
     onClick: (item: NavItem) -> Unit,
 ) = NavigationBarItem(
-        selected = currentScreenId == item.name,
+        selected = currentScreen == item.screen,
         onClick = { onClick(item) },
-        label = { Text(item.name) },
+        label = { Text(stringResource(item.screen.nameRes)) },
         alwaysShowLabel = false, // the label will only be shown when this item is selected
         icon = {
             BadgedBox(
@@ -112,7 +127,7 @@ private fun RowScope.buildNavigationBarItem(
             ) {
                 Icon(
                     painter = item.selectedIcon,
-                    contentDescription = item.name,
+                    contentDescription = item.screen.name,
                     modifier = Modifier.size(item.size)
                 )
             }
@@ -124,13 +139,14 @@ private fun RowScope.buildNavigationBarItem(
  * The names of the enums are also the id of the each screen
  */
 enum class Screens(
+    @StringRes val nameRes: Int,
     val icon: AppIcons? = null,
     val materialIcons: ImageVector? = null,
     val size: Dp = 25.dp
 ) {
-    About(materialIcons = MaterialIcons.Info, size = 22.dp),
-    Home(materialIcons = MaterialIcons.Home),
-    Settings(icon = AppIcons.Settings)
+    About(R.string.about, materialIcons = MaterialIcons.Info, size = 22.dp),
+    Home(R.string.home, materialIcons = MaterialIcons.Home),
+    Settings(R.string.settings, icon = AppIcons.Settings)
 }
 
 /** If it's failing, comment out uses of [LocalContext.current]. Find a solution for this */

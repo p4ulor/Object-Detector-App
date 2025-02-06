@@ -88,7 +88,7 @@ dependencies {
     implementation(libs.androidx.camera.camera2) // CameraX is built on top of camera2, so it's required
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-    implementation(libs.androidx.camera.extensions) // https://developer.android.com/media/camera/camera-extensions
+    // implementation(libs.androidx.camera.extensions) // https://developer.android.com/media/camera/camera-extensions
 
     // MediaPipe - vision tasks
     // - https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android

@@ -85,7 +85,7 @@ fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), colo
 
     DisposableEffect(Unit) {
         onDispose {
-            i("onDispose")
+            i("onDispose") // rethink if this is a good design
             vm.areSettingsLoaded.value = false
         }
     }
@@ -212,7 +212,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
 
 @Composable
 private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (UserSecretPreferences) -> Unit) {
-    SettingsHeader(geminiLikeText(R.string.gemini_api_key))
+    SettingsHeader(geminiLikeText(R.string.gemini_api))
 
     var apiKey by remember { mutableStateOf(currPrefs.geminiApiKey ?: "") }
     var isVisible by remember { mutableStateOf(false) }

@@ -55,9 +55,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
 import p4ulor.mediapipe.ui.components.utils.CenteredRow
 import p4ulor.mediapipe.ui.components.utils.roundMessageBox
 
@@ -171,7 +173,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 private fun SampleComposable(){
-    Surface {
+    Box {
         Column(
             modifier = Modifier
                 .padding(10.dp)
@@ -179,7 +181,7 @@ private fun SampleComposable(){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Text("Text", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+            Text("HorizontalDivider", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
             HorizontalDivider()
             HorizontalDivider(thickness = 10.dp)
 
@@ -302,13 +304,29 @@ private fun SampleComposable(){
 @Preview
 @Composable
 private fun DarkColorSchemePreview() = AppTheme(enableDarkTheme = true){
-    SampleComposable()
+    Surface{
+        BoxWithBackground(R.drawable.background_dark_2) { SampleComposable() }
+    }
+}
+
+@Preview
+@Composable
+private fun DarkColorSchemePreview2() = AppTheme(enableDarkTheme = true){
+    Surface { SampleComposable() }
 }
 
 @Preview
 @Composable
 private fun LightColorSchemePreview() = AppTheme(enableDarkTheme = false){
-    SampleComposable()
+    Surface {
+        BoxWithBackground(R.drawable.background_light) { SampleComposable() }
+    }
+}
+
+@Preview
+@Composable
+private fun LightColorSchemePreview2() = AppTheme(enableDarkTheme = false) {
+    Surface { SampleComposable() }
 }
 
 /** https://developer.android.com/develop/ui/compose/designsystems/material3 */

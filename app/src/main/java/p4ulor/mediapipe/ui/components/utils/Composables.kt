@@ -42,6 +42,7 @@ fun BoxWithBackground(
     resourceId: Int,
     boxModifier: Modifier = Modifier.fillMaxSize(),
     contentScale: ContentScale = ContentScale.FillBounds,
+    invert: Boolean = false,
     content: @Composable @UiComposable BoxWithConstraintsScope.() -> Unit
 ) {
     BoxWithConstraints(boxModifier) {
@@ -49,9 +50,10 @@ fun BoxWithBackground(
             painter = painterResource(resourceId),
             contentDescription = "Background",
             contentScale = contentScale,
-            modifier = Modifier.fillMaxSize().graphicsLayer {
-                scaleX = -1f // Flip horizontally
-            }
+            modifier = Modifier.fillMaxSize().then(
+               if (invert) Modifier.graphicsLayer { scaleX = -1f } // Scale Horizontally
+               else Modifier
+            )
         )
         content()
     }

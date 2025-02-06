@@ -37,6 +37,8 @@ class MainActivity : ComponentActivity() {
         i("Destroyed")
     }
 
+    // Ignoring because it has to work out with NavHost
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
         return object : OnBackInvokedDispatcher{
