@@ -27,6 +27,7 @@ import p4ulor.mediapipe.ui.theme.GeminiLikeGradient
 import p4ulor.mediapipe.ui.theme.MediaPipeLikeGradient
 import androidx.compose.material3.Text as ComposeText
 
+/** Because it's tiring to have to write [stringResource] */
 @Composable
 fun QuickText(
     @StringRes text: Int,

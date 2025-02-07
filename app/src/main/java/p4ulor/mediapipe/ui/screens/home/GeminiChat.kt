@@ -79,7 +79,7 @@ fun GeminiChat(newMessage: Message, isLoadingOrAnimationInProgress: (Boolean) ->
 /** Run in interactive mode */
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun GeminiChatPreview() = AppTheme {
+private fun GeminiChatPreview() = AppTheme {
     val newMessages = remember { MutableStateFlow<Message?>(null) }
     val newMessage by newMessages.collectAsState()
     var isLoadingOrAnimationInProgress by remember { mutableStateOf(false) }

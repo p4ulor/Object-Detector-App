@@ -7,6 +7,7 @@ import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.screens.root.RootScreen
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
+                enableEdgeToEdge() // Gives transparent look by default
                 RootScreen()
             }
         }

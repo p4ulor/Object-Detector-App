@@ -1,5 +1,8 @@
 package p4ulor.mediapipe.ui.screens.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -16,7 +19,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -27,9 +29,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -39,17 +39,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
@@ -57,6 +54,7 @@ import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.data.storage.UserSecretPreferences
 import p4ulor.mediapipe.data.utils.trimToDecimals
 import p4ulor.mediapipe.i
+import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.CircleThumb
 import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.IconSmallSize
@@ -66,7 +64,7 @@ import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.SliderTrack
 import p4ulor.mediapipe.ui.components.geminiLikeText
 import p4ulor.mediapipe.ui.components.mediaPipeLikeText
-import p4ulor.mediapipe.ui.components.utils.CenteredContent
+import p4ulor.mediapipe.ui.components.utils.getTextSize
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 private val GeneralPadding = 12.dp
@@ -74,23 +72,17 @@ private val GeneralPadding = 12.dp
 @Composable
 fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
     var currentPrefs by remember { mutableStateOf(UserPreferences()) }
-    var currentSecretPrefs by remember { mutableStateOf(UserSecretPreferences()) }
-    val areSettingsLoaded by vm.areSettingsLoaded.asStateFlow().collectAsState()
+    var currentSecretPrefs by remember { mutableStateOf<UserSecretPreferences?>(null) }
 
     LaunchedEffect(Unit) { // Collect only on first composition rendering
         currentPrefs = vm.getUserPrefs().first()
         currentSecretPrefs = vm.getUserSecretPrefs().first()
-        vm.areSettingsLoaded.value = true
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            i("onDispose") // rethink if this is a good design
-            vm.areSettingsLoaded.value = false
-        }
-    }
-
-    if(areSettingsLoaded) {
+    AnimatedVisibility(
+        visible = currentSecretPrefs != null,
+        enter = fadeIn(smooth()) + scaleIn()
+    ) {
         Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
             MediaPipeSettings(
                 currPrefs = currentPrefs,
@@ -98,13 +90,9 @@ fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), colo
             )
             Spacer(Modifier.size(GeneralPadding * 2))
             GeminiSettings(
-                currPrefs = currentSecretPrefs,
+                currPrefs = currentSecretPrefs!!,
                 onNewPrefs = { vm.saveUserSecretPrefs(it) }
             )
-        }
-    } else {
-        CenteredContent {
-            CircularProgressIndicator(Modifier.size(100.dp))
         }
     }
 }
@@ -117,7 +105,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
     SettingsHeader(mediaPipeLikeText(R.string.mediapipe))
 
     var minDetectCertainty by remember { mutableFloatStateOf(currPrefs.minDetectCertainty) }
-    var maxObjectsDetections by remember { mutableIntStateOf(currPrefs.maxObjectsDetections) }
+    var maxObjectsDetections by remember { mutableIntStateOf(currPrefs.maxObjectDetections) }
     var enableAnimations by remember { mutableStateOf(currPrefs.enableAnimations) }
     var selectedModel by remember { mutableStateOf(currPrefs.selectedModel) }
 
@@ -127,11 +115,9 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
 
     Row {
         QuickText(R.string.minimum_detection_certainty)
-        val textMeasurer = rememberTextMeasurer()
-        val maxTextSize = with(LocalDensity.current) { textMeasurer.measure("%%%%%").size.width.toDp() }
         Text(
             "${(minDetectCertainty*100).toInt()}%",
-            Modifier.width(maxTextSize),
+            Modifier.width(getTextSize("%%%%%")), // So the widgets don't slightly change positions when slider goes through 0%-100$
             fontWeight = FontWeight.Bold,
             maxLines = 1
         )
@@ -163,7 +149,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
                 maxObjectsDetections = it.toInt()
             },
             onValueChangeFinished = {
-                onNewPrefs(currPrefs.apply { this.maxObjectsDetections = maxObjectsDetections })
+                onNewPrefs(currPrefs.apply { this.maxObjectDetections = maxObjectsDetections })
             },
             modifier = Modifier
                 .padding(GeneralPadding)
@@ -264,7 +250,7 @@ private fun ColumnScope.SettingsHeader(styledText: AnnotatedString){
 
 @Preview
 @Composable
-fun SettingsScreenPreview() = AppTheme(enableDarkTheme = true) {
+private fun SettingsScreenPreview() = AppTheme(enableDarkTheme = true) {
     Surface {
         //SettingsScreen()
     }

@@ -5,15 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import p4ulor.mediapipe.R
 
+/** See docs of [requestPermission] */
 fun Context.requestUserToManuallyAddThePermission(){
     AlertDialog.Builder(this)
-        .setTitle("Camera Permission Needed")
-        .setMessage("This app needs access to your camera to take photos.")
+        .setTitle(getString(R.string.camera_permission_needed))
+        .setMessage(getString(R.string.camera_permission_needed_text))
         .setPositiveButton("Ok") { _, _ ->
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            val goToSettingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                 data = Uri.fromParts("package", packageName, null)
             }
-            startActivity(intent)
+            startActivity(goToSettingsIntent)
         }.show()
 }

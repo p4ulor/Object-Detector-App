@@ -17,14 +17,14 @@ import p4ulor.mediapipe.e
 
 data class UserPreferences(
     var minDetectCertainty: Float = Default.minDetectCertainty,
-    var maxObjectsDetections: Int = Default.maxObjectsDetections,
+    var maxObjectDetections: Int = Default.maxObjectsDetections,
     var enableAnimations: Boolean = Default.enableAnimations,
     var selectedModel: String = Default.selectedModel
 ) {
     companion object {
         // Don't put this inside an object like the other things, or these will be null
         val minDetectCertaintyKey = floatPreferencesKey("minDetectCertainty")
-        val maxObjectsDetectionsKey = intPreferencesKey("maxObjectsDetections")
+        val maxObjectDetectionsKey = intPreferencesKey("maxObjectDetections")
         val enableAnimationsKey = booleanPreferencesKey("enableAnimations")
         val selectedModelKey = stringPreferencesKey("selectedModel")
 
@@ -37,7 +37,7 @@ data class UserPreferences(
 
         object Ranges {
             val detectionCertainty = ObjectDetectorSettings.detectionCertaintyRange
-            val objectDetections = 1..ObjectDetectorSettings.maxObjectDetection
+            val objectDetections = 1..ObjectDetectorSettings.maxObjectDetections
             val models = Models.values().map { it.name }
         }
 
@@ -49,7 +49,7 @@ data class UserPreferences(
                 .firstOrNull().run {
                     UserPreferences(
                         this?.get(minDetectCertaintyKey) ?: Default.minDetectCertainty,
-                        this?.get(maxObjectsDetectionsKey) ?: Default.maxObjectsDetections,
+                        this?.get(maxObjectDetectionsKey) ?: Default.maxObjectsDetections,
                         this?.get(enableAnimationsKey) ?: Default.enableAnimations,
                         this?.get(selectedModelKey) ?: Default.selectedModel,
                     )
@@ -60,7 +60,7 @@ data class UserPreferences(
     suspend fun saveIn(storage: DataStore<Preferences>) = withContext(Dispatchers.IO) {
         storage.edit { preferences ->
             preferences[minDetectCertaintyKey] = this@UserPreferences.minDetectCertainty
-            preferences[maxObjectsDetectionsKey] = this@UserPreferences.maxObjectsDetections
+            preferences[maxObjectDetectionsKey] = this@UserPreferences.maxObjectDetections
             preferences[enableAnimationsKey] = this@UserPreferences.enableAnimations
             preferences[selectedModelKey] = this@UserPreferences.selectedModel
         }

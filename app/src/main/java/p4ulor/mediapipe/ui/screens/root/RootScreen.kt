@@ -2,6 +2,8 @@ package p4ulor.mediapipe.ui.screens.root
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,8 +21,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -40,21 +44,28 @@ import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
-import p4ulor.mediapipe.i
+import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
 import p4ulor.mediapipe.ui.components.utils.SmoothHorizontalDivider
+import p4ulor.mediapipe.ui.components.utils.SystemNavigationBarHeight
 import p4ulor.mediapipe.ui.screens.about.AboutScreen
 import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
 
-val BottomNavigationBarHeight = 65.dp
+val BottomNavigationBarHeight = 60.dp
 
 @Composable
-fun RootScreen() = Surface { // The surface is used to for theming to work
+fun RootScreen() = Surface { // The surface is used to for theming to work properly
     var currentScreen by rememberSaveable { mutableStateOf(Screens.Home) }
+    var isBottomBarVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isBottomBarVisible = true
+    }
+
     val navController = rememberNavController()
     val (background, isBgInverted) = if(isSystemInDarkTheme()) {
         when(currentScreen) {
@@ -70,7 +81,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
     }
 
     BoxWithBackground(background, invert = isBgInverted) {
-        // I'll keep this here for demo purposes, the other VM's are injected with Koin
+        // I'll keep this VM here for demo/historical purposes, the other VM's are injected with Koin
         val mainVM = viewModel<MainViewModel>(
             factory = create(MainViewModel::class, LocalContext.current.applicationContext)
         )
@@ -80,10 +91,10 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             content = {
-                NavHost(
-                    modifier = Modifier.padding(it), // Important so that NavHost can make the screens automatically take in consideration the bottom bar
-                    navController = navController,
+                NavHost( // Comes with default fade transitions between routes
+                    navController,
                     startDestination = Screens.Home.name,
+                    Modifier.padding(it), // Important so that NavHost can make the screens automatically take in consideration the bottom bar
                 ) {
                     composable(route = Screens.About.name) { AboutScreen() }
                     composable(route = Screens.Home.name) { HomeScreen(mainVM) }
@@ -91,15 +102,23 @@ fun RootScreen() = Surface { // The surface is used to for theming to work
                 }
             },
             bottomBar = {
-                SmoothHorizontalDivider()
-                NavigationBar (Modifier.height(BottomNavigationBarHeight), containerColor = Color.Transparent) {
-                    bottomBarDestinations.forEach { item ->
-                        buildNavigationBarItem(item, currentScreen, onClick = { barItem ->
-                            if(currentScreen.name != barItem.screen.name){
-                                currentScreen = barItem.screen
-                                navController.navigate(item.screen.name)
-                            }
-                        })
+                AnimatedVisibility(
+                    visible = isBottomBarVisible,
+                    enter = fadeIn(smooth())
+                ) {
+                    SmoothHorizontalDivider()
+                    NavigationBar(
+                        Modifier.height(SystemNavigationBarHeight + BottomNavigationBarHeight),
+                        Color.Transparent
+                    ) {
+                        bottomBarDestinations.forEach { item ->
+                            buildNavigationBarItem(item, currentScreen, onClick = { barItem ->
+                                if(currentScreen.name != barItem.screen.name){
+                                    currentScreen = barItem.screen
+                                    navController.navigate(item.screen.name)
+                                }
+                            })
+                        }
                     }
                 }
             }
@@ -155,6 +174,6 @@ enum class Screens(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-fun RootScreenPreview() = AppTheme {
+private fun RootScreenPreview() = AppTheme {
     RootScreen()
 }

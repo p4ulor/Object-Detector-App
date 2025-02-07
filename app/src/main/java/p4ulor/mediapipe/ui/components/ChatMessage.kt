@@ -102,7 +102,7 @@ fun ChatMessage(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-fun ChatMessagePreview() = AppTheme {
+private fun ChatMessagePreview() = AppTheme {
     Column(Modifier.fillMaxSize()) {
         ChatMessage(
             "Witness the convergence of advanced technology and creative vision. " +

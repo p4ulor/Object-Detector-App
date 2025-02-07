@@ -128,7 +128,7 @@ fun DropdownOptions(
 
 @Preview
 @Composable
-fun DropdownOptionsPreview() = AppTheme(enableDarkTheme = true) {
+private fun DropdownOptionsPreview() = AppTheme(enableDarkTheme = true) {
     Surface(Modifier.fillMaxSize()) {
         DropdownOptions(
             label = "Model",

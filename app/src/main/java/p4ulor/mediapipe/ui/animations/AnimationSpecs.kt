@@ -5,8 +5,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 
-/** [EaseInEaseOut](https://cubic-bezier.com/#.5,0,.5,1 )*/
+/** [EaseInEaseOut](https://cubic-bezier.com/#.5,0,.5,1)*/
 val EaseInEaseOut = CubicBezierEasing(.5f, 0f, .5f, 1f)
+val Linear = CubicBezierEasing(0f, 0f, 1f, 1f)
 
 fun <T> smooth(durationMillis: Int = 300) = tween<T>(
     durationMillis = durationMillis,

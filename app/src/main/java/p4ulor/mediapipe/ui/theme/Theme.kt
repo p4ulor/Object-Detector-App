@@ -64,7 +64,8 @@ import p4ulor.mediapipe.ui.components.utils.CenteredRow
 import p4ulor.mediapipe.ui.components.utils.roundMessageBox
 
 /**
- * Run in interactive mode to see the animations
+ * Run in interactive mode to see the animations.
+ * I don't put the colors in variables, so it becomes easier to edit and understand
  * Containers are: boxes, columns, rows, scaffold, cards and others
  */
 

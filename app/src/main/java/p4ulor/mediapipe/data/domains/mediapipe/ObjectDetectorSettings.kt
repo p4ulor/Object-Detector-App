@@ -2,6 +2,7 @@ package p4ulor.mediapipe.data.domains.mediapipe
 
 import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
+import p4ulor.mediapipe.data.storage.UserPreferences
 
 /**
  * A class that encapsulates the different settings that can be to detect objects using MediaPipe
@@ -10,7 +11,7 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
  */
 data class ObjectDetectorSettings(
     val processor: Delegate = Delegate.GPU,
-    val maxObjectDetection: Int = ObjectDetectorSettings.maxObjectDetection,
+    val maxObjectDetections: Int = ObjectDetectorSettings.maxObjectDetections,
     val mediaTypeToAnalyze: RunningMode = RunningMode.LIVE_STREAM,
     val model: Models = Models.EFFICIENTDETV0,
     val sensitivityThreshold: Float = 0.5F,
@@ -19,12 +20,18 @@ data class ObjectDetectorSettings(
     companion object {
         // Use later
         val detectionCertaintyRange = 0f..1f
-        const val maxObjectDetection = 5
+        const val maxObjectDetections = 5
     }
 }
 
 /** These files should be in the assets folder */
 enum class Models(val id: String) {
     EFFICIENTDETV0("efficientdet-lite0.tflite"),
-    EFFICIENTDETV2("efficientdet-lite2.tflite")
+    EFFICIENTDETV2("efficientdet-lite2.tflite");
+
+    companion object {
+        fun getFrom(prefs: UserPreferences) = Models.values().firstOrNull {
+            it.name == prefs.selectedModel
+        } ?: EFFICIENTDETV0
+    }
 }

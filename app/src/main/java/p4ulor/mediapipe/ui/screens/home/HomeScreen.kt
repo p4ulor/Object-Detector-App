@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,13 +37,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.createImageAnalyser
@@ -61,6 +61,7 @@ import p4ulor.mediapipe.android.utils.takePic
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
+import p4ulor.mediapipe.data.domains.mediapipe.Models
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.i
@@ -69,7 +70,9 @@ import p4ulor.mediapipe.ui.components.AppIcons
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.utils.CenteredContent
+import p4ulor.mediapipe.ui.components.utils.DisplayHeight
 import p4ulor.mediapipe.ui.components.utils.requestPermission
 import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
@@ -80,11 +83,10 @@ fun HomeScreen(viewModel: MainViewModel) {
     val ctx = LocalContext.current
 
     val isGranted = requestPermission(Manifest.permission.CAMERA, onPermissionNotGranted = {
-        i("Permission not granted")
         CenteredContent {
             /** See [requestPermission] */
             var oneTimePermRequestWasUsed by rememberSaveable { mutableStateOf(false) }
-            Text("No camera permission!")
+            QuickText(R.string.no_camera_permission)
             Button(onClick = {
                 if(!oneTimePermRequestWasUsed){
                     ctx.getActivity()?.requestPermission()
@@ -93,17 +95,17 @@ fun HomeScreen(viewModel: MainViewModel) {
                     ctx.requestUserToManuallyAddThePermission()
                 }
             }) {
-                Text("Get permissions")
+                QuickText(R.string.get_permissions)
             }
         }
     })
 
     if(isGranted){
-        i("Permission granted")
         var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
         var prefs by remember { mutableStateOf<UserPreferences?>(null) }
 
         LaunchedEffect(Unit) {
+            delay(500) // To let the initial launch animations to breathe
             prefs = viewModel.loadPrefs().first()
             cameraProvider = ctx.getCameraProvider()
         }
@@ -153,14 +155,13 @@ fun CameraPreviewContainer(
         onUnbind = {
             i("Unbinding camera")
             cameraProvider.unbindAll()
+            camera = null
             isAppMinimized = true
             isFlashEnabled = false
         }
     )
 
-    val density = LocalDensity.current
-    val display = ctx.resources.displayMetrics
-    val maxAvailableHeightDp = with(density) { display.heightPixels.toDp() } - BottomNavigationBarHeight
+    val maxAvailableHeightDp = DisplayHeight - BottomNavigationBarHeight
     val ratio4_3Padding = maxAvailableHeightDp / 3
 
     BoxWithConstraints(
@@ -187,13 +188,15 @@ fun CameraPreviewContainer(
             if(!isAppMinimized){ // The only way to terminate the PreviewView in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
-                    factory = { ctx ->
+                    factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
                         val cameraPreviewView = PreviewView(ctx)
 
                         val imageAnalysisSettings = viewModel.initObjectDetector(
                             createImageAnalyser(cameraPreviewRatio.toInt()),
                             ObjectDetectorSettings(
-                                sensitivityThreshold = prefs.minDetectCertainty
+                                sensitivityThreshold = prefs.minDetectCertainty,
+                                maxObjectDetections = prefs.maxObjectDetections,
+                                model = Models.getFrom(prefs)
                             )
                         )
 
@@ -286,7 +289,7 @@ private fun startCameraAndPreviewView(
         surfaceProvider = cameraPreviewView.surfaceProvider
     }
 
-    return cameraProvider.bindToLifecycle(
+    return cameraProvider.bindToLifecycle( // Requires main thread
         lifecycleOwner,
         CameraSelector.DEFAULT_BACK_CAMERA,
         useCases = arrayOf(
@@ -297,10 +300,12 @@ private fun startCameraAndPreviewView(
     )
 }
 
+/**
+ * Add bars in the sides so the background doesn't show, per example, when camera ratio == 4:3
+ * if(isAppMinimized) is used to avoid displaying this background when changing screens
+ */
 @Composable
 private fun EdgeBars(cameraPreviewSize: Size, isAppMinimized: Boolean) {
-    // Add bars so the background doesn't show, per example, when camera ratio == 4:3
-    // if(isAppMinimized) is used to avoid displaying this background when changing screens
     Box(Modifier
         .fillMaxWidth()
         .height(cameraPreviewSize.height.dp)

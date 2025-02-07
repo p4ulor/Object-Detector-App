@@ -6,10 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
-import p4ulor.mediapipe.android.utils.launch
 import p4ulor.mediapipe.android.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
@@ -22,12 +20,11 @@ import p4ulor.mediapipe.data.utils.executor
 import p4ulor.mediapipe.e
 
 class MainViewModel(private val application: Application) : AndroidViewModel(application) {
-    private val _prefs = MutableStateFlow<UserPreferences?>(null)
-    val prefs = _prefs.asStateFlow()
+    private val prefs = MutableStateFlow<UserPreferences?>(null)
 
     fun loadPrefs() = flow {
-        _prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)
-        emit(_prefs.value)
+        prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)
+        emit(prefs.value)
     }
 
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)

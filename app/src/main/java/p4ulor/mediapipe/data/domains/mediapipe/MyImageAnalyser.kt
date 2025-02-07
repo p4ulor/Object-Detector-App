@@ -43,7 +43,7 @@ class MyImageAnalyser(
             .setBaseOptions(mediaPipeBaseOptions)
             .setScoreThreshold(sensitivityThreshold)
             .setRunningMode(mediaTypeToAnalyze)
-            .setMaxResults(maxObjectDetection)
+            .setMaxResults(maxObjectDetections)
 
         when (mediaTypeToAnalyze) {
             RunningMode.IMAGE,
