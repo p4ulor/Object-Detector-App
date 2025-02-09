@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import p4ulor.mediapipe.data.utils.encodeToBase64
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.sources.gemini.GeminiApiService
-import p4ulor.mediapipe.data.sources.gemini.MimeTypes
+import p4ulor.mediapipe.data.sources.gemini.MimeType
 import p4ulor.mediapipe.utils.LoggingMock
 import kotlin.test.assertTrue
 
@@ -21,7 +21,7 @@ class GeminiApiServiceTest {
             val prompt = GeminiPrompt(
                 "Caption this image.",
                 encodeToBase64(getResource("app_icon_og.png").readBytes()),
-                MimeTypes.PNG
+                MimeType.PNG
             )
             with(service.promptWithImage(prompt)!!){
                 assertTrue(generatedText.length > 5)

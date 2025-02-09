@@ -8,11 +8,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * An abstraction over [Screens]. Specially to aid in the transformation of the icons. [Painter] is
- * used to support Image and Vector resources and ImageVectors
+ * An abstraction over [Screen]. Specially to aid in the transformation of the icons.
+ * [Painter] is used to support Image and Vector resources and ImageVectors
  */
 data class NavItem(
-    val screen: Screens,
+    val screen: Screen,
     val selectedIcon: Painter,
     val unselectedIcon: Painter? = null,
     val hasNews: Boolean,
@@ -21,15 +21,15 @@ data class NavItem(
     override fun equals(other: Any?) = (other as? NavItem)?.screen == screen
 }
 
-/** Builds a list of [NavItem]s based on the [Screens] */
+/** Builds a list of [NavItem]s based on the [Screen] */
 val bottomBarDestinations
     @Composable
-    get() = Screens.entries.map {
+    get() = Screen.entries.map {
         NavItem(
             screen = it,
             selectedIcon = when {
                 it.icon?.resourceId != null -> painterResource(id = it.icon.resourceId)
-                it.materialIcons != null -> rememberVectorPainter(it.materialIcons)
+                it.materialIcon != null -> rememberVectorPainter(it.materialIcon)
                 else -> error("Something wasn't setup properly here")
             },
             hasNews = false,

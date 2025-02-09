@@ -111,13 +111,13 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
 
     val detectionCertaintyRange = UserPreferences.Companion.Ranges.detectionCertainty
     val objectDetectionsRange = UserPreferences.Companion.Ranges.objectDetections
-    val models = UserPreferences.Companion.Ranges.models
+    val models = UserPreferences.Companion.Ranges.model
 
     Row {
         QuickText(R.string.minimum_detection_certainty)
         Text(
             "${(minDetectCertainty*100).toInt()}%",
-            Modifier.width(getTextSize("%%%%%")), // So the widgets don't slightly change positions when slider goes through 0%-100$
+            Modifier.width(getTextSize("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
             fontWeight = FontWeight.Bold,
             maxLines = 1
         )

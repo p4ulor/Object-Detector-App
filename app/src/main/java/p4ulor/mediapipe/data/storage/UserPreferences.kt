@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import p4ulor.mediapipe.data.domains.mediapipe.Models
+import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.e
 
@@ -32,13 +32,13 @@ data class UserPreferences(
             const val minDetectCertainty = 0.50f
             const val maxObjectsDetections = 3
             const val enableAnimations = false
-            val selectedModel = Models.EFFICIENTDETV0.name
+            val selectedModel = Model.EFFICIENTDETV0.name
         }
 
         object Ranges {
             val detectionCertainty = ObjectDetectorSettings.detectionCertaintyRange
             val objectDetections = 1..ObjectDetectorSettings.maxObjectDetections
-            val models = Models.values().map { it.name }
+            val model = Model.values().map { it.name }
         }
 
         suspend fun getFrom(storage: DataStore<Preferences>) = withContext(Dispatchers.IO) {

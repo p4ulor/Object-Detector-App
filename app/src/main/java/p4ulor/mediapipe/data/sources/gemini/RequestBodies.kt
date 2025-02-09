@@ -8,7 +8,7 @@ data class GenerateContentRequest(
     val contents: List<Content>
 ) {
 
-    constructor(text: String, imageBase64: String, format: MimeTypes) : this(
+    constructor(text: String, imageBase64: String, format: MimeType) : this(
         listOf(
             Content(
                 listOf(Part(text), Part(inline_data = Image(format.value, imageBase64)))

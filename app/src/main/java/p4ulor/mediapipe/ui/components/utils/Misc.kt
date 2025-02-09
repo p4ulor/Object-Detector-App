@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.navigation.NavHostController
 
 /**
  * Gets the height system's navigation bar (recent items, home, back). Useful to setting the height
@@ -30,3 +31,9 @@ val DisplayHeight: Dp
         val display = LocalContext.current.resources.displayMetrics
         with(LocalDensity.current) { display.heightPixels.toDp() }
     }
+
+val NavHostController.currentRoute
+    get() = currentBackStackEntry?.destination?.route
+
+val NavHostController.previousRoute
+    get() = previousBackStackEntry?.destination?.route

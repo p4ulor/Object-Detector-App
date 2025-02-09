@@ -13,7 +13,7 @@ data class ObjectDetectorSettings(
     val processor: Delegate = Delegate.GPU,
     val maxObjectDetections: Int = ObjectDetectorSettings.maxObjectDetections,
     val mediaTypeToAnalyze: RunningMode = RunningMode.LIVE_STREAM,
-    val model: Models = Models.EFFICIENTDETV0,
+    val model: Model = Model.EFFICIENTDETV0,
     val sensitivityThreshold: Float = 0.5F,
 ) {
 
@@ -25,12 +25,12 @@ data class ObjectDetectorSettings(
 }
 
 /** These files should be in the assets folder */
-enum class Models(val id: String) {
+enum class Model(val id: String) {
     EFFICIENTDETV0("efficientdet-lite0.tflite"),
     EFFICIENTDETV2("efficientdet-lite2.tflite");
 
     companion object {
-        fun getFrom(prefs: UserPreferences) = Models.values().firstOrNull {
+        fun getFrom(prefs: UserPreferences) = Model.values().firstOrNull {
             it.name == prefs.selectedModel
         } ?: EFFICIENTDETV0
     }

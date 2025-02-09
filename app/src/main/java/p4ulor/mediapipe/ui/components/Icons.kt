@@ -21,10 +21,10 @@ import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 
 /** Todo, try to find a better solution, maybe */
 data class AnyIcon private constructor(
-    val appIcon: AppIcons? = null,
+    val appIcon: AppIcon? = null,
     val materialIcon: ImageVector? = null
 ){
-    constructor(appIcon: AppIcons) : this(appIcon, null)
+    constructor(appIcon: AppIcon) : this(appIcon, null)
     constructor(materialIcon: ImageVector) : this(null, materialIcon)
 
     fun isAppIcon() = appIcon!=null
@@ -38,7 +38,7 @@ data class AnyIcon private constructor(
  * by opening the .svg in Gimp and saving it as .png)
  * @param [resourceId] a .png or .xml
  */
-enum class AppIcons(val resourceId: Int) {
+enum class AppIcon(val resourceId: Int) {
     FlashlightOff(R.drawable.flashlight_off),
     FlashlightOn(R.drawable.flashlight_on),
     Scale(R.drawable.scale),
@@ -55,7 +55,7 @@ val IconDefaultSize = 44.dp
 val IconSmallSize = 25.dp
 
 @Composable
-fun QuickIcon(icon: AppIcons, onClick: () -> Unit) = Icon(
+fun QuickIcon(icon: AppIcon, onClick: () -> Unit) = Icon(
     painter = painterResource(icon.resourceId),
     contentDescription = icon.name,
     modifier = Modifier
@@ -99,7 +99,7 @@ fun QuickIconWithBorder(
 
 @Composable
 fun QuickIconWithBorder(
-    icon: AppIcons,
+    icon: AppIcon,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
 ){

@@ -61,12 +61,12 @@ import p4ulor.mediapipe.android.utils.takePic
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
-import p4ulor.mediapipe.data.domains.mediapipe.Models
+import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AnyIcon
-import p4ulor.mediapipe.ui.components.AppIcons
+import p4ulor.mediapipe.ui.components.AppIcon
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
@@ -196,7 +196,7 @@ fun CameraPreviewContainer(
                             ObjectDetectorSettings(
                                 sensitivityThreshold = prefs.minDetectCertainty,
                                 maxObjectDetections = prefs.maxObjectDetections,
-                                model = Models.getFrom(prefs)
+                                model = Model.getFrom(prefs)
                             )
                         )
 
@@ -231,7 +231,7 @@ fun CameraPreviewContainer(
         listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
         fabs = buildList {
             add(
-                FloatingActionButton(AnyIcon(AppIcons.Camera)) {
+                FloatingActionButton(AnyIcon(AppIcon.Camera)) {
                     imageCaptureUseCase.takePic(ctx) { outputFile, location ->
                         scope.launch {
                             ctx.toast("Image saved in $location")
@@ -240,12 +240,12 @@ fun CameraPreviewContainer(
                 }
             )
             add(
-                FloatingActionButton(AnyIcon(AppIcons.Gemini)) {
+                FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
                     i("This about to get LIT")
                 }
             )
             add(
-                FloatingActionButton(AnyIcon(AppIcons.Scale)) {
+                FloatingActionButton(AnyIcon(AppIcon.Scale)) {
                     cameraPreviewRatio = cameraPreviewRatio.toggle()
                     imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
                 }
@@ -254,7 +254,7 @@ fun CameraPreviewContainer(
             camera?.apply {
                 if (hasFlash) {
                     i("Torch supported, state: ${cameraInfo.torchState.value}")
-                    val icon = if (isFlashEnabled) AppIcons.FlashlightOff else AppIcons.FlashlightOn
+                    val icon = if (isFlashEnabled) AppIcon.FlashlightOff else AppIcon.FlashlightOn
                     add(
                         FloatingActionButton(AnyIcon(icon)) {
                             isFlashEnabled = !isFlashEnabled

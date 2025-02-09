@@ -44,7 +44,7 @@ class GeminiApiEndpoints(private val apiKey: String) {
     /** @return a [Pair] where [Pair.first] = path and [Pair.second] = [QueryParams]*/
     fun postTo(endpoint: Endpoint) = run {
         require(endpoint.method == HttpMethod.Post)
-        Pair(endpoint.path, listOf(QueryParam(QueryKeys.key.name, apiKey)))
+        Pair(endpoint.path, listOf(QueryParam(QueryKey.key.name, apiKey)))
     }
 
     companion object {
@@ -57,13 +57,13 @@ class GeminiApiEndpoints(private val apiKey: String) {
         }
     }
 
-    private enum class QueryKeys {
+    private enum class QueryKey {
         key
     }
 }
 
 /** https://ai.google.dev/gemini-api/docs/vision?lang=rest#technical-details-image */
-enum class MimeTypes(val value: String) {
+enum class MimeType(val value: String) {
     PNG(ContentType.Image.PNG.toString()),
     JPEG(ContentType.Image.JPEG.toString()),
     WEBP("image/webp"),

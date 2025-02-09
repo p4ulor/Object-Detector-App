@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -100,7 +101,7 @@ fun ExpandableFAB(
             var hasOpenedUpwards by remember { mutableStateOf(false) }
 
             // Used to place the fabs either bellow or above the openerFab. Using columns causes the openerFab to move
-            fabsYoffset = if (isExpanded) { // Mazurka logic to make the opening/closing of the fabs be done correctly when moving it through the screen through various states
+            fabsYoffset = if (isExpanded) { // Logic to make the opening/closing of the fabs be done correctly when moving it through the screen through various states
                 run {
                     if (canOpenUpwards && !hasOpenedUpwards) {
                         hasOpenedUpwards = true
@@ -129,6 +130,7 @@ fun ExpandableFAB(
 @Composable
 private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolean, isVisible: Boolean) {
     AnimatedVisibility(
+        modifier = Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under the openerFAB when there are many FABs, due to the initial position of the slideIn animation
         visible = isVisible,
         enter = fadeIn(smooth()) + slideInVertSmooth(openUpwards),
         exit = fadeOut(smooth()) + slideOutVertSmooth(!openUpwards)
@@ -146,7 +148,7 @@ data class FloatingActionButton(
     val onClick: () -> Unit = {}
 )
 
-enum class FabPosition{
+enum class FabPosition {
     Top,
     Bottom;
 
@@ -163,10 +165,10 @@ private fun ExpandableFABPreview() = AppTheme {
     ExpandableFAB(
         listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
         listOf(
-            FloatingActionButton(AnyIcon(AppIcons.Camera)) { i("Edit clicked") },
-            FloatingActionButton(AnyIcon(AppIcons.Gemini)) { i("Share clicked") },
-            FloatingActionButton(AnyIcon(AppIcons.Camera)) { i("Edit clicked") },
-            FloatingActionButton(AnyIcon(AppIcons.Gemini)) { i("Share clicked") }
+            FloatingActionButton(AnyIcon(AppIcon.Camera)) { i("Edit clicked") },
+            FloatingActionButton(AnyIcon(AppIcon.Gemini)) { i("Share clicked") },
+            FloatingActionButton(AnyIcon(AppIcon.Camera)) { i("Edit clicked") },
+            FloatingActionButton(AnyIcon(AppIcon.Gemini)) { i("Share clicked") }
         ),
         initialPosition = FabPosition.Top
     )
