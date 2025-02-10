@@ -87,6 +87,9 @@ object CameraConstants {
     }
 }
 
+val ResolutionSelector.is4by3: Boolean
+    get() = this == CameraConstants.RATIO_4_3
+
 /** OpenGL pipeline supported dynamic range format */
 private val openGLPipelineSupportedDynamicRanges = setOf(
     DynamicRange.SDR,

@@ -19,6 +19,7 @@ val SystemNavigationBarHeight
     @Composable
     get() = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
+/** Gets [Dp] size of a text (considering the default text size) */
 @Composable
 fun getTextSize(string: String): Dp {
     val textMeasurer = rememberTextMeasurer()

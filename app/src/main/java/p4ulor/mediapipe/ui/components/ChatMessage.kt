@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.ui.components.utils.roundMessageBox
-import p4ulor.mediapipe.ui.theme.AppTheme
+import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 private val GeneralPadding = 4.dp
 private val HorizontalPadding = 8.dp
@@ -102,7 +102,7 @@ fun ChatMessage(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-private fun ChatMessagePreview() = AppTheme {
+private fun ChatMessagePreview() = PreviewComposable {
     Column(Modifier.fillMaxSize()) {
         ChatMessage(
             "Witness the convergence of advanced technology and creative vision. " +

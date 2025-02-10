@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Visibility
@@ -194,11 +195,8 @@ private fun SampleComposable(){
                 label = { Text("Label") },
                 trailingIcon = { // Add the toggle button
                     val image = if (isVisible) MaterialIcons.VisibilityOff else MaterialIcons.Visibility
-
-                    val description = if (isVisible) "Hide password" else "Show password"
-
                     IconButton(onClick = { isVisible = !isVisible }) {
-                        Icon(imageVector = image, description)
+                        Icon(imageVector = image, "description")
                     }
                 }
             )
@@ -304,30 +302,35 @@ private fun SampleComposable(){
 
 @Preview
 @Composable
-private fun DarkColorSchemePreview() = AppTheme(enableDarkTheme = true){
-    Surface{
-        BoxWithBackground(R.drawable.background_dark_2) { SampleComposable() }
-    }
+private fun DarkColorSchemePreview() = PreviewComposable(enableDarkTheme = true){
+    BoxWithBackground(R.drawable.background_dark_2) { SampleComposable() }
 }
 
 @Preview
 @Composable
-private fun DarkColorSchemePreview2() = AppTheme(enableDarkTheme = true){
-    Surface { SampleComposable() }
+private fun DarkColorSchemePreview2() = PreviewComposable(enableDarkTheme = true){
+    SampleComposable()
 }
 
 @Preview
 @Composable
 private fun LightColorSchemePreview() = AppTheme(enableDarkTheme = false){
-    Surface {
-        BoxWithBackground(R.drawable.background_light) { SampleComposable() }
-    }
+    BoxWithBackground(R.drawable.background_light) { SampleComposable() }
 }
 
 @Preview
 @Composable
-private fun LightColorSchemePreview2() = AppTheme(enableDarkTheme = false) {
-    Surface { SampleComposable() }
+private fun LightColorSchemePreview2() = PreviewComposable(enableDarkTheme = false) {
+    SampleComposable()
+}
+
+/** Util to reduce repetitive code. Previews should be made on top of a Surface */
+@Composable
+fun PreviewComposable(
+    enableDarkTheme: Boolean = true,
+    content: @Composable () -> Unit
+) = AppTheme(enableDarkTheme) {
+    Surface(Modifier.fillMaxSize().wrapContentSize()) { content() }
 }
 
 /** https://developer.android.com/develop/ui/compose/designsystems/material3 */

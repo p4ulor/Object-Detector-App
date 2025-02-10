@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- enableOnBackInvokedCallback: https://developer.android.com/develop/ui/compose/system/predictive-back -> -->
     <application
         android:name=".android.MyApplication"
         android:testOnly="true"
@@ -32,7 +33,6 @@
             android:theme="@style/Theme.MLonAndroidwMediaPipe">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

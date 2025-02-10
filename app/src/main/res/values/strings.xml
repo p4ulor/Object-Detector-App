@@ -16,4 +16,5 @@
     <string name="get_permissions">Get permissions</string>
     <string name="camera_permission_needed">Camera permission needed</string>
     <string name="camera_permission_needed_text">This app needs access to your camera to use it\'s features</string>
+    <string name="ask_gemini">Ask Gemini...</string>
 </resources>

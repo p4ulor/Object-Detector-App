@@ -12,6 +12,7 @@ import p4ulor.mediapipe.ui.theme.AppTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        i("onCreate")
 
         // Lock screen to portrait
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

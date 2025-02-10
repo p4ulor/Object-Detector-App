@@ -2,8 +2,8 @@ package p4ulor.mediapipe
 
 import android.util.Log
 
-private val versionName = BuildConfig.VERSION_NAME
 val TAG = "p4ulor"
+private val versionName = BuildConfig.VERSION_NAME
 val VERSION = "objdetect($versionName)"
 
 fun i(s: String) { Log.i(TAG, s) }

@@ -91,7 +91,10 @@ one and monitor the use of your API key
 - Listen to networks changes to display gemini as available or not
 - fix The application may be doing too much work on its main thread.
 - Make more composables previewable
-- add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
+- CI & CD:
+  - use alpine linux
+  - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
+  - https://github.com/skydoves/Balloon/blob/main/.github/workflows/release-docs.yaml
 ### Fixes
 - Fix not using deprecated resolution selector causing
 ```

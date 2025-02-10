@@ -57,7 +57,7 @@ fun GeminiChat(newMessage: Message, isLoadingOrAnimationInProgress: (Boolean) ->
     Column(Modifier.fillMaxSize().padding(GeneralPadding)) {
         LazyColumn(
             state = scrollPosition,
-            modifier = Modifier.weight(1f), // necessary for reverseLayout to work. Forces the LazyColumn to expand and align itself with the bottom edge of the parent Column
+            modifier = Modifier.weight(1f), // necessary for reverseLayout to work. Makes so the LazyColumn to expand and align itself with the bottom edge of the parent Column
             reverseLayout = true // reverses order of the items and show them at the bottom
         ) {
             // The key is required for animateItem to work as it's docs say

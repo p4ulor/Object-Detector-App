@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -73,25 +74,12 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
         isBottomBarVisible = true
     }
 
-    val (background, isBgInverted) = if(isSystemInDarkTheme()) {
-        when(currentScreen) {
-            Screen.Settings -> R.drawable.background_dark_2 to false
-            Screen.About -> R.drawable.background_dark_2 to true
-            else -> R.drawable.background_dark to false
-        }
-    } else {
-        when(currentScreen) {
-            Screen.Home -> R.drawable.background_light to false
-            else ->  R.drawable.background_light_2 to false
-        }
-    }
-
     val navigateTo: (Screen) -> Unit = {
         currentScreen = it
         navController.navigate(currentScreen.name)
     }
 
-    BoxWithBackground(background, invert = isBgInverted) {
+    BoxWithBackground(getBackground(currentScreen)) {
         // I'll keep this VM here for demo/historical purposes, the other VM's are injected with Koin
         val mainVM = viewModel<MainViewModel>(
             factory = create(MainViewModel::class, LocalContext.current.applicationContext)
@@ -112,7 +100,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                     composable(route = Screen.Settings.name) { SettingsScreen(settingsVM) }
                 }
 
-                BackHandler { // Should be placed after NavHost, so it's BackHandler is override by this
+                BackHandler { // Should be placed after NavHost, so it's BackHandler is overridden by this
                     with(navController.currentRoute) {
                         if (this == Screen.Home.name) {
                             ctx.getActivity()?.moveTaskToBack(true) // minimize app
@@ -147,12 +135,25 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
 }
 
 @Composable
+private fun getBackground(currentScreen: Screen) = if(isSystemInDarkTheme()) {
+    when(currentScreen) {
+        Screen.Home -> R.drawable.background_dark
+        else -> R.drawable.background_dark_2
+    }
+} else {
+    when(currentScreen) {
+        Screen.Home -> R.drawable.background_light
+        else ->  R.drawable.background_light_2
+    }
+}
+
+@Composable
 private fun RowScope.buildNavigationBarItem(
     item: NavItem,
     currentScreen: Screen,
     onClick: (item: NavItem) -> Unit,
 ) = NavigationBarItem(
-        selected = currentScreen == item.screen.also { i("Is ${item.screen} selected  =$${currentScreen == item.screen}") },
+        selected = currentScreen == item.screen,
         onClick = { onClick(item) },
         label = { Text(stringResource(item.screen.nameRes)) },
         alwaysShowLabel = false, // the label will only be shown when this item is selected
@@ -197,6 +198,7 @@ enum class Screen(
 @Preview(
     showSystemUi = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
+    device = Devices.PIXEL_3
 )
 @Composable
 private fun RootScreenPreview() = AppTheme {

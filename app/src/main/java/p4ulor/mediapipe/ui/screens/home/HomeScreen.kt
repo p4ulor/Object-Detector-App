@@ -8,15 +8,16 @@ import androidx.camera.core.ExperimentalZeroShutterLag
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.Add
@@ -54,6 +55,7 @@ import p4ulor.mediapipe.android.utils.getActivity
 import p4ulor.mediapipe.android.utils.getCameraProvider
 import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.hasFlash
+import p4ulor.mediapipe.android.utils.is4by3
 import p4ulor.mediapipe.android.utils.isHdrSupported
 import p4ulor.mediapipe.android.utils.requestPermission
 import p4ulor.mediapipe.android.utils.requestUserToManuallyAddThePermission
@@ -67,6 +69,7 @@ import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcon
+import p4ulor.mediapipe.ui.components.ChatInput
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
@@ -161,70 +164,70 @@ fun CameraPreviewContainer(
         }
     )
 
-    val maxAvailableHeightDp = DisplayHeight - BottomNavigationBarHeight
-    val ratio4_3Padding = maxAvailableHeightDp / 3
+    Box(Modifier.fillMaxSize()) {
+        val (modifier, aligntment) = modifierAndAlignmentFor(cameraPreviewRatio)
+        BoxWithConstraints(modifier, aligntment) {
+            val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer( // Using with() so it's more readable
+                container = with(this@BoxWithConstraints) {
+                    Size(width = maxWidth.value, height = maxHeight.value)
+                },
+                box = with(cameraPreviewRatio.toSize()) {
+                    Size(width = width, height = height)
+                }
+            )
 
-    BoxWithConstraints(
-        Modifier.fillMaxSize().padding(
-            bottom = if(cameraPreviewRatio==CameraConstants.RATIO_4_3) ratio4_3Padding else 0.dp
-        ),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer(
-            container = Size(width = this.maxWidth.value, height = this.maxHeight.value),
-            box = with(cameraPreviewRatio.toSize()) {
-                Size(width = width, height = height)
-            }
-        )
+            EdgeBars(cameraPreviewSize, isAppMinimized)
 
-        EdgeBars(cameraPreviewSize, isAppMinimized)
-
-        Box(
-            Modifier
+            Box(Modifier
                 .width(cameraPreviewSize.width.dp)
-                .height(cameraPreviewSize.height.dp),
-        ) {
-            // CameraX isn't providing a composable yet, so we use AndroidView to use it
-            if(!isAppMinimized){ // The only way to terminate the PreviewView in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized
-                AndroidView(
-                    modifier = Modifier.fillMaxSize(),
-                    factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
-                        val cameraPreviewView = PreviewView(ctx)
+                .height(cameraPreviewSize.height.dp)
+            ) {
+                // CameraX isn't providing a composable yet, so we use AndroidView to use it
+                if(!isAppMinimized){ // The only way to terminate the PreviewView in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
+                            val cameraPreviewView = PreviewView(ctx)
 
-                        val imageAnalysisSettings = viewModel.initObjectDetector(
-                            createImageAnalyser(cameraPreviewRatio.toInt()),
-                            ObjectDetectorSettings(
-                                sensitivityThreshold = prefs.minDetectCertainty,
-                                maxObjectDetections = prefs.maxObjectDetections,
-                                model = Model.getFrom(prefs)
+                            val imageAnalysisSettings = viewModel.initObjectDetector(
+                                createImageAnalyser(cameraPreviewRatio.toInt()),
+                                ObjectDetectorSettings(
+                                    sensitivityThreshold = prefs.minDetectCertainty,
+                                    maxObjectDetections = prefs.maxObjectDetections,
+                                    model = Model.getFrom(prefs)
+                                )
                             )
-                        )
 
-                        camera = startCameraAndPreviewView(
-                            cameraProvider,
-                            cameraPreviewView,
-                            imageCaptureUseCase,
-                            imageAnalysisSettings,
-                            lifecycleOwner
-                        )
+                            camera = startCameraAndPreviewView(
+                                cameraProvider,
+                                cameraPreviewView,
+                                imageCaptureUseCase,
+                                imageAnalysisSettings,
+                                lifecycleOwner
+                            )
 
-                        cameraPreviewView
-                    }
-                )
-            }
-
-            // Show the detected objects overlays
-            resultsBundle?.let {
-                if(!isAppMinimized){ // Avoids showing the overlay for some milliseconds when changing screens
-                    ObjectBoundsBoxOverlays(
-                        detections = it.detectedObjects.detections() ?: emptyList(),
-                        frameWidth = it.inputImageWidth,
-                        frameHeight = it.inputImageHeight,
-                        animate = prefs.enableAnimations
+                            cameraPreviewView
+                        }
                     )
+                }
+
+                // Show the detected objects overlays
+                resultsBundle?.let {
+                    if(!isAppMinimized){ // Avoids showing the overlay for some milliseconds when changing screens
+                        ObjectBoundsBoxOverlays(
+                            detections = it.detectedObjects.detections() ?: emptyList(),
+                            frameWidth = it.inputImageWidth,
+                            frameHeight = it.inputImageHeight,
+                            animate = prefs.enableAnimations
+                        )
+                    }
                 }
             }
         }
+
+        ChatInput(Modifier.align(Alignment.BottomCenter).fillMaxWidth(), onSubmit = {
+
+        })
     }
 
     ExpandableFAB(
@@ -314,5 +317,25 @@ private fun EdgeBars(cameraPreviewSize: Size, isAppMinimized: Boolean) {
         } else {
             MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         })
-    ){}
+    )
 }
+
+/**
+ * Specifies the right modifer and alignment for 4_3 and 16_9
+ * - 4_3 -> Top with height equal to half of the available height
+ * - 16_9 -> Placed on bottom with max size
+ */
+@Composable
+private fun modifierAndAlignmentFor(cameraPreviewRatio: ResolutionSelector) = Pair(
+    if(cameraPreviewRatio.is4by3) {
+        val maxAvailableHeightDp = DisplayHeight - BottomNavigationBarHeight
+        Modifier.height(maxAvailableHeightDp / 2).fillMaxWidth()
+    } else {
+        Modifier.fillMaxSize()
+    },
+    if(cameraPreviewRatio.is4by3) {
+        Alignment.TopCenter
+    } else {
+        Alignment.BottomCenter
+    }
+)
