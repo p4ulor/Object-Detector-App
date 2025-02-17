@@ -32,7 +32,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,14 +39,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
@@ -65,7 +62,7 @@ import p4ulor.mediapipe.android.utils.requestUserToManuallyAddThePermission
 import p4ulor.mediapipe.android.utils.takePic
 import p4ulor.mediapipe.android.utils.toInt
 import p4ulor.mediapipe.android.utils.toSize
-import p4ulor.mediapipe.android.viewmodels.MainViewModel
+import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.storage.preferences.UserPreferences
@@ -87,7 +84,7 @@ import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 @Composable
-fun HomeScreen(viewModel: MainViewModel) {
+fun HomeScreen(viewModel: HomeViewModel) {
     val ctx = LocalContext.current
 
     val isGranted = requestPermission(Manifest.permission.CAMERA, onPermissionNotGranted = {
@@ -139,7 +136,7 @@ fun HomeScreen(viewModel: MainViewModel) {
 @OptIn(ExperimentalZeroShutterLag::class)
 @Composable
 fun CameraPreviewContainer(
-    vm: MainViewModel,
+    vm: HomeViewModel,
     cameraProvider: ProcessCameraProvider,
     prefs: UserPreferences,
     secretPrefs: UserSecretPreferences
@@ -154,7 +151,6 @@ fun CameraPreviewContainer(
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
     var isGeminiEnabled by rememberSaveable { mutableStateOf(false) }
 
-    // Contains the data necessary to outline an object into the screen
     val resultsBundle by vm.objDetectionResults.collectAsState()
     val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
 
@@ -172,6 +168,10 @@ fun CameraPreviewContainer(
             isFlashEnabled = false
         }
     )
+
+    LaunchedEffect(hasConnection) {
+        if(!hasConnection) isGeminiEnabled = false
+    }
 
     if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens
         Box(Modifier.fillMaxSize()) {

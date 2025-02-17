@@ -30,7 +30,7 @@ import p4ulor.mediapipe.data.utils.executorForImgAnalysis
  * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
  */
-class MainViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
+class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     val network: NetworkObserver by inject()
 
     private val ktorClient = KtorClient("dummyjson.com")
@@ -39,6 +39,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
     private val secretPrefs = MutableStateFlow<UserSecretPreferences?>(null)
 
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
+    /** Contains the data necessary to outline an object into the screen */
     @OptIn(FlowPreview::class)
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if (prefs.value?.enableAnimations == true) it.sample(500L) else it

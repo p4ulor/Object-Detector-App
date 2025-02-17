@@ -45,9 +45,8 @@ import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.utils.getActivity
-import p4ulor.mediapipe.android.viewmodels.MainViewModel
+import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
-import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AppIcon
 import p4ulor.mediapipe.ui.components.MaterialIcons
@@ -81,8 +80,8 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
 
     BoxWithBackground(getBackground(currentScreen)) {
         // I'll keep this VM here for demo/historical purposes, the other VM's are injected with Koin
-        val mainVM = viewModel<MainViewModel>(
-            factory = create(MainViewModel::class, LocalContext.current.applicationContext)
+        val homeVM = viewModel<HomeViewModel>(
+            factory = create<HomeViewModel>(LocalContext.current.applicationContext)
         )
         val settingsVM = koinViewModel<SettingsViewModel>()
 
@@ -96,7 +95,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                     Modifier.padding(it), // Important so that NavHost can make the screens automatically take in consideration the bottom bar
                 ) {
                     composable(route = Screen.About.name) { AboutScreen() }
-                    composable(route = Screen.Home.name) { HomeScreen(mainVM) }
+                    composable(route = Screen.Home.name) { HomeScreen(homeVM) }
                     composable(route = Screen.Settings.name) { SettingsScreen(settingsVM) }
                 }
 
