@@ -113,7 +113,7 @@ dependencies {
     implementation(libs.koin.android) // Core lib for Android
     implementation(libs.koin.androidx.compose) // https://insert-koin.io/docs/quickstart/android-compose/#injecting-viewmodel-in-compose
     implementation(libs.koin.annotations)
-    ksp(libs.koin.ksp.compiler) // Indicate gradle to use Koin's KSP compiler with KSP to generate code, as use that code as a dependency
+    ksp(libs.koin.ksp.compiler) // Indicate gradle to use Koin's KSP compiler with KSP to generate code, and use that code as a dependency
 
     // Datastore, to store app settings
     implementation(libs.androidx.datastore.preferences)
@@ -209,7 +209,10 @@ ksp {
     arg("KOIN_CONFIG_CHECK","true")
 }
 
-// Extra, is interesting and might be used for soemthing
+/**
+ * Extra, is interesting and might be used for something
+ * ./gradlew testDebugUnitTest --tests p4ulor.mediapipe.unit.misc.MathTests
+ */
 tasks.withType<Test>().configureEach {
     var startTime: Long = 0
 

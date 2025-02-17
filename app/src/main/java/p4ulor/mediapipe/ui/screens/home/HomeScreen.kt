@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
@@ -67,7 +68,8 @@ import p4ulor.mediapipe.android.utils.toSize
 import p4ulor.mediapipe.android.viewmodels.MainViewModel
 import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
-import p4ulor.mediapipe.data.storage.UserPreferences
+import p4ulor.mediapipe.data.storage.preferences.UserPreferences
+import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AnyIcon
@@ -109,15 +111,17 @@ fun HomeScreen(viewModel: MainViewModel) {
     if(isGranted){
         var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
         var prefs by remember { mutableStateOf<UserPreferences?>(null) }
+        var secretPrefs by remember { mutableStateOf<UserSecretPreferences?>(null) }
 
         LaunchedEffect(Unit) {
             delay(500) // To let the initial launch animations to breathe
-            prefs = viewModel.loadPrefs().first()
+            prefs = viewModel.loadUserPrefs().first()
+            secretPrefs = viewModel.loadUserSecretPrefs().first()
             cameraProvider = ctx.getCameraProvider()
         }
 
         if(cameraProvider!=null && prefs!=null) {
-            CameraPreviewContainer(viewModel, cameraProvider!!, prefs!!)
+            CameraPreviewContainer(viewModel, cameraProvider!!, prefs!!, secretPrefs!!)
         } else {
             CenteredContent {
                 CircularProgressIndicator(Modifier.size(100.dp))
@@ -137,17 +141,18 @@ fun HomeScreen(viewModel: MainViewModel) {
 fun CameraPreviewContainer(
     vm: MainViewModel,
     cameraProvider: ProcessCameraProvider,
-    prefs: UserPreferences
+    prefs: UserPreferences,
+    secretPrefs: UserSecretPreferences
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val ctx = LocalContext.current
-    val scope = rememberCoroutineScope() // for calling things that require UI thread
 
     var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
     var isFlashEnabled by rememberSaveable { mutableStateOf(false) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
+    var isGeminiEnabled by rememberSaveable { mutableStateOf(false) }
 
     // Contains the data necessary to outline an object into the screen
     val resultsBundle by vm.objDetectionResults.collectAsState()
@@ -168,26 +173,26 @@ fun CameraPreviewContainer(
         }
     )
 
-    Box(Modifier.fillMaxSize()) {
-        val (modifier, aligntment) = modifierAndAlignmentFor(cameraPreviewRatio)
-        BoxWithConstraints(modifier, aligntment) {
-            val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer( // Using with() so it's more readable
-                container = with(this@BoxWithConstraints) {
-                    Size(width = maxWidth.value, height = maxHeight.value)
-                },
-                box = with(cameraPreviewRatio.toSize()) {
-                    Size(width = width, height = height)
-                }
-            )
+    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens
+        Box(Modifier.fillMaxSize()) {
+            val (modifier, aligntment) = modifierAndAlignmentFor(cameraPreviewRatio)
+            BoxWithConstraints(modifier, aligntment) {
+                val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer( // Using with() so it's more readable
+                    container = with(this@BoxWithConstraints) {
+                        Size(width = maxWidth.value, height = maxHeight.value)
+                    },
+                    box = with(cameraPreviewRatio.toSize()) {
+                        Size(width = width, height = height)
+                    }
+                )
 
-            EdgeBars(cameraPreviewSize, isAppMinimized)
+                EdgeBars(cameraPreviewSize, isAppMinimized)
 
-            Box(Modifier
-                .width(cameraPreviewSize.width.dp)
-                .height(cameraPreviewSize.height.dp)
-            ) {
-                // CameraX isn't providing a composable yet, so we use AndroidView to use it
-                if(!isAppMinimized){ // The only way to terminate the PreviewView in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized
+                Box(Modifier
+                    .width(cameraPreviewSize.width.dp)
+                    .height(cameraPreviewSize.height.dp)
+                ) {
+                    // CameraX isn't providing a composable yet, so we use AndroidView to use it
                     AndroidView(
                         modifier = Modifier.fillMaxSize(),
                         factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
@@ -213,11 +218,9 @@ fun CameraPreviewContainer(
                             cameraPreviewView
                         }
                     )
-                }
 
-                // Show the detected objects overlays
-                resultsBundle?.let {
-                    if(!isAppMinimized){ // Avoids showing the overlay for some milliseconds when changing screens
+                    // Show the detected objects overlays
+                    resultsBundle?.let {
                         ObjectBoundsBoxOverlays(
                             detections = it.detectedObjects.detections() ?: emptyList(),
                             frameWidth = it.inputImageWidth,
@@ -227,59 +230,63 @@ fun CameraPreviewContainer(
                     }
                 }
             }
+
+            AnimatedVisibility(
+                visible = isGeminiEnabled,
+                Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+                enter = fadeIn(smooth()) + scaleIn()
+            ) {
+                ChatInput(Modifier, onSubmit = {
+
+                })
+            }
         }
 
-        AnimatedVisibility(
-            visible = hasConnection,
-            Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
-            enter = fadeIn(smooth()) + scaleIn()
-        ) {
-            ChatInput(Modifier, onSubmit = {
-
-            })
-        }
-    }
-
-    ExpandableFAB(
-        listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
-        fabs = buildList {
-            add(
-                FloatingActionButton(AnyIcon(AppIcon.Camera)) {
-                    imageCaptureUseCase.takePic(ctx) { outputFile, location ->
-                        scope.launch {
+        ExpandableFAB(
+            listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
+            fabs = buildList {
+                add(
+                    FloatingActionButton(AnyIcon(AppIcon.Camera)) {
+                        imageCaptureUseCase.takePic(ctx) { outputFile, location ->
                             ctx.toast("Image saved in $location")
                         }
                     }
-                }
-            )
-            add(
-                FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
-                    i("This about to get LIT")
-                }
-            )
-            add(
-                FloatingActionButton(AnyIcon(AppIcon.Scale)) {
-                    cameraPreviewRatio = cameraPreviewRatio.toggle()
-                    imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
-                }
-            )
-
-            camera?.apply {
-                if (hasFlash) {
-                    i("Torch supported, state: ${cameraInfo.torchState.value}")
-                    val icon = if (isFlashEnabled) AppIcon.FlashlightOff else AppIcon.FlashlightOn
-                    add(
-                        FloatingActionButton(AnyIcon(icon)) {
-                            isFlashEnabled = !isFlashEnabled
-                            enableFlash(isFlashEnabled)
+                )
+                add(
+                    FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
+                        if(hasConnection && !secretPrefs.geminiApiKey.isNullOrBlank()){
+                            isGeminiEnabled = !isGeminiEnabled
+                        } else {
+                            with(ctx){
+                                toast(getString(R.string.check_internet_and_gemini_key))
+                            }
                         }
-                    )
-                } else {
-                    i("Torch not supported")
+                    }
+                )
+                add(
+                    FloatingActionButton(AnyIcon(AppIcon.Scale)) {
+                        cameraPreviewRatio = cameraPreviewRatio.toggle()
+                        imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
+                    }
+                )
+
+                camera?.apply {
+                    if (hasFlash) {
+                        i("Torch supported, state: ${cameraInfo.torchState.value}")
+                        val icon = if (isFlashEnabled) AppIcon.FlashlightOff else AppIcon.FlashlightOn
+                        add(
+                            FloatingActionButton(AnyIcon(icon)) {
+                                isFlashEnabled = !isFlashEnabled
+                                enableFlash(isFlashEnabled)
+                            }
+                        )
+                    } else {
+                        i("Torch not supported")
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 /**

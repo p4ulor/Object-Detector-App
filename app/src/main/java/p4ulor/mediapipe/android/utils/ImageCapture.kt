@@ -8,7 +8,7 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.data.sources.gemini.MimeType
-import p4ulor.mediapipe.data.utils.executor
+import p4ulor.mediapipe.data.utils.executorCommon
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 
@@ -38,7 +38,7 @@ fun ImageCapture.takePic(
 
     takePicture(
         outputFileOptions,
-        executor,
+        executorCommon,
         object : ImageCapture.OnImageSavedCallback {
             override fun onError(error: ImageCaptureException) {
                 e("Error capturing image: $error")

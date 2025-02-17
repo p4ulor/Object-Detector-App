@@ -7,7 +7,9 @@ import java.util.Date
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-val executor: ExecutorService = Executors.newSingleThreadExecutor()
+/** 2 separate executors are used so no concurrency is used unlike using a thread pool */
+val executorCommon: ExecutorService = Executors.newSingleThreadExecutor()
+val executorForImgAnalysis: ExecutorService = Executors.newSingleThreadExecutor()
 
 fun getTodaysDate(): String {
     val date = Date.from(Instant.now())

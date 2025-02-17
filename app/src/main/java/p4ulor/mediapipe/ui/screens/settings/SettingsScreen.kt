@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -51,14 +50,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
-import p4ulor.mediapipe.data.storage.UserPreferences
-import p4ulor.mediapipe.data.storage.UserSecretPreferences
+import p4ulor.mediapipe.data.storage.preferences.UserPreferences
+import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.utils.trimToDecimals
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth

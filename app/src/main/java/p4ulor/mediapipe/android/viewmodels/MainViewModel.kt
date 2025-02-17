@@ -17,11 +17,14 @@ import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
 import p4ulor.mediapipe.data.sources.KtorClient
-import p4ulor.mediapipe.data.storage.UserPreferences
-import p4ulor.mediapipe.data.storage.dataStore
-import p4ulor.mediapipe.data.utils.executor
+import p4ulor.mediapipe.data.storage.preferences.UserPreferences
+import p4ulor.mediapipe.data.storage.preferences.dataStore
+import p4ulor.mediapipe.data.utils.executorCommon
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.android.utils.create
+import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
+import p4ulor.mediapipe.data.storage.preferences.secretDataStore
+import p4ulor.mediapipe.data.utils.executorForImgAnalysis
 
 /**
  * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
@@ -30,12 +33,10 @@ import p4ulor.mediapipe.android.utils.create
 class MainViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     val network: NetworkObserver by inject()
 
-    private val prefs = MutableStateFlow<UserPreferences?>(null)
+    private val ktorClient = KtorClient("dummyjson.com")
 
-    fun loadPrefs() = flow {
-        prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)
-        emit(prefs.value)
-    }
+    private val prefs = MutableStateFlow<UserPreferences?>(null)
+    private val secretPrefs = MutableStateFlow<UserSecretPreferences?>(null)
 
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
     @OptIn(FlowPreview::class)
@@ -43,11 +44,19 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
         if (prefs.value?.enableAnimations == true) it.sample(500L) else it
     }.toStateFlow(_objDetectionResults.value) // because [sample] returns a flow
 
-    private val ktorClient = KtorClient("dummyjson.com")
+    fun loadUserPrefs() = flow {
+        prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)
+        emit(prefs.value)
+    }
+
+    fun loadUserSecretPrefs() = flow {
+        secretPrefs.value = UserSecretPreferences.getFrom(application.applicationContext.secretDataStore)
+        emit(secretPrefs.value)
+    }
 
     /**
      * Creates a [ImageAnalysis] analyzer with [MyImageAnalyser] and with [objectDetectorSettings]
-     * The [imageAnalysisSettings] runs in a single thread pool [executor]
+     * The [imageAnalysisSettings] runs in a single thread pool [executorCommon]
      */
     fun initObjectDetector(
         imageAnalysisSettings: ImageAnalysis,
@@ -65,7 +74,7 @@ class MainViewModel(private val application: Application) : AndroidViewModel(app
             }
         }
         imageAnalysisSettings.setAnalyzer(
-            executor,
+            executorForImgAnalysis,
             myImageAnalyser
         )
         return imageAnalysisSettings

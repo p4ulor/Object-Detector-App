@@ -8,6 +8,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -17,6 +18,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import p4ulor.mediapipe.R
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 
@@ -106,15 +111,21 @@ fun QuickIconWithBorder(
 ){
     FloatingActionButton(
         onClick = onClick,
-        modifier = Modifier.size(IconContainerDefaultSize).pointerInput(Unit) {
-            detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
-        }
+        modifier = Modifier
+            .size(IconContainerDefaultSize)
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
+            }
     ) {
         Icon(
             painter = painterResource(icon.resourceId),
             icon.name,
             Modifier.size(IconInContainerDefaultSize),
-            tint = if(icon.useOriginalColors) Color.Unspecified else MaterialTheme.colorScheme.onPrimaryContainer
+            tint = if (icon.useOriginalColors) {
+                Color.Unspecified
+            } else {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            }
         )
     }
 }
@@ -127,9 +138,11 @@ fun QuickIconWithBorder(
 ){
     FloatingActionButton(
         onClick = onClick,
-        modifier = Modifier.size(IconContainerDefaultSize).pointerInput(Unit) {
-            detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
-        }
+        modifier = Modifier
+            .size(IconContainerDefaultSize)
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
+            }
     ) {
         Icon(
             imageVector = icon,

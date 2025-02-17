@@ -18,4 +18,5 @@
     <string name="camera_permission_needed_text">This app needs access to your camera to use it\'s features</string>
     <string name="ask_gemini">Ask Gemini...</string>
     <string name="connectivity_status">Connectivity status</string>
+    <string name="check_internet_and_gemini_key">Check your Internet or setup your API key</string>
 </resources>
