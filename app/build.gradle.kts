@@ -118,6 +118,9 @@ dependencies {
     // Datastore, to store app settings
     implementation(libs.androidx.datastore.preferences)
 
+    // Lottie, for animated icons/images
+    implementation(libs.lottie.compose)
+
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))
     testImplementation(libs.coroutines.test)
@@ -206,3 +209,34 @@ ksp {
     arg("KOIN_CONFIG_CHECK","true")
 }
 
+// Extra, is interesting and might be used for soemthing
+tasks.withType<Test>().configureEach {
+    var startTime: Long = 0
+
+    addTestListener(object : TestListener {
+        override fun beforeSuite(suite: TestDescriptor) {}
+
+        override fun beforeTest(testDescriptor: TestDescriptor) {
+            startTime = System.currentTimeMillis()
+            println("Running test: ${testDescriptor.className}#${testDescriptor.name}")
+        }
+
+        override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
+            val endTime = System.currentTimeMillis()
+            val duration = endTime - startTime
+            println("Finished test: ${testDescriptor.className}/${testDescriptor.name} in $duration ms")
+        }
+
+        override fun afterSuite(suite: TestDescriptor, result: TestResult) {}
+    })
+
+    // alternative
+    /*beforeTest(closureOf<TestDescriptor> {
+        startTime = System.currentTimeMillis()
+        println("Running ${this.className}#${this.name}")
+    })*/
+
+    doLast {
+        println("Test finished")
+    }
+}

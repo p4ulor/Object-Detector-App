@@ -45,7 +45,7 @@ object UserSecretPreferencesSerializer: Serializer<UserSecretPreferences> {
         d("Will read encrypted ${encryptedBytes.decodeToString()}")
         val decryptedBytes = Crypto.decrypt(UserSecretPreferences.secretId, encryptedBytes)
         val decodedJsonString = decryptedBytes.decodeToString()
-        d("Decrypted ${decodedJsonString}")
+        d("Decrypted $decodedJsonString")
         return Json.decodeFromString(decodedJsonString)
     }
 

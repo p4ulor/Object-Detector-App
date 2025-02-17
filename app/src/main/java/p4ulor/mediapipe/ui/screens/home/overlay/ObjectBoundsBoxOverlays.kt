@@ -60,7 +60,6 @@ fun ObjectBoundsBoxOverlays(
         for (detection in detections) {
             val detectionBounds = detection.boundingBox()
             val animatableState = currentBoundsForEachObject.getOrPut(detection.objectName) {
-                val detectionBounds = detection.boundingBox()
                 AnimatedDetectionOverlay(
                     xLeft = Animatable(detectionBounds.left),
                     yTop = Animatable(detectionBounds.top),

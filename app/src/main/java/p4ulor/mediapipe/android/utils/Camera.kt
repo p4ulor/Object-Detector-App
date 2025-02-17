@@ -121,7 +121,7 @@ val Camera?.hasFlash: Boolean
     get() = this?.cameraInfo?.hasFlashUnit() == true
 
 fun Camera.enableFlash(isFlashEnabled: Boolean) {
-    cameraControl?.enableTorch(isFlashEnabled)?.addListener( {
+    cameraControl.enableTorch(isFlashEnabled).addListener( {
         i("Flashlight updated")
     }, executor)
 }

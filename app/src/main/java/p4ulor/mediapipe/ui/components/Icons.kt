@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -38,13 +39,13 @@ data class AnyIcon private constructor(
  * by opening the .svg in Gimp and saving it as .png)
  * @param [resourceId] a .png or .xml
  */
-enum class AppIcon(val resourceId: Int) {
+enum class AppIcon(val resourceId: Int, val useOriginalColors: Boolean = false) {
     FlashlightOff(R.drawable.flashlight_off),
     FlashlightOn(R.drawable.flashlight_on),
     Scale(R.drawable.scale),
     Settings(R.drawable.settings_vector),
     Camera(R.drawable.camera),
-    Gemini(R.drawable.gemini);
+    Gemini(R.drawable.gemini, useOriginalColors = true);
 }
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */
@@ -113,7 +114,7 @@ fun QuickIconWithBorder(
             painter = painterResource(icon.resourceId),
             icon.name,
             Modifier.size(IconInContainerDefaultSize),
-            tint = Color.White // MaterialTheme.colorScheme.onBackground
+            tint = if(icon.useOriginalColors) Color.Unspecified else MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }

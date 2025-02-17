@@ -11,10 +11,12 @@ import androidx.camera.core.Preview
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -67,6 +69,7 @@ import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.i
+import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcon
 import p4ulor.mediapipe.ui.components.ChatInput
@@ -132,7 +135,7 @@ fun HomeScreen(viewModel: MainViewModel) {
 @OptIn(ExperimentalZeroShutterLag::class)
 @Composable
 fun CameraPreviewContainer(
-    viewModel: MainViewModel,
+    vm: MainViewModel,
     cameraProvider: ProcessCameraProvider,
     prefs: UserPreferences
 ) {
@@ -147,7 +150,8 @@ fun CameraPreviewContainer(
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
 
     // Contains the data necessary to outline an object into the screen
-    val resultsBundle by viewModel.objDetectionResults.collectAsState()
+    val resultsBundle by vm.objDetectionResults.collectAsState()
+    val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
 
     CameraUseBinder(
         lifecycleOwner,
@@ -189,7 +193,7 @@ fun CameraPreviewContainer(
                         factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
                             val cameraPreviewView = PreviewView(ctx)
 
-                            val imageAnalysisSettings = viewModel.initObjectDetector(
+                            val imageAnalysisSettings = vm.initObjectDetector(
                                 createImageAnalyser(cameraPreviewRatio.toInt()),
                                 ObjectDetectorSettings(
                                     sensitivityThreshold = prefs.minDetectCertainty,
@@ -225,9 +229,15 @@ fun CameraPreviewContainer(
             }
         }
 
-        ChatInput(Modifier.align(Alignment.BottomCenter).fillMaxWidth(), onSubmit = {
+        AnimatedVisibility(
+            visible = hasConnection,
+            Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+            enter = fadeIn(smooth()) + scaleIn()
+        ) {
+            ChatInput(Modifier, onSubmit = {
 
-        })
+            })
+        }
     }
 
     ExpandableFAB(

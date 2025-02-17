@@ -30,6 +30,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -47,8 +49,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.data.storage.UserSecretPreferences
@@ -73,6 +80,7 @@ private val GeneralPadding = 12.dp
 fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
     var currentPrefs by remember { mutableStateOf(UserPreferences()) }
     var currentSecretPrefs by remember { mutableStateOf<UserSecretPreferences?>(null) }
+    val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
 
     LaunchedEffect(Unit) { // Collect only on first composition rendering
         currentPrefs = vm.getUserPrefs().first()
@@ -88,11 +96,17 @@ fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), colo
                 currPrefs = currentPrefs,
                 onNewPrefs = { vm.saveUserPrefs(it) }
             )
+
             Spacer(Modifier.size(GeneralPadding * 2))
+
             GeminiSettings(
                 currPrefs = currentSecretPrefs!!,
                 onNewPrefs = { vm.saveUserSecretPrefs(it) }
             )
+
+            Spacer(Modifier.size(GeneralPadding * 2))
+
+            ConnectivityStatus(hasConnection)
         }
     }
 }
@@ -233,6 +247,22 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
         }
     ) {
         QuickText(R.string.save)
+    }
+
+
+}
+
+@Composable
+private fun ColumnScope.ConnectivityStatus(hasConnection: Boolean) {
+    val (animation, modifier) = if (hasConnection) {
+        R.raw.success_animation to Modifier
+    } else {
+        R.raw.error_animation to Modifier.size(30.dp, 80.dp)
+    }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(animation))
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        QuickText(R.string.connectivity_status)
+        LottieAnimation(composition, modifier)
     }
 }
 

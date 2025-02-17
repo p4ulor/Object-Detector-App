@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
@@ -18,8 +21,15 @@ import p4ulor.mediapipe.data.storage.UserPreferences
 import p4ulor.mediapipe.data.storage.dataStore
 import p4ulor.mediapipe.data.utils.executor
 import p4ulor.mediapipe.e
+import p4ulor.mediapipe.android.utils.create
 
-class MainViewModel(private val application: Application) : AndroidViewModel(application) {
+/**
+ * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
+ * - https://insert-koin.io/docs/reference/koin-core/koin-component/
+ */
+class MainViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
+    val network: NetworkObserver by inject()
+
     private val prefs = MutableStateFlow<UserPreferences?>(null)
 
     fun loadPrefs() = flow {
