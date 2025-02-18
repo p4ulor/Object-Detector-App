@@ -1,4 +1,4 @@
-# For submitting images that are lower than 20MB
+# For submitting images that are lower than 20MB (which is what I use in the app)
 # https://ai.google.dev/gemini-api/docs/vision?lang=rest#image-input
 
 IMG_PATH="app_icon_og.png"

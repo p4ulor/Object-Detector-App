@@ -11,7 +11,9 @@ import p4ulor.mediapipe.data.sources.utils.QueryParams
 
 /**
  * The Gemini HTTP endpoints used to send prompts. It also includes the headers used and
- * details about the HTTP API.
+ * details about the HTTP API. Each [Endpoint] must belong to a [Resource](https://www.ibm.com/docs/en/was/8.5.5?topic=applications-defining-resource-methods-restful),
+ * which defines a path for specific functionalities or use-cases.
+ * [version] is used before the resource paths
  *
  * I decided not to use Ktor's ["Type-safe requests"](https://ktor.io/docs/2.3.13/client-resources.html#resource_path_param)
  * since it requires those annotations and the "parent" property, which comes with many repetitive lines.
@@ -27,7 +29,7 @@ class GeminiApiEndpoints(private val apiKey: String) {
 
     sealed class Resources {
         /** https://ai.google.dev/api/all-methods#rest-resource:-v1beta.models */
-        sealed class Model {
+        sealed class Models {
             /** https://ai.google.dev/api/generate-content#method:-models.generatecontent */
             object GenerateContent : Endpoint("/models/$defaultModel:generateContent", HttpMethod.Post)
 
@@ -41,7 +43,7 @@ class GeminiApiEndpoints(private val apiKey: String) {
         val path = "$baseBath$endpointPath"
     }
 
-    /** @return a [Pair] where [Pair.first] = path and [Pair.second] = [QueryParams]*/
+    /** @return a [Pair] where [Pair.first] = path and [Pair.second] = [QueryParams]. Read [KtorClient] */
     fun postTo(endpoint: Endpoint) = run {
         require(endpoint.method == HttpMethod.Post)
         Pair(endpoint.path, listOf(QueryParam(QueryKey.key.name, apiKey)))
@@ -50,8 +52,8 @@ class GeminiApiEndpoints(private val apiKey: String) {
     companion object {
         /** Should only be used to configure [HttpClient] */
         const val hostName = "generativelanguage.googleapis.com"
-        private const val version = "/v1beta" // keep up with this https://ai.google.dev/gemini-api/docs/api-versions
-        private const val baseBath = version
+        private const val version = "v1beta" // keep up with this https://ai.google.dev/gemini-api/docs/api-versions
+        private const val baseBath = "/$version"
         val defaultHeaders = headers {
             append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         }

@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    // Added (read docs):
+    // Added (read readme):
     alias(libs.plugins.de.undercouch.gradle.download)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.dokka)
@@ -30,9 +30,11 @@ android {
     }
 
     buildTypes {
+        // https://developer.android.com/build/shrink-code
         release {
-            isMinifyEnabled = true // shrinks code
-            isShrinkResources = true // removes resources that ProGuard flagged as unused
+            isDebuggable = false
+            isMinifyEnabled = true // Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
+            isShrinkResources = true // removes unused resources, performed by Android Gradle plugin
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -49,7 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true // Added after the tests failing with: com.android.builder.errors.EvalIssueException: defaultConfig contains custom BuildConfig fields, but the feature is disabled
+        buildConfig = true // Enables the use of the generated BuildConfig.java, used in Logging.kt
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

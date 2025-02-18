@@ -17,7 +17,7 @@ import java.io.OutputStream
 
 @Serializable
 data class UserSecretPreferences(
-    val geminiApiKey: String? = null
+    val geminiApiKey: String = ""
 ) {
     companion object {
         const val secretId = "gemini"

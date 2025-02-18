@@ -9,8 +9,8 @@ import org.koin.core.annotation.Module
  * https://insert-koin.io/docs/setup/annotations
  * https://insert-koin.io/docs/reference/koin-annotations/start/
  * https://insert-koin.io/docs/quickstart/android-annotations/
- * https://github.com/InsertKoinIO/koin-getting-started/tree/main/android-annotations
  * https://insert-koin.io/docs/quickstart/android-compose/
+ * https://github.com/InsertKoinIO/koin-getting-started/tree/main/android-annotations
  */
 @Module
 @ComponentScan("p4ulor.mediapipe")

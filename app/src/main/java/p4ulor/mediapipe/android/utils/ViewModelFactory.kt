@@ -4,11 +4,10 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import p4ulor.mediapipe.android.viewmodels.HomeViewModel
-import kotlin.reflect.KClass
+import androidx.lifecycle.AndroidViewModel
 
 /**
- * Factory method to create any [ViewModel] with Application
+ * Factory method to create any [AndroidViewModel] with Application
  */
 inline fun <reified VM : ViewModel> create(
     context: Context

@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components
+package p4ulor.mediapipe.ui.components.chat
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
@@ -44,12 +44,12 @@ fun ChatMessage(
 ) {
     var animatedText by remember { mutableStateOf("") }
 
-    if (!authorisUser && !isLoading) {
+    if (!authorisUser) {
         isAnimationInProgress(true)
         LaunchedEffect(text) {
             animatedText = ""
             text.forEachIndexed { index, _ ->
-                delay(10)
+                delay(5)
                 animatedText = text.substring(0, index + 1)
             }
             isAnimationInProgress(false)

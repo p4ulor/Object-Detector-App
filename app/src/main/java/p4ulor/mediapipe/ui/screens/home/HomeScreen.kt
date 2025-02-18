@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -48,7 +47,7 @@ import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
-import p4ulor.mediapipe.android.utils.createImageAnalyser
+import p4ulor.mediapipe.android.utils.createCameraImageAnalyser
 import p4ulor.mediapipe.android.utils.createImageCaptureUseCase
 import p4ulor.mediapipe.android.utils.enableFlash
 import p4ulor.mediapipe.android.utils.getActivity
@@ -71,7 +70,7 @@ import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcon
-import p4ulor.mediapipe.ui.components.ChatInput
+import p4ulor.mediapipe.ui.components.chat.ChatInput
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
@@ -117,7 +116,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
             cameraProvider = ctx.getCameraProvider()
         }
 
-        if(cameraProvider!=null && prefs!=null) {
+        if(cameraProvider!=null && prefs!=null && secretPrefs!=null) {
             CameraPreviewContainer(viewModel, cameraProvider!!, prefs!!, secretPrefs!!)
         } else {
             CenteredContent {
@@ -170,10 +169,10 @@ fun CameraPreviewContainer(
     )
 
     LaunchedEffect(hasConnection) {
-        if(!hasConnection) isGeminiEnabled = false
+        if(!hasConnection) isGeminiEnabled = false //todo, this should disable the chat not remove it if there are messages
     }
 
-    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens
+    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens. And it's used terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to not render the AndroidView in the compose tree)
         Box(Modifier.fillMaxSize()) {
             val (modifier, aligntment) = modifierAndAlignmentFor(cameraPreviewRatio)
             BoxWithConstraints(modifier, aligntment) {
@@ -186,20 +185,19 @@ fun CameraPreviewContainer(
                     }
                 )
 
-                EdgeBars(cameraPreviewSize, isAppMinimized)
+                EdgeBars(cameraPreviewSize)
 
                 Box(Modifier
                     .width(cameraPreviewSize.width.dp)
                     .height(cameraPreviewSize.height.dp)
                 ) {
-                    // CameraX isn't providing a composable yet, so we use AndroidView to use it
-                    AndroidView(
+                    AndroidView( // CameraX isn't providing a composable yet for Camera Preview, so we use AndroidView to use it
                         modifier = Modifier.fillMaxSize(),
                         factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
                             val cameraPreviewView = PreviewView(ctx)
 
                             val imageAnalysisSettings = vm.initObjectDetector(
-                                createImageAnalyser(cameraPreviewRatio.toInt()),
+                                createCameraImageAnalyser(cameraPreviewRatio.toInt()),
                                 ObjectDetectorSettings(
                                     sensitivityThreshold = prefs.minDetectCertainty,
                                     maxObjectDetections = prefs.maxObjectDetections,
@@ -254,7 +252,7 @@ fun CameraPreviewContainer(
                 )
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
-                        if(hasConnection && !secretPrefs.geminiApiKey.isNullOrBlank()){
+                        if(hasConnection && secretPrefs.geminiApiKey.isNotBlank()){
                             isGeminiEnabled = !isGeminiEnabled
                         } else {
                             with(ctx){
@@ -325,15 +323,11 @@ private fun startCameraAndPreviewView(
  * if(isAppMinimized) is used to avoid displaying this background when changing screens
  */
 @Composable
-private fun EdgeBars(cameraPreviewSize: Size, isAppMinimized: Boolean) {
+private fun EdgeBars(cameraPreviewSize: Size) {
     Box(Modifier
         .fillMaxWidth()
         .height(cameraPreviewSize.height.dp)
-        .background(if(isAppMinimized) {
-            Color.Transparent
-        } else {
-            MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
-        })
+        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
     )
 }
 

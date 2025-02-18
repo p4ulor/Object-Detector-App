@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.screens.home
+package p4ulor.mediapipe.ui.components.chat
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
@@ -22,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.sync.Mutex
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
-import p4ulor.mediapipe.ui.components.ChatMessage
 import p4ulor.mediapipe.ui.theme.AppTheme
 import java.util.UUID
 import kotlin.random.Random
@@ -32,8 +33,8 @@ private val GeneralPadding = 4.dp
 
 /**
  * A Gemini chat box, where [newMessage]s are added to the list of messages. If the latest message
- * sent is a loading message, and the user send a message, it will be ignored. But if that new
- * message if not from the user and is not a loading message, it will replace the previously loading
+ * sent is a loading message, and the user sends a message, it will be ignored. But if that new
+ * message is not from the user and is not a loading message, it will replace the previously loading
  * message.
  * @param [isLoadingOrAnimationInProgress] used to enable/disable new user input
  */
@@ -114,11 +115,12 @@ private fun GeminiChatPreview() = AppTheme {
     }
 }
 
+/** To generate messages with new UUIDs */
 fun getDummyMessages() = listOf(
     Message("Describe the image"),
     Message("Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity", authorIsUser = false),
     Message("Think really hard"),
-    Message("Loading", authorIsUser = false, isLoading = true),
+    Message("", authorIsUser = false, isLoading = true),
     Message("I just wasted neurons", authorIsUser = false)
 )
 
@@ -126,7 +128,7 @@ data class Message(
     val text: String,
     val authorIsUser: Boolean = true,
     var isLoading: Boolean = false,
-    val uuid: String = UUID.randomUUID().toString() + Random(0).nextInt()
+    val uuid: String = UUID.randomUUID().toString()
 ) {
     init {
         if(authorIsUser) {

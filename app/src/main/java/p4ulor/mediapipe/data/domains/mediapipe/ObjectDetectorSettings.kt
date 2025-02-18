@@ -24,7 +24,7 @@ data class ObjectDetectorSettings(
     }
 }
 
-/** These files should be in the assets folder */
+/** These files should be in the assets folder with these names and file extension */
 enum class Model(val id: String) {
     EFFICIENTDETV0("efficientdet-lite0.tflite"),
     EFFICIENTDETV2("efficientdet-lite2.tflite");

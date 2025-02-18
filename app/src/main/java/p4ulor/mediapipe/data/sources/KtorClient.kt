@@ -32,6 +32,7 @@ import p4ulor.mediapipe.data.sources.utils.QueryParams
 import p4ulor.mediapipe.data.sources.utils.addAll
 import p4ulor.mediapipe.data.sources.utils.getIfOkOrNull
 import p4ulor.mediapipe.i
+import java.io.Closeable
 
 /**
  * An HTTP client with some easy to use methods ready to send and receive data in JSON format via
@@ -39,11 +40,14 @@ import p4ulor.mediapipe.i
  *
  * Notes:
  * - [hostName] cannot contain the URL scheme/protocol, which is defined in [DefaultRequest]
- * - [QueryParams] cannot be in the path, they need to be specially encoded by Ktor at [withUrl]
+ * - [QueryParams] cannot be in the path when calling [get], [post], etc. They need to be specially
+ * encoded by Ktor at [withUrl]
  * - Consider using [close] when closing the app
- * - Maybe todo: Support streaming responses https://ktor.io/docs/client-responses.html#streaming
+ * - Maybe todo: Support streaming responses
+ *      - https://ktor.io/docs/client-responses.html#streaming
+ *      - https://ai.google.dev/api/generate-content#method:-models.streamgeneratecontent
  */
-class KtorClient(private val hostName: String) {
+class KtorClient(private val hostName: String) : Closeable {
     private val httpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
@@ -108,7 +112,7 @@ class KtorClient(private val hostName: String) {
         return response.getIfOkOrNull
     }
 
-    fun close() = httpClient.close()
+    override fun close() = httpClient.close()
 
     private fun HttpRequestBuilder.withUrl(
         path: String,

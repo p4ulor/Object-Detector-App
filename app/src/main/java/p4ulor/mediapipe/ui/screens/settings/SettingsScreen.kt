@@ -211,7 +211,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
 private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (UserSecretPreferences) -> Unit) {
     SettingsHeader(geminiLikeText(R.string.gemini_api))
 
-    var apiKey by remember { mutableStateOf(currPrefs.geminiApiKey ?: "") }
+    var apiKey by remember { mutableStateOf(currPrefs.geminiApiKey) }
     var isVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(

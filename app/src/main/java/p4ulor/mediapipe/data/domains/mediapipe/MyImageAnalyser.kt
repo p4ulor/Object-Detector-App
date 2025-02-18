@@ -12,7 +12,6 @@ import com.google.mediapipe.tasks.core.ErrorListener
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetector
 import p4ulor.mediapipe.e
-import p4ulor.mediapipe.i
 
 /**
  * This class is the main class that uses the MediaPipe logic
@@ -24,10 +23,7 @@ class MyImageAnalyser(
 ) : ImageAnalysis.Analyzer {
 
     var callbacks: ObjectDetectorCallbacks? = null
-
-    // Sample docs: For this example this needs to be a var so it can be reset on changes. If the ObjectDetector
-    // will not change, a lazy val would be preferable.
-    private var objectDetector: ObjectDetector? = null
+    private lateinit var objectDetector: ObjectDetector
 
     init {
         setupObjectDetector()
@@ -54,12 +50,7 @@ class MyImageAnalyser(
                     .setErrorListener(errorListener())
         }
 
-        objectDetector = try {
-            ObjectDetector.createFromOptions(context, objectDetectorOptions.build())
-        } catch (e: Exception){
-            i("Object detector exception $e")
-            null
-        }
+        objectDetector = ObjectDetector.createFromOptions(context, objectDetectorOptions.build())
     }
 
     private fun resultListener() = MPImageResultListener { detectedObjects, inputImage ->
@@ -100,7 +91,9 @@ class MyImageAnalyser(
         image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
 
         // Rotate the frame received from the camera to be in the same direction as it'll be shown
-        val matrix = Matrix().apply { postRotate(image.imageInfo.rotationDegrees.toFloat()) }
+        val matrixWithRotation = Matrix().apply {
+            postRotate(image.imageInfo.rotationDegrees.toFloat())
+        }
 
         val rotatedBitmap = Bitmap.createBitmap(
             bitmapBuffer,
@@ -108,7 +101,7 @@ class MyImageAnalyser(
             0,
             bitmapBuffer.width,
             bitmapBuffer.height,
-            matrix,
+            matrixWithRotation,
             true
         )
 
