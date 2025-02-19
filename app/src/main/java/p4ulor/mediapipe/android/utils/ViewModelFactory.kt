@@ -2,9 +2,9 @@ package p4ulor.mediapipe.android.utils
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.AndroidViewModel
 
 /**
  * Factory method to create any [AndroidViewModel] with Application

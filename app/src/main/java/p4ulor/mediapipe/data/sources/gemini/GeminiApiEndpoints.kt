@@ -6,6 +6,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.headers
 import p4ulor.mediapipe.data.sources.KtorClient
+import p4ulor.mediapipe.data.sources.gemini.GeminiApiEndpoints.Companion.version
+import p4ulor.mediapipe.data.sources.gemini.GeminiApiEndpoints.Endpoint
 import p4ulor.mediapipe.data.sources.utils.QueryParam
 import p4ulor.mediapipe.data.sources.utils.QueryParams
 

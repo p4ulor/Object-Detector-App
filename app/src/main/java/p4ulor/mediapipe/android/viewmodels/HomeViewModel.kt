@@ -11,19 +11,19 @@ import kotlinx.coroutines.flow.sample
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import p4ulor.mediapipe.android.utils.NetworkObserver
+import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
-import p4ulor.mediapipe.data.storage.preferences.UserPreferences
-import p4ulor.mediapipe.data.storage.preferences.dataStore
-import p4ulor.mediapipe.e
-import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.data.sources.gemini.GeminiApiService
+import p4ulor.mediapipe.data.storage.preferences.UserPreferences
 import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
+import p4ulor.mediapipe.data.storage.preferences.dataStore
 import p4ulor.mediapipe.data.storage.preferences.secretDataStore
 import p4ulor.mediapipe.data.utils.executorForImgAnalysis
+import p4ulor.mediapipe.e
 
 /**
  * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory

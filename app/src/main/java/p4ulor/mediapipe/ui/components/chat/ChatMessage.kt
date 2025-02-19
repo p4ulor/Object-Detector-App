@@ -38,7 +38,7 @@ private val PaddingInsideCard = 16.dp
 fun ChatMessage(
     text: String = "",
     authorisUser: Boolean = false,
-    isLoading: Boolean = false,
+    isPending: Boolean = false,
     isLoaded: Boolean = false,
     modifier: Modifier = Modifier,
     isAnimationInProgress: (Boolean) -> Unit = {}
@@ -58,10 +58,10 @@ fun ChatMessage(
     }
 
     Column(
-        horizontalAlignment = if (authorisUser) Alignment.End else Alignment.Start,
-        modifier = modifier
+        modifier
             .padding(horizontal = HorizontalPadding, vertical = GeneralPadding)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        horizontalAlignment = if (authorisUser) Alignment.End else Alignment.Start,
     ) {
 
         Text(
@@ -70,9 +70,9 @@ fun ChatMessage(
             } else {
                 stringResource(R.string.gemini)
             },
+            Modifier.padding(GeneralPadding),
             color = MaterialTheme.colorScheme.onPrimaryContainer,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(GeneralPadding)
+            fontWeight = FontWeight.Bold
         )
 
         BoxWithConstraints {
@@ -82,11 +82,11 @@ fun ChatMessage(
                 MaterialTheme.colorScheme.primaryContainer
             }
             Card(
-                colors = CardDefaults.cardColors(containerColor = backgroundColor),
+                Modifier.widthIn(0.dp, maxWidth * 0.9f),
                 shape = roundMessageBox(authorisUser),
-                modifier = Modifier.widthIn(0.dp, maxWidth * 0.9f)
+                colors = CardDefaults.cardColors(containerColor = backgroundColor),
             ) {
-                if (isLoading) {
+                if (isPending) {
                     CircularProgressIndicator(Modifier.padding(PaddingInsideCard))
                 } else {
                     Text(
@@ -109,20 +109,20 @@ private fun ChatMessagePreview() = PreviewComposable {
             "Witness the convergence of advanced technology and creative vision. " +
                     "This image encapsulates the spirit of modern photography.",
             authorisUser = true,
-            isLoading = false
+            isPending = false
         )
 
         ChatMessage(
             "Witness the convergence of advanced technology and creative vision. " +
                     "This image encapsulates the spirit of modern photographyyyyyyyyyyyyyyyyyyyyyyyyyy.",
             authorisUser = false,
-            isLoading = false
+            isPending = false
         )
 
         ChatMessage(
             "Loading",
             authorisUser = false,
-            isLoading = true
+            isPending = true
         )
     }
 }

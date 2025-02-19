@@ -1,8 +1,10 @@
 package p4ulor.mediapipe.ui.components.chat
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -28,18 +30,20 @@ import p4ulor.mediapipe.ui.theme.PreviewComposable
  * @param onSubmit callback where the [String] input is what the user wrote and submitted
  */
 @Composable
-fun ChatInput(modifier: Modifier, onSubmit: (String) -> Unit) {
+fun ChatInput(modifier: Modifier, disableSubmit: Boolean, onSubmit: (String) -> Unit) {
     var input by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
         value = input,
         onValueChange = { input = it },
-        modifier.border(2.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
+        modifier
+            .border(2.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
         placeholder = { QuickText(R.string.ask_gemini) },
         trailingIcon = {
-            QuickIcon(MaterialIcons.Send, IconSmallSize) {
-                if(input.isNotBlank()){
+            val icon = if(disableSubmit) MaterialIcons.Block else MaterialIcons.Send
+            QuickIcon(icon, IconSmallSize) {
+                if(input.isNotBlank() && !disableSubmit){
                     onSubmit(input)
                 }
             }
@@ -61,7 +65,7 @@ fun ChatInput(modifier: Modifier, onSubmit: (String) -> Unit) {
 @Preview
 @Composable
 private fun ChatInputPreview() = PreviewComposable {
-    ChatInput(Modifier, onSubmit = {
+    ChatInput(Modifier.fillMaxWidth(), disableSubmit = false, onSubmit = {
 
     })
 }

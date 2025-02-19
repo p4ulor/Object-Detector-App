@@ -70,7 +70,6 @@ import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcon
-import p4ulor.mediapipe.ui.components.chat.ChatInput
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
@@ -234,9 +233,7 @@ fun CameraPreviewContainer(
                 Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
                 enter = fadeIn(smooth()) + scaleIn()
             ) {
-                ChatInput(Modifier, onSubmit = {
 
-                })
             }
         }
 
