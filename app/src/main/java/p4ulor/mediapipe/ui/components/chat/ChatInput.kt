@@ -39,7 +39,9 @@ fun ChatInput(modifier: Modifier, onSubmit: (String) -> Unit) {
         placeholder = { QuickText(R.string.ask_gemini) },
         trailingIcon = {
             QuickIcon(MaterialIcons.Send, IconSmallSize) {
-                onSubmit(input)
+                if(input.isNotBlank()){
+                    onSubmit(input)
+                }
             }
         },
         keyboardOptions = KeyboardOptions(
@@ -47,8 +49,7 @@ fun ChatInput(modifier: Modifier, onSubmit: (String) -> Unit) {
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                onSubmit(input)
-                input = ""
+                // Don't submit, only the icon click is used
                 focusManager.clearFocus() // todo see if this is needed
             }
         ),

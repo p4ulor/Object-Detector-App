@@ -1,9 +1,13 @@
 package p4ulor.mediapipe.ui.components.chat
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +20,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,26 +44,29 @@ private val GeneralPadding = 4.dp
  * @param [isLoadingOrAnimationInProgress] used to enable/disable new user input
  */
 @Composable
-fun GeminiChat(newMessage: Message, isLoadingOrAnimationInProgress: (Boolean) -> Unit = {}){
+fun GeminiChat(newMessage: Message?, isLoadingOrAnimationInProgress: (Boolean) -> Unit = {}){
     val messages = remember { mutableStateListOf<Message>() }
     val scrollPosition = rememberLazyListState()
 
     LaunchedEffect(newMessage) {
-        if(newMessage.isLoading) isLoadingOrAnimationInProgress(true)
-        val currentMsgIsLoading = messages.getOrNull(0)?.isLoading == true
-        if (currentMsgIsLoading && !newMessage.isLoading && !newMessage.authorIsUser) {
-            messages[0] = newMessage
-            scrollPosition.animateScrollToItem(0)
-        } else if (!currentMsgIsLoading) {
-            messages.add(0, newMessage)
-            scrollPosition.animateScrollToItem(0)
+        newMessage?.let { msg ->
+            if(msg.isLoading) isLoadingOrAnimationInProgress(true)
+            val currentMsgIsLoading = messages.getOrNull(0)?.isLoading == true
+            if (currentMsgIsLoading && !msg.isLoading && !msg.authorIsUser) {
+                messages[0] = msg
+                scrollPosition.animateScrollToItem(0)
+            } else if (!currentMsgIsLoading) {
+                messages.add(0, msg)
+                scrollPosition.animateScrollToItem(0)
+            }
         }
+
     }
 
-    Column(Modifier.fillMaxSize().padding(GeneralPadding)) {
+    Column(Modifier.fillMaxSize().padding(GeneralPadding)) { // Column used in order to use weight
         LazyColumn(
             state = scrollPosition,
-            modifier = Modifier.weight(1f), // necessary for reverseLayout to work. Makes so the LazyColumn to expand and align itself with the bottom edge of the parent Column
+            modifier = Modifier.weight(1f), // weight is necessary for reverseLayout to work. Makes so the LazyColumn to expand and align itself with the bottom edge of the parent Column
             reverseLayout = true // reverses order of the items and show them at the bottom
         ) {
             // The key is required for animateItem to work as it's docs say
@@ -67,17 +75,28 @@ fun GeminiChat(newMessage: Message, isLoadingOrAnimationInProgress: (Boolean) ->
                     text = message.text,
                     authorisUser = message.authorIsUser,
                     isLoading = message.isLoading,
+                    isLoaded = message.isLoaded,
                     modifier = if(message == newMessage) Modifier.animateItem(smooth()) else Modifier,
                     isAnimationInProgress = {
                         isLoadingOrAnimationInProgress(it)
+                        if(!it){
+                            message.isLoaded = true
+                        }
                     }
                 )
             }
         }
+        ChatInput(Modifier.fillMaxWidth()) {
+
+        }
     }
 }
 
-/** Run in interactive mode */
+/**
+ * Run in interactive mode.
+ * Loading can be for waiting for a response and animation is from the incremental typing of the
+ * Gemini text
+ */
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun GeminiChatPreview() = AppTheme {
@@ -93,6 +112,9 @@ private fun GeminiChatPreview() = AppTheme {
                 dummyMessages.addAll(getDummyMessages())
             }
             val messageToAdd = dummyMessages.removeAt(0)
+            if(!messageToAdd.isLoading && !messageToAdd.authorIsUser){
+                isLoadingOrAnimationInProgress = true
+            }
             while (isLoadingOrAnimationInProgress){
                 delay(1000)
                 if(!messageToAdd.isLoading && !messageToAdd.authorIsUser) {
@@ -105,14 +127,10 @@ private fun GeminiChatPreview() = AppTheme {
         }
     }
 
-    Box(Modifier.fillMaxSize()) {
-        newMessage?.let {
-            GeminiChat(
-                newMessage = it,
-                isLoadingOrAnimationInProgress = { isLoadingOrAnimationInProgress = it }
-            )
-        }
-    }
+    GeminiChat(
+        newMessage = newMessage,
+        isLoadingOrAnimationInProgress = { isLoadingOrAnimationInProgress = it }
+    )
 }
 
 /** To generate messages with new UUIDs */
@@ -124,16 +142,24 @@ fun getDummyMessages() = listOf(
     Message("I just wasted neurons", authorIsUser = false)
 )
 
+/**
+ * A message with an empty string should be interpreted as loading and thus
+ * show circular loading animation
+ * todo move this to a file
+ */
 data class Message(
-    val text: String,
+    val text: String = "",
     val authorIsUser: Boolean = true,
     var isLoading: Boolean = false,
+    var isLoaded: Boolean = false,
     val uuid: String = UUID.randomUUID().toString()
 ) {
     init {
         if(authorIsUser) {
             isLoading = false
+            isLoaded = true
         }
     }
     override fun equals(other: Any?) = uuid == (other as? Message)?.uuid
+
 }

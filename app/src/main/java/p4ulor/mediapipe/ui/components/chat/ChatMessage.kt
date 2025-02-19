@@ -39,12 +39,13 @@ fun ChatMessage(
     text: String = "",
     authorisUser: Boolean = false,
     isLoading: Boolean = false,
+    isLoaded: Boolean = false,
     modifier: Modifier = Modifier,
     isAnimationInProgress: (Boolean) -> Unit = {}
 ) {
     var animatedText by remember { mutableStateOf("") }
 
-    if (!authorisUser) {
+    if (!authorisUser && !isLoaded) {
         isAnimationInProgress(true)
         LaunchedEffect(text) {
             animatedText = ""
@@ -89,7 +90,7 @@ fun ChatMessage(
                     CircularProgressIndicator(Modifier.padding(PaddingInsideCard))
                 } else {
                     Text(
-                        if(authorisUser) text else animatedText,
+                        if(authorisUser || isLoaded) text else animatedText,
                         Modifier.padding(PaddingInsideCard).animateContentSize()
                     )
                 }
