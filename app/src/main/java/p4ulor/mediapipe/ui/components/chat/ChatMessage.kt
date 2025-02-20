@@ -38,14 +38,14 @@ private val PaddingInsideCard = 16.dp
 fun ChatMessage(
     text: String = "",
     authorisUser: Boolean = false,
-    isPending: Boolean = false,
+    isPending: Boolean = false, //todo, see if we can remove this, and only use isLoaded
     isLoaded: Boolean = false,
     modifier: Modifier = Modifier,
     isAnimationInProgress: (Boolean) -> Unit = {}
 ) {
     var animatedText by remember { mutableStateOf("") }
 
-    if (!authorisUser && !isLoaded) {
+    if (!authorisUser && !isLoaded && !isPending) {
         isAnimationInProgress(true)
         LaunchedEffect(text) {
             animatedText = ""

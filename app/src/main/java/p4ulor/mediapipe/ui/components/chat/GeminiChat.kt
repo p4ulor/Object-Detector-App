@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,20 +19,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.theme.AppTheme
 import java.util.UUID
 
 /**
- * A Gemini chat box, where [newMessage]s are added to the list of messages. If the latest message
+ * A Gemini chat box, where [newMsg]s are added to the list of messages. If the latest message
  * sent is a loading message, and the user sends a message, it will be ignored. But if that new
  * message is not from the user and is not a loading message, it will replace the previously loading
  * message.
@@ -42,26 +39,25 @@ import java.util.UUID
  */
 @Composable
 fun GeminiChat(
-    newMessage: Message?,
+    newMsg: Message,
     chatInputHeight: Dp,
     isPendingOrAnimationInProgress: (Boolean) -> Unit = {}
 ){
     val messages = remember { mutableStateListOf<Message>() }
     val scrollPosition = rememberLazyListState()
-    val display = LocalContext.current.resources.displayMetrics
-    val chatInputHeightDp = with(LocalDensity.current) { display.heightPixels.toDp() }
 
-    LaunchedEffect(newMessage) {
-        newMessage?.let { msg ->
-            if(msg.isPending) isPendingOrAnimationInProgress(true)
-            val currentMsgIsPending = messages.getOrNull(0)?.isPending == true
-            if (currentMsgIsPending && !msg.isPending && !msg.authorIsUser) {
-                messages[0] = msg
-                scrollPosition.animateScrollToItem(0)
-            } else if (!currentMsgIsPending) {
-                messages.add(0, msg)
-                scrollPosition.animateScrollToItem(0)
-            }
+    LaunchedEffect(newMsg) {
+        if(newMsg.isBlank){
+            return@LaunchedEffect
+        }
+        if(newMsg.isPending) isPendingOrAnimationInProgress(true)
+        val currentMsgIsPending = messages.getOrNull(0)?.isPending == true
+        if (currentMsgIsPending && !newMsg.isPending && !newMsg.authorIsUser) {
+            messages[0] = newMsg // replace the pending message with a loading message
+            scrollPosition.animateScrollToItem(0)
+        } else if (!currentMsgIsPending) {
+            messages.add(0, newMsg)
+            scrollPosition.animateScrollToItem(0)
         }
     }
 
@@ -78,10 +74,10 @@ fun GeminiChat(
                     authorisUser = message.authorIsUser,
                     isPending = message.isPending,
                     isLoaded = message.isLoaded,
-                    modifier = if(message == newMessage) Modifier.animateItem(smooth()) else Modifier,
-                    isAnimationInProgress = {
-                        isPendingOrAnimationInProgress(it)
-                        if(!it){
+                    modifier = if(message == newMsg) Modifier.animateItem(smooth()) else Modifier,
+                    isAnimationInProgress = { isIt ->
+                        isPendingOrAnimationInProgress(isIt)
+                        if(!isIt){
                             message.isLoaded = true
                         }
                     }
@@ -94,13 +90,12 @@ fun GeminiChat(
 /**
  * Run in interactive mode.
  * This has some logic to constrain new newMessages but it's all so simulate a real use. New messages
- * are blocked by ChatInput disabling the click of the trailing icon
+ * are blocked by ChatInput by disabling the click of the trailing icon
  */
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun GeminiChatPreview() = AppTheme {
-    val newMessages = remember { MutableStateFlow<Message?>(null) }
-    val newMessage by newMessages.collectAsState()
+    var newMessage by remember { mutableStateOf(Message()) }
     var isPendingOrAnimationInProgress by remember { mutableStateOf(false) }
     var chatInputHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
@@ -112,25 +107,24 @@ private fun GeminiChatPreview() = AppTheme {
             if (dummyMessages.isEmpty()) {
                 dummyMessages.addAll(getDummyMessages())
             }
+
             val messageToAdd = dummyMessages.removeAt(0)
-            if(!messageToAdd.isPending && !messageToAdd.authorIsUser){
+            val willReplacePreviouslyPendingMsg = !messageToAdd.isPending && newMessage.isPending
+            while (isPendingOrAnimationInProgress && !willReplacePreviouslyPendingMsg){
+                delay(100)
+            }
+            if(messageToAdd.isPending){
                 isPendingOrAnimationInProgress = true
             }
-            while (isPendingOrAnimationInProgress){
-                delay(1000)
-                if(!messageToAdd.isPending && !messageToAdd.authorIsUser) {
-                    break
-                }
-            }
-
             delay(1000)
-            newMessages.emit(messageToAdd)
+            newMessage = messageToAdd
+            delay(1000)
         }
     }
 
     Box {
         GeminiChat(
-            newMessage = newMessage,
+            newMsg = newMessage,
             chatInputHeight = chatInputHeight,
             isPendingOrAnimationInProgress = { isPendingOrAnimationInProgress = it }
         )
@@ -143,8 +137,10 @@ private fun GeminiChatPreview() = AppTheme {
                         it.height.toDp()
                     }
                },
-            disableSubmit = false) {
-        }
+            disableSubmit = isPendingOrAnimationInProgress,
+            onSubmit = {
+
+        })
     }
 }
 
@@ -156,23 +152,3 @@ fun getDummyMessages() = listOf(
     Message(authorIsUser = false, isPending = true),
     Message("I just wasted neurons", authorIsUser = false)
 )
-
-/**
- * Messages with isPending, should show a circular loading animation
- * todo move this to a file
- */
-data class Message(
-    val text: String = "",
-    val authorIsUser: Boolean = true,
-    var isPending: Boolean = false,
-    var isLoaded: Boolean = false,
-    val uuid: String = UUID.randomUUID().toString()
-) {
-    init {
-        if(authorIsUser) {
-            isPending = false
-            isLoaded = true
-        }
-    }
-    override fun equals(other: Any?) = uuid == (other as? Message)?.uuid
-}

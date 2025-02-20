@@ -40,7 +40,7 @@ one and monitor the use of your API key
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
 - A cloud platform or BaaS (Backend As A Service) that provides a range of utilities for different environments (and programming languages) via SDK's (Software Development Kits)
-- I use it to store the results of prompts from the Gemini API
+- I use it to store the results of prompts from the Gemini API and the achivement ranking of the users with [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0)
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
 ## Secondary Technologies 🛠️
@@ -92,8 +92,9 @@ one and monitor the use of your API key
 - fix The application may be doing too much work on its main thread.
 - Make more composables previewable
 - CI & CD:
-  - use alpine linux
+  - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
   - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
+  - https://github.com/marketplace/actions/github-pages-overwriter
   - https://github.com/skydoves/Balloon/blob/main/.github/workflows/release-docs.yaml
 ### Fixes
 - Fix not using deprecated resolution selector causing
