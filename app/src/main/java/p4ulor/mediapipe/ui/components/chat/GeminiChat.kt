@@ -70,10 +70,7 @@ fun GeminiChat(
             // The key is required for animateItem to work as it's docs say
             items(messages.toList(), key = { it.uuid }) { message ->
                 ChatMessage(
-                    text = message.text,
-                    authorisUser = message.authorIsUser,
-                    isPending = message.isPending,
-                    isLoaded = message.isLoaded,
+                    message,
                     modifier = if(message == newMsg) Modifier.animateItem(smooth()) else Modifier,
                     isAnimationInProgress = { isIt ->
                         isPendingOrAnimationInProgress(isIt)
@@ -116,7 +113,6 @@ private fun GeminiChatPreview() = AppTheme {
             if(messageToAdd.isPending){
                 isPendingOrAnimationInProgress = true
             }
-            delay(1000)
             newMessage = messageToAdd
             delay(1000)
         }

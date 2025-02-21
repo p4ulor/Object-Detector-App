@@ -36,16 +36,13 @@ private val PaddingInsideCard = 16.dp
 
 @Composable
 fun ChatMessage(
-    text: String = "",
-    authorisUser: Boolean = false,
-    isPending: Boolean = false, //todo, see if we can remove this, and only use isLoaded
-    isLoaded: Boolean = false,
+    msg: Message,
     modifier: Modifier = Modifier,
     isAnimationInProgress: (Boolean) -> Unit = {}
-) {
+) = with(msg) {
     var animatedText by remember { mutableStateOf("") }
 
-    if (!authorisUser && !isLoaded && !isPending) {
+    if (isNewGeminiMsg) {
         isAnimationInProgress(true)
         LaunchedEffect(text) {
             animatedText = ""
@@ -61,11 +58,11 @@ fun ChatMessage(
         modifier
             .padding(horizontal = HorizontalPadding, vertical = GeneralPadding)
             .fillMaxWidth(),
-        horizontalAlignment = if (authorisUser) Alignment.End else Alignment.Start,
+        horizontalAlignment = if (authorIsUser) Alignment.End else Alignment.Start,
     ) {
 
         Text(
-            text = if (authorisUser) {
+            text = if (authorIsUser) {
                 stringResource(R.string.you)
             } else {
                 stringResource(R.string.gemini)
@@ -76,21 +73,21 @@ fun ChatMessage(
         )
 
         BoxWithConstraints {
-            val backgroundColor = if (authorisUser) {
+            val backgroundColor = if (authorIsUser) {
                 MaterialTheme.colorScheme.tertiaryContainer
             } else {
                 MaterialTheme.colorScheme.primaryContainer
             }
             Card(
                 Modifier.widthIn(0.dp, maxWidth * 0.9f),
-                shape = roundMessageBox(authorisUser),
+                shape = roundMessageBox(authorIsUser),
                 colors = CardDefaults.cardColors(containerColor = backgroundColor),
             ) {
                 if (isPending) {
                     CircularProgressIndicator(Modifier.padding(PaddingInsideCard))
                 } else {
                     Text(
-                        if(authorisUser || isLoaded) text else animatedText,
+                        if(authorIsUser || isLoaded) text else animatedText,
                         Modifier.padding(PaddingInsideCard).animateContentSize()
                     )
                 }
@@ -106,23 +103,28 @@ fun ChatMessage(
 private fun ChatMessagePreview() = PreviewComposable {
     Column(Modifier.fillMaxSize()) {
         ChatMessage(
-            "Witness the convergence of advanced technology and creative vision. " +
-                    "This image encapsulates the spirit of modern photography.",
-            authorisUser = true,
-            isPending = false
+            Message(
+                "Witness the convergence of advanced technology and creative vision. " +
+                        "This image encapsulates the spirit of modern photography.",
+                authorIsUser = true,
+                isPending = false
+            )
         )
 
         ChatMessage(
-            "Witness the convergence of advanced technology and creative vision. " +
-                    "This image encapsulates the spirit of modern photographyyyyyyyyyyyyyyyyyyyyyyyyyy.",
-            authorisUser = false,
-            isPending = false
+            Message(
+                "Witness the convergence of advanced technology and creative vision. " +
+                        "This image encapsulates the spirit of modern photographyyyyyyyyyyyyyyyyyyyyyyyyyy.",
+                authorIsUser = false,
+                isPending = false
+            )
         )
 
         ChatMessage(
-            "Loading",
-            authorisUser = false,
-            isPending = true
+            Message(
+                authorIsUser = false,
+                isPending = true
+            )
         )
     }
 }

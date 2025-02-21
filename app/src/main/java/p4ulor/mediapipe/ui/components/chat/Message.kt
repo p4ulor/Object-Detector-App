@@ -8,16 +8,13 @@ data class Message(
     val authorIsUser: Boolean = true,
     var isPending: Boolean = false,
     var isLoaded: Boolean = false,
-    val uuid: String = UUID.randomUUID().toString()
+    val uuid: String = UUID.randomUUID().toString().take(6)
 ) {
-    init {
-        if(authorIsUser) {
-            isPending = false
-            isLoaded = true
-        }
-    }
     override fun equals(other: Any?) = uuid == (other as? Message)?.uuid
 
     val isBlank: Boolean
         get() = authorIsUser && text.isBlank()
+
+    val isNewGeminiMsg: Boolean
+        get() = !authorIsUser && !isLoaded && !isPending
 }
