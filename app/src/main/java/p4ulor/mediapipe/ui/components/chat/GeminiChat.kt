@@ -27,7 +27,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.theme.AppTheme
-import java.util.UUID
 
 /**
  * A Gemini chat box, where [newMsg]s are added to the list of messages. If the latest message
@@ -87,7 +86,8 @@ fun GeminiChat(
 /**
  * Run in interactive mode.
  * This has some logic to constrain new newMessages but it's all so simulate a real use. New messages
- * are blocked by ChatInput by disabling the click of the trailing icon
+ * are blocked by ChatInput by disabling the click of the trailing icon.
+ * Note: Compose preview with interaction mode doesn't allow typing in the [ChatInput]
  */
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -128,9 +128,9 @@ private fun GeminiChatPreview() = AppTheme {
             Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .onSizeChanged {
+                .onSizeChanged { size ->
                     chatInputHeight = density.run {
-                        it.height.toDp()
+                        size.height.toDp()
                     }
                },
             disableSubmit = isPendingOrAnimationInProgress,

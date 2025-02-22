@@ -45,6 +45,7 @@ fun ChatInput(modifier: Modifier, disableSubmit: Boolean, onSubmit: (String) -> 
             QuickIcon(icon, IconSmallSize) {
                 if(input.isNotBlank() && !disableSubmit){
                     onSubmit(input)
+                    input = ""
                 }
             }
         },

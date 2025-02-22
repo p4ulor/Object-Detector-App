@@ -1,5 +1,6 @@
 package p4ulor.mediapipe.ui.components.chat
 
+import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import java.util.UUID
 
 /** Is used with [GeminiChat]. Messages with isPending, should show a circular loading animation */
@@ -17,4 +18,15 @@ data class Message(
 
     val isNewGeminiMsg: Boolean
         get() = !authorIsUser && !isLoaded && !isPending
+
+    companion object {
+        val getBlank: Message
+            get() = Message()
+
+        fun from(resp: GeminiResponse?): Message? {
+            return resp?.let {
+                Message(it.generatedText, authorIsUser = false)
+            }
+        }
+    }
 }

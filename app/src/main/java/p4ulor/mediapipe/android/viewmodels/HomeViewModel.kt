@@ -6,13 +6,17 @@ import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.utils.create
+import p4ulor.mediapipe.android.utils.launch
 import p4ulor.mediapipe.android.utils.toStateFlow
+import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
+import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
@@ -33,6 +37,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     val network: NetworkObserver by inject()
 
     private var geminiApi: GeminiApiService? = null
+    private val _geminiResponse = MutableStateFlow<GeminiResponse?>(null)
+    val geminiResponse = _geminiResponse.asStateFlow()
 
     private val prefs = MutableStateFlow(UserPreferences())
     private val secretPrefs = MutableStateFlow(UserSecretPreferences())
@@ -42,7 +48,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     @OptIn(FlowPreview::class)
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if (prefs.value.enableAnimations) it.sample(500L) else it
-    }.toStateFlow(_objDetectionResults.value) // because [sample] returns a flow
+    }.toStateFlow(_objDetectionResults.value) // [toStateFlow] is used instead of [asStateFlow] because [sample] returns a flow
 
     fun loadUserPrefs() = flow {
         prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)
@@ -81,6 +87,14 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
             myImageAnalyser
         )
         return cameraImageAnalyser
+    }
+
+    fun promptGemini(prompt: GeminiPrompt) {
+        geminiApi?.run {
+            launch {
+                _geminiResponse.value = promptWithImage(prompt)
+            }
+        }
     }
 
     override fun onCleared() {

@@ -189,7 +189,7 @@ tasks.withType<KotlinCompile> {
 }
 
 /**
- *  Configurs the dokkaHtml gradle task, to generate the documentation pages
+ *  Configures the dokkaHtml gradle task, to generate the documentation pages
  *  https://kotlinlang.org/docs/dokka-gradle.html
  */
 tasks.dokkaHtml {
@@ -199,7 +199,8 @@ tasks.dokkaHtml {
     dokkaSourceSets.configureEach {
         perPackageOption {
             reportUndocumented.set(true)
-            documentedVisibilities.set(Visibility.values().toSet())
+            val allVisibilities = Visibility.values().toSet()
+            documentedVisibilities.set(allVisibilities)
         }
     }
 

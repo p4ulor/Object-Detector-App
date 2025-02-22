@@ -34,6 +34,10 @@ private val GeneralPadding = 4.dp
 private val HorizontalPadding = 8.dp
 private val PaddingInsideCard = 16.dp
 
+/**
+ * TODO, maybe this could be improved by having a GeminiMessage and a UserMessage composable
+ * and doing the same with the [Message] class
+ */
 @Composable
 fun ChatMessage(
     msg: Message,

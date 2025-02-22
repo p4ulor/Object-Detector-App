@@ -7,7 +7,7 @@
 
 ### Side features
 - Change camera settings: Ratio and flashlight
-- Change model settings: sensitivity, max detection count, etc  (TODO)
+- Change model settings: sensitivity, max detection count, etc
 - Achievements list for the 80 Media Pipe objects (TODO)
 - Notification on new object detected as part of an achievement (TODO)
 

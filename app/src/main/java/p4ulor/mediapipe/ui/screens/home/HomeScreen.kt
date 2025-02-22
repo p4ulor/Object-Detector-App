@@ -1,10 +1,8 @@
 package p4ulor.mediapipe.ui.screens.home
 
 import android.Manifest
-import androidx.annotation.OptIn
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalZeroShutterLag
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
@@ -32,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -74,6 +73,8 @@ import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.QuickText
+import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
+import p4ulor.mediapipe.ui.components.chat.Message
 import p4ulor.mediapipe.ui.components.utils.CenteredContent
 import p4ulor.mediapipe.ui.components.utils.DisplayHeight
 import p4ulor.mediapipe.ui.components.utils.requestPermission
@@ -116,7 +117,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
         }
 
         if(cameraProvider!=null && prefs!=null && secretPrefs!=null) {
-            CameraPreviewContainer(viewModel, cameraProvider!!, prefs!!, secretPrefs!!)
+            HomeScreenGranted(viewModel, cameraProvider!!, prefs!!, secretPrefs!!)
         } else {
             CenteredContent {
                 CircularProgressIndicator(Modifier.size(100.dp))
@@ -131,9 +132,8 @@ fun HomeScreen(viewModel: HomeViewModel) {
  * We are using CameraProvider and not CameraController for more customization
  * https://developer.android.com/media/camera/camerax/architecture#cameraprovider
  */
-@OptIn(ExperimentalZeroShutterLag::class)
 @Composable
-fun CameraPreviewContainer(
+fun HomeScreenGranted( //todo move this another file
     vm: HomeViewModel,
     cameraProvider: ProcessCameraProvider,
     prefs: UserPreferences,
@@ -142,12 +142,16 @@ fun CameraPreviewContainer(
     val lifecycleOwner = LocalLifecycleOwner.current
     val ctx = LocalContext.current
 
-    var camera by remember { mutableStateOf<Camera?>(null) } /** the camera we setup in [startCameraAndPreviewView] */
+    // Camera
+    var camera by remember { mutableStateOf<Camera?>(null) } /** this is initialized in [startCameraAndPreviewView] */
     var isFlashEnabled by rememberSaveable { mutableStateOf(false) }
     var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
+
+    // Gemini
     var isGeminiEnabled by rememberSaveable { mutableStateOf(false) }
+    val geminiResponse by vm.geminiResponse.collectAsState()
 
     val resultsBundle by vm.objDetectionResults.collectAsState()
     val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
@@ -171,7 +175,7 @@ fun CameraPreviewContainer(
         if(!hasConnection) isGeminiEnabled = false //todo, this should disable the chat not remove it if there are messages
     }
 
-    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens. And it's used terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to not render the AndroidView in the compose tree)
+    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera uses a lot of resources. And it's used terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to not render the AndroidView in the compose tree)
         Box(Modifier.fillMaxSize()) {
             val (modifier, aligntment) = modifierAndAlignmentFor(cameraPreviewRatio)
             BoxWithConstraints(modifier, aligntment) {
@@ -233,7 +237,14 @@ fun CameraPreviewContainer(
                 Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
                 enter = fadeIn(smooth()) + scaleIn()
             ) {
-
+                GeminiChatContainer(
+                    newGeminiMessage = Message.from(geminiResponse) ?: Message.getBlank,
+                    onUserSubmit = { text ->
+                        /*vm.promptGemini(
+                            GeminiPrompt(text)
+                        )*/
+                    }
+                )
             }
         }
 
