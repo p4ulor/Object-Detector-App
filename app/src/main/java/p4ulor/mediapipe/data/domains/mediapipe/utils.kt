@@ -13,6 +13,7 @@ interface ObjectDetectorCallbacks {
 }
 
 /**
+ * Contains the data necessary to outline an object into the screen.
  * Wraps results from inference, the time it takes for inference to be performed, and
  * the input image and height for properly scaling UI to return back to callers
  */

@@ -37,6 +37,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     val network: NetworkObserver by inject()
 
     private var geminiApi: GeminiApiService? = null
+
     private val _geminiResponse = MutableStateFlow<GeminiResponse?>(null)
     val geminiResponse = _geminiResponse.asStateFlow()
 
@@ -44,7 +45,6 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     private val secretPrefs = MutableStateFlow(UserSecretPreferences())
 
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
-    /** Contains the data necessary to outline an object into the screen */
     @OptIn(FlowPreview::class)
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if (prefs.value.enableAnimations) it.sample(500L) else it
