@@ -19,4 +19,7 @@
     <string name="ask_gemini">Ask Gemini...</string>
     <string name="connectivity_status">Connectivity status</string>
     <string name="check_internet_and_gemini_key">Check your Internet or setup your API key</string>
+    <string name="image_saved_in">Image saved in %s</string>
+    <string name="take_a_picture_first">Take a picture first before prompting</string>
+    <string name="cant_prompt_empty_message">Can\'t prompt empty message</string>
 </resources>

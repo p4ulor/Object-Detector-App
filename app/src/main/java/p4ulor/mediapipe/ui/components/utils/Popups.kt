@@ -4,10 +4,11 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.annotation.StringRes
 
-/** Must be called in Main/UI thread */
-fun Context.toast(text: String) {
+/** Creates a Toast that uses the Main/UI thread (as required when using Toast) */
+fun Context.toast(@StringRes text: Int, param: String = "") {
     Handler(Looper.getMainLooper()).post {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, this.getString(text, param), Toast.LENGTH_SHORT).show()
     }
 }

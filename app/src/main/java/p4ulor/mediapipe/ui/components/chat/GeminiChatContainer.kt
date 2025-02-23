@@ -1,5 +1,6 @@
 package p4ulor.mediapipe.ui.components.chat
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -11,11 +12,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import p4ulor.mediapipe.R
+import p4ulor.mediapipe.android.utils.Picture
+import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**
@@ -24,11 +29,18 @@ import p4ulor.mediapipe.ui.theme.PreviewComposable
  * Also checkout [GeminiChatPreview].
  */
 @Composable
-fun GeminiChatContainer(modifier: Modifier = Modifier, newGeminiMessage: Message, onUserSubmit: (String) -> Unit){
+fun GeminiChatContainer(
+    modifier: Modifier = Modifier,
+    pictureTaken: Picture?,
+    newGeminiMessage: Message,
+    onValidUserSubmit: (String) -> Unit
+) {
+    val density = LocalDensity.current
+    val ctx = LocalContext.current
+
     var newMessage by remember { mutableStateOf(Message()) }
     var isPendingOrAnimationInProgress by remember { mutableStateOf(false) }
     var chatInputHeight by remember { mutableStateOf(0.dp) }
-    val density = LocalDensity.current
 
     LaunchedEffect(newGeminiMessage) {
         newMessage = newGeminiMessage
@@ -49,11 +61,19 @@ fun GeminiChatContainer(modifier: Modifier = Modifier, newGeminiMessage: Message
                         size.height.toDp()
                     }
                 },
+            pictureTaken = pictureTaken,
             disableSubmit = isPendingOrAnimationInProgress,
             onSubmit = { text ->
-                isPendingOrAnimationInProgress = true
-                newMessage = Message(text)
-                onUserSubmit(text)
+                if (text.isBlank()) {
+                    ctx.toast(R.string.cant_prompt_empty_message)
+                }
+                else if(pictureTaken == null){
+                    ctx.toast(R.string.take_a_picture_first)
+                } else {
+                    isPendingOrAnimationInProgress = true
+                    newMessage = Message(text)
+                    onValidUserSubmit(text)
+                }
             }
         )
     }
@@ -81,7 +101,8 @@ fun GeminiChatContainerPreview() = PreviewComposable {
 
     GeminiChatContainer(
         newGeminiMessage = geminiResponse,
-        onUserSubmit = { text ->
+        pictureTaken = Picture(Uri.EMPTY),
+        onValidUserSubmit = { text ->
             userPrompt = Message(text)
         }
     )

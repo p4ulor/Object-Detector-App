@@ -44,10 +44,10 @@ one and monitor the use of your API key
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
 ## Secondary Technologies 🛠️
-| [Koin](https://insert-koin.io/docs/quickstart/android-annotations/) | [Lottie](https://airbnb.io/lottie/#/android-compose) | [Mockk](https://mockk.io/) | Coil | [Jetpack Compose UI Test](https://developer.android.com/develop/ui/compose/testing) | 
-|:----:|:------:|:-----:|:-----:|:-----:|
+| [Koin](https://insert-koin.io/docs/quickstart/android-annotations/) |       [Lottie](https://airbnb.io/lottie/#/android-compose)       |                            [Mockk](https://mockk.io/)                             |                      [Coil](https://coil-kt.github.io/coil/)                      |                             [Jetpack Compose UI Test](https://developer.android.com/develop/ui/compose/testing)                              | 
+|:-------------------------------------------------------------------:|:----------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------:|
 | <img width="50" src='https://insert-koin.io/img/koin_new_logo.png'> | <img width="50" src='https://airbnb.io/lottie/images/logo.webp'> | <img width="50" src='https://avatars.githubusercontent.com/u/34787540?s=200&v=4'> | <img width="50" src='https://avatars.githubusercontent.com/u/52722434?s=200&v=4'> | <img width="50" src='https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/jetpackcompose/jetpackcompose-original.svg'> |
-| For dependency injection | For animated graphics | For object mocking in tests | For efficient image loading  | For UI tests
+|                      For dependency injection                       |                      For animated graphics                       |                            For object mocking in tests                            |                            For efficient image loading                            |                                                                 For UI tests                                                                 |
 
 ### Other Dependencies & Plugins Used 🔌
 #### Gradle Plugins 🐘

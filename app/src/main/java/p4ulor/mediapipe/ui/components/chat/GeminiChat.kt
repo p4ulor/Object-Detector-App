@@ -29,9 +29,8 @@ import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 /**
- * A Gemini chat box, where [newMsg]s are added to the list of messages. If the latest message
- * sent is a loading message, and the user sends a message, it will be ignored. But if that new
- * message is not from the user and is not a loading message, it will replace the previously loading
+ * A Gemini chat box, where [newMsg]s are added to the list of messages.
+ * If a new message is not from the user and is not a loading message and not a pending, it will replace the previously loading
  * message.
  * @param [isPendingOrAnimationInProgress], an optional callback that can be used to know when
  * a message is pending or animating
@@ -51,8 +50,8 @@ fun GeminiChat(
         }
         if(newMsg.isPending) isPendingOrAnimationInProgress(true)
         val currentMsgIsPending = messages.getOrNull(0)?.isPending == true
-        if (currentMsgIsPending && !newMsg.isPending && !newMsg.authorIsUser) {
-            messages[0] = newMsg // replace the pending message with a loading message
+        if (currentMsgIsPending && newMsg.isNewGeminiMsg) {
+            messages[0] = newMsg // replace the pending message with the new message
             scrollPosition.animateScrollToItem(0)
         } else if (!currentMsgIsPending) {
             messages.add(0, newMsg)
@@ -133,6 +132,7 @@ private fun GeminiChatPreview() = AppTheme {
                         size.height.toDp()
                     }
                },
+            pictureTaken = null,
             disableSubmit = isPendingOrAnimationInProgress,
             onSubmit = {
 

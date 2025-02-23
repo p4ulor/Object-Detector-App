@@ -37,8 +37,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.CameraConstants.toggle
+import p4ulor.mediapipe.android.utils.Picture
 import p4ulor.mediapipe.android.utils.createCameraImageAnalyser
 import p4ulor.mediapipe.android.utils.createImageCaptureUseCase
 import p4ulor.mediapipe.android.utils.enableFlash
@@ -87,9 +87,10 @@ fun HomeScreenGranted(
     // Camera
     var camera by remember { mutableStateOf<Camera?>(null) } /** this is initialized in [startCameraAndPreviewView] */
     var isFlashEnabled by rememberSaveable { mutableStateOf(false) }
-    var cameraPreviewRatio by remember { mutableStateOf(CameraConstants.RATIO_16_9) }
+    var cameraPreviewRatio by remember { mutableStateOf(vm.cameraPreviewRatio) }
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
+    var pictureTaken by remember { mutableStateOf<Picture?>(null) }
 
     // Gemini
     var isGeminiEnabled by rememberSaveable { mutableStateOf(false) }
@@ -132,9 +133,10 @@ fun HomeScreenGranted(
 
                 EdgeBars(cameraPreviewSize)
 
-                Box(Modifier
-                    .width(cameraPreviewSize.width.dp)
-                    .height(cameraPreviewSize.height.dp)
+                Box(
+                    Modifier
+                        .width(cameraPreviewSize.width.dp)
+                        .height(cameraPreviewSize.height.dp)
                 ) {
                     AndroidView( // CameraX isn't providing a composable yet for Camera Preview, so we use AndroidView to use it
                         modifier = Modifier.fillMaxSize(),
@@ -176,14 +178,18 @@ fun HomeScreenGranted(
 
             AnimatedVisibility(
                 visible = isGeminiEnabled,
-                Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
                 enter = fadeIn(smooth()) + scaleIn()
             ) {
                 GeminiChatContainer(
                     newGeminiMessage = Message.from(geminiResponse) ?: Message.getBlank,
-                    onUserSubmit = { text ->
+                    pictureTaken = pictureTaken,
+                    onValidUserSubmit = { text ->
+                        i("Prompting Gemini")
                         /*vm.promptGemini(
-                            GeminiPrompt(text)
+                            GeminiPrompt(text, pictureTaken!!.mimeType.value)
                         )*/
                     }
                 )
@@ -195,8 +201,9 @@ fun HomeScreenGranted(
             fabs = buildList {
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Camera)) {
-                        imageCaptureUseCase.takePic(ctx) { outputFile, location ->
-                            ctx.toast("Image saved in $location")
+                        imageCaptureUseCase.takePic(ctx) { picture ->
+                            ctx.toast(R.string.image_saved_in, "${picture.path}")
+                            pictureTaken = picture
                         }
                     }
                 )
@@ -205,15 +212,14 @@ fun HomeScreenGranted(
                         if(hasConnection && secretPrefs.geminiApiKey.isNotBlank()){
                             isGeminiEnabled = !isGeminiEnabled
                         } else {
-                            with(ctx){
-                                toast(getString(R.string.check_internet_and_gemini_key))
-                            }
+                            ctx.toast(R.string.check_internet_and_gemini_key)
                         }
                     }
                 )
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Scale)) {
                         cameraPreviewRatio = cameraPreviewRatio.toggle()
+                        vm.cameraPreviewRatio = cameraPreviewRatio
                         imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
                     }
                 )
@@ -274,10 +280,11 @@ private fun startCameraAndPreviewView(
  */
 @Composable
 private fun EdgeBars(cameraPreviewSize: Size) {
-    Box(Modifier
-        .fillMaxWidth()
-        .height(cameraPreviewSize.height.dp)
-        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(cameraPreviewSize.height.dp)
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
     )
 }
 
@@ -290,7 +297,9 @@ private fun EdgeBars(cameraPreviewSize: Size) {
 private fun modifierAndAlignmentFor(cameraPreviewRatio: ResolutionSelector) = Pair(
     if(cameraPreviewRatio.is4by3) {
         val maxAvailableHeightDp = DisplayHeight - BottomNavigationBarHeight
-        Modifier.height(maxAvailableHeightDp / 2).fillMaxWidth()
+        Modifier
+            .height(maxAvailableHeightDp / 2)
+            .fillMaxWidth()
     } else {
         Modifier.fillMaxSize()
     },

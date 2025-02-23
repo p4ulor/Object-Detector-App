@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import p4ulor.mediapipe.android.utils.CameraConstants
 import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.utils.launch
@@ -35,6 +36,8 @@ import p4ulor.mediapipe.e
  */
 class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     val network: NetworkObserver by inject()
+
+    var cameraPreviewRatio = CameraConstants.RATIO_16_9
 
     private var geminiApi: GeminiApiService? = null
 

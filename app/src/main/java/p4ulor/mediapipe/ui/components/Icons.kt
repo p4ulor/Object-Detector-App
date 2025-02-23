@@ -25,10 +25,16 @@ data class AnyIcon private constructor(
     val appIcon: AppIcon? = null,
     val materialIcon: ImageVector? = null
 ){
+    init {
+        require(!(appIcon == null && materialIcon == null)) {
+            "Both params can't be null"
+        }
+    }
+
     constructor(appIcon: AppIcon) : this(appIcon, null)
     constructor(materialIcon: ImageVector) : this(null, materialIcon)
 
-    fun isAppIcon() = appIcon!=null
+    fun isAppIcon() = appIcon != null
 }
 
 /**
