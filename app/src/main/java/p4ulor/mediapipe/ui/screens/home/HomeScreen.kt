@@ -58,7 +58,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
         LaunchedEffect(Unit) {
             delay(500) // To let the initial launch animations to breathe
-            prefs = viewModel.loadUserPrefs().first()
+            prefs = viewModel.loadUserPrefs().first() // Loads prefs which need to be obtained everytime if user changed them in Settings
             secretPrefs = viewModel.loadUserSecretPrefs().first()
             cameraProvider = ctx.getCameraProvider()
         }

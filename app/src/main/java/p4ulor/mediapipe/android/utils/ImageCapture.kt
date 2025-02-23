@@ -53,6 +53,9 @@ fun ImageCapture.takePic(ctx: Context, onImageSaved: (picture: Picture) -> Unit)
     )
 }
 
+/**
+ * @property path should be something like `content://media/external/images/media/1000069851`
+ */
 data class Picture(
     val path: Uri,
     val mimeType: MimeType = ImageCaptureDefault.mimeType

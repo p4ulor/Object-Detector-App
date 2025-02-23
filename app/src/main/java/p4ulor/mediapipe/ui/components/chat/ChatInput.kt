@@ -1,14 +1,15 @@
 package p4ulor.mediapipe.ui.components.chat
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.PhotoCameraBack
+import androidx.compose.material.icons.filled.NoPhotography
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -17,14 +18,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.Picture
+import p4ulor.mediapipe.ui.components.IconMediumSize
 import p4ulor.mediapipe.ui.components.IconSmallSize
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.QuickIcon
@@ -54,17 +62,30 @@ fun ChatInput(
             .border(2.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
         placeholder = { QuickText(R.string.ask_gemini) },
         trailingIcon = {
-            val icon = if(disableSubmit) MaterialIcons.Block else MaterialIcons.Send
-            Row {
-                pictureTaken?.run {
-                    QuickIcon(MaterialIcons.PhotoCameraBack, IconSmallSize) {
-                        ctx.startActivity(Intent().apply {
-                            action = Intent.ACTION_VIEW
-                            setDataAndType(path, mimeType.value)
-                        })
-                    }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if(pictureTaken == null){
+                    QuickIcon(MaterialIcons.NoPhotography, IconSmallSize) {}
+                } else {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(pictureTaken.path)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "picture taken preview",
+                        Modifier
+                            .size(IconMediumSize)
+                            .clip(RoundRectangleShape)
+                            .clickable {
+                                ctx.startActivity(Intent().apply {
+                                    action = Intent.ACTION_VIEW
+                                    setDataAndType(pictureTaken.path, pictureTaken.mimeType.value)
+                                })
+                            },
+                        contentScale = ContentScale.Crop
+                    )
                 }
-                QuickIcon(icon, IconSmallSize) {
+                val sendIcon = if(disableSubmit) MaterialIcons.Block else MaterialIcons.Send
+                QuickIcon(sendIcon, IconSmallSize) {
                     if(!disableSubmit){
                         onSubmit(input)
                         input = ""
@@ -89,7 +110,7 @@ fun ChatInput(
 @Preview
 @Composable
 private fun ChatInputPreview() = PreviewComposable {
-    ChatInput(Modifier.fillMaxWidth(), Picture(Uri.EMPTY), disableSubmit = false, onSubmit = {
+    ChatInput(Modifier.fillMaxWidth(), null, disableSubmit = false, onSubmit = {
 
     })
 }

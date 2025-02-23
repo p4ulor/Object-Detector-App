@@ -37,8 +37,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.CameraConstants.toggle
-import p4ulor.mediapipe.android.utils.Picture
 import p4ulor.mediapipe.android.utils.createCameraImageAnalyser
 import p4ulor.mediapipe.android.utils.createImageCaptureUseCase
 import p4ulor.mediapipe.android.utils.enableFlash
@@ -87,10 +85,10 @@ fun HomeScreenGranted(
     // Camera
     var camera by remember { mutableStateOf<Camera?>(null) } /** this is initialized in [startCameraAndPreviewView] */
     var isFlashEnabled by rememberSaveable { mutableStateOf(false) }
-    var cameraPreviewRatio by remember { mutableStateOf(vm.cameraPreviewRatio) }
+    val cameraPreviewRatio by vm.cameraPreviewRatio.collectAsState()
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
+    val pictureTaken by vm.pictureTaken.collectAsState()
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
-    var pictureTaken by remember { mutableStateOf<Picture?>(null) }
 
     // Gemini
     var isGeminiEnabled by rememberSaveable { mutableStateOf(false) }
@@ -115,7 +113,12 @@ fun HomeScreenGranted(
     )
 
     LaunchedEffect(hasConnection) {
-        if(!hasConnection) isGeminiEnabled = false //todo, this should disable the chat not remove it if there are messages
+        if(!hasConnection) {
+            if(isGeminiEnabled){
+                ctx.toast(R.string.connection_lost)
+            }
+            isGeminiEnabled = false
+        }
     }
 
     if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera uses a lot of resources. And it's used terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to not render the AndroidView in the compose tree)
@@ -202,8 +205,7 @@ fun HomeScreenGranted(
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Camera)) {
                         imageCaptureUseCase.takePic(ctx) { picture ->
-                            ctx.toast(R.string.image_saved_in, "${picture.path}")
-                            pictureTaken = picture
+                            vm.savePicture(picture)
                         }
                     }
                 )
@@ -218,8 +220,7 @@ fun HomeScreenGranted(
                 )
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Scale)) {
-                        cameraPreviewRatio = cameraPreviewRatio.toggle()
-                        vm.cameraPreviewRatio = cameraPreviewRatio
+                        vm.toggleCameraPreviewRatio()
                         imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
                     }
                 )

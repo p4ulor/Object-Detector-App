@@ -59,6 +59,7 @@ val MaterialIcons = ComposeMaterialIcons.Default
 
 val PaddingAroundIcon = 10.dp
 val IconDefaultSize = 44.dp
+val IconMediumSize = 30.dp
 val IconSmallSize = 25.dp
 
 @Composable

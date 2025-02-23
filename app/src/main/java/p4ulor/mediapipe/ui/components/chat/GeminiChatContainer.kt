@@ -101,7 +101,7 @@ fun GeminiChatContainerPreview() = PreviewComposable {
 
     GeminiChatContainer(
         newGeminiMessage = geminiResponse,
-        pictureTaken = Picture(Uri.EMPTY),
+        pictureTaken = null,
         onValidUserSubmit = { text ->
             userPrompt = Message(text)
         }

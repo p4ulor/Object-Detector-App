@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.sample
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import p4ulor.mediapipe.android.utils.CameraConstants
+import p4ulor.mediapipe.android.utils.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.NetworkObserver
+import p4ulor.mediapipe.android.utils.Picture
 import p4ulor.mediapipe.android.utils.create
 import p4ulor.mediapipe.android.utils.launch
 import p4ulor.mediapipe.android.utils.toStateFlow
@@ -33,14 +35,20 @@ import p4ulor.mediapipe.e
 /**
  * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
+ * This class has some data that should survive recomposition like:
+ * - [cameraPreviewRatio], [pictureTaken]
  */
 class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     val network: NetworkObserver by inject()
 
-    var cameraPreviewRatio = CameraConstants.RATIO_16_9
+    // Values that should survive recomposition and be remembered
+    private val _cameraPreviewRatio = MutableStateFlow(CameraConstants.RATIO_16_9)
+    val cameraPreviewRatio = _cameraPreviewRatio.asStateFlow()
+
+    private val _pictureTaken = MutableStateFlow<Picture?>(null)
+    val pictureTaken = _pictureTaken.asStateFlow()
 
     private var geminiApi: GeminiApiService? = null
-
     private val _geminiResponse = MutableStateFlow<GeminiResponse?>(null)
     val geminiResponse = _geminiResponse.asStateFlow()
 
@@ -52,6 +60,14 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if (prefs.value.enableAnimations) it.sample(500L) else it
     }.toStateFlow(_objDetectionResults.value) // [toStateFlow] is used instead of [asStateFlow] because [sample] returns a flow
+
+    fun savePicture(picture: Picture) {
+        _pictureTaken.value = picture
+    }
+
+    fun toggleCameraPreviewRatio() {
+        _cameraPreviewRatio.value = cameraPreviewRatio.value.toggle()
+    }
 
     fun loadUserPrefs() = flow {
         prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)

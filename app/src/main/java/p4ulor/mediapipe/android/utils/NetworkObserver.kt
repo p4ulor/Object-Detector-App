@@ -12,6 +12,7 @@ import org.koin.core.annotation.Single
 /**
  * Allows receiving updates to the status of Wifi or Mobile Data connectivity via [hasConnection]
  * @param [context] is injected by Koin
+ * todo, make so this doesnt run in background when minimizing app
  */
 @Single
 class NetworkObserver(context: Context) {

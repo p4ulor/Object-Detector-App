@@ -123,6 +123,10 @@ dependencies {
     // Lottie, for animated icons/images
     implementation(libs.lottie.compose)
 
+    // Coil, for loading images outside of the app
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))
     testImplementation(libs.coroutines.test)
