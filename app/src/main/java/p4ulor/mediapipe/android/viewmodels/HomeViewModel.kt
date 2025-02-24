@@ -2,6 +2,7 @@ package p4ulor.mediapipe.android.viewmodels
 
 import android.app.Application
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,8 +66,9 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         _pictureTaken.value = picture
     }
 
-    fun toggleCameraPreviewRatio() {
-        _cameraPreviewRatio.value = cameraPreviewRatio.value.toggle()
+    fun toggleCameraPreviewRatio(): ResolutionSelector {
+        _cameraPreviewRatio.value = _cameraPreviewRatio.value.toggle()
+        return _cameraPreviewRatio.value
     }
 
     fun loadUserPrefs() = flow {

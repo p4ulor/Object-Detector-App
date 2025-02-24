@@ -10,11 +10,11 @@ import p4ulor.mediapipe.data.storage.preferences.UserPreferences
  * in order to classify it as an object as X. Detections bellow this amount won't be displayed
  */
 data class ObjectDetectorSettings(
-    val processor: Delegate = Delegate.GPU,
     val maxObjectDetections: Int = ObjectDetectorSettings.maxObjectDetections,
-    val mediaTypeToAnalyze: RunningMode = RunningMode.LIVE_STREAM,
-    val model: Model = Model.EFFICIENTDETV0,
     val sensitivityThreshold: Float = 0.5F,
+    val model: Model = Model.EFFICIENTDETV0,
+    val processor: Delegate = Delegate.GPU,
+    val mediaTypeToAnalyze: RunningMode = RunningMode.LIVE_STREAM
 ) {
 
     companion object {

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,7 +40,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.createCameraImageAnalyser
 import p4ulor.mediapipe.android.utils.createImageCaptureUseCase
-import p4ulor.mediapipe.android.utils.enableFlash
+import p4ulor.mediapipe.android.utils.toggleFlash
 import p4ulor.mediapipe.android.utils.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.hasFlash
 import p4ulor.mediapipe.android.utils.is4by3
@@ -67,10 +68,15 @@ import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 /**
- * I'm using CameraX to use the phone's camera, and since it doesn't have a prebuilt
- * composable in Jetpack Compose, we use AndroidView to implement it.
+ * This class has a lot of nested calls, but in the way it's now, it's more readable because it's
+ * more direct. Breaking it down into more util functions would make it cluttered with the amount
+ * of common variables each component uses
+ *
  * We are using CameraProvider and not CameraController for more customization
  * https://developer.android.com/media/camera/camerax/architecture#cameraprovider
+ *
+ * Unfortunately, I haven't found a way to fix the lag or provide a loading animation when toggling
+ * camera ratios
  */
 @Composable
 fun HomeScreenGranted(
@@ -93,9 +99,9 @@ fun HomeScreenGranted(
     // Gemini
     var isGeminiEnabled by rememberSaveable { mutableStateOf(false) }
     val geminiResponse by vm.geminiResponse.collectAsState()
+    val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
 
     val resultsBundle by vm.objDetectionResults.collectAsState()
-    val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
 
     CameraUseBinder(
         lifecycleOwner,
@@ -141,31 +147,33 @@ fun HomeScreenGranted(
                         .width(cameraPreviewSize.width.dp)
                         .height(cameraPreviewSize.height.dp)
                 ) {
-                    AndroidView( // CameraX isn't providing a composable yet for Camera Preview, so we use AndroidView to use it
-                        modifier = Modifier.fillMaxSize(),
-                        factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
-                            val cameraPreviewView = PreviewView(ctx)
+                    key(imageCaptureUseCase) { // Only re-create this view when imageCaptureUseCase updates (due to a camera ratio toggle)
+                        AndroidView( // CameraX isn't providing a composable yet for Camera Preview, so we use AndroidView to use it
+                            modifier = Modifier.fillMaxSize(),
+                            factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
+                                val cameraPreviewView = PreviewView(ctx)
 
-                            val imageAnalysisSettings = vm.initObjectDetector(
-                                createCameraImageAnalyser(cameraPreviewRatio.toInt()),
-                                ObjectDetectorSettings(
-                                    sensitivityThreshold = prefs.minDetectCertainty,
-                                    maxObjectDetections = prefs.maxObjectDetections,
-                                    model = Model.getFrom(prefs)
+                                val imageAnalysisSettings = vm.initObjectDetector(
+                                    createCameraImageAnalyser(cameraPreviewRatio.toInt()),
+                                    ObjectDetectorSettings(
+                                        maxObjectDetections = prefs.maxObjectDetections,
+                                        sensitivityThreshold = prefs.minDetectCertainty,
+                                        model = Model.getFrom(prefs)
+                                    )
                                 )
-                            )
 
-                            camera = startCameraAndPreviewView(
-                                cameraProvider,
-                                cameraPreviewView,
-                                imageCaptureUseCase,
-                                imageAnalysisSettings,
-                                lifecycleOwner
-                            )
+                                camera = startCameraAndPreviewView(
+                                    cameraProvider,
+                                    cameraPreviewView,
+                                    imageCaptureUseCase,
+                                    imageAnalysisSettings,
+                                    lifecycleOwner
+                                )
 
-                            cameraPreviewView
-                        }
-                    )
+                                cameraPreviewView
+                            }
+                        )
+                    }
 
                     // Show the detected objects overlays
                     resultsBundle?.let {
@@ -220,25 +228,26 @@ fun HomeScreenGranted(
                 )
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Scale)) {
-                        vm.toggleCameraPreviewRatio()
-                        imageCaptureUseCase = createImageCaptureUseCase(cameraPreviewRatio)
+                        cameraProvider.unbindAll() // because a new [camera] will be initialized in the AndroidView
+                        imageCaptureUseCase = createImageCaptureUseCase(vm.toggleCameraPreviewRatio())
                     }
                 )
 
-                camera?.apply {
-                    if (hasFlash) {
-                        i("Torch supported, state: ${cameraInfo.torchState.value}")
-                        val icon = if (isFlashEnabled) AppIcon.FlashlightOff else AppIcon.FlashlightOn
-                        add(
-                            FloatingActionButton(AnyIcon(icon)) {
-                                isFlashEnabled = !isFlashEnabled
-                                enableFlash(isFlashEnabled)
+                add( // Lazy solution because there are other things to do... Adds flash button regardless of flash support, so the button doesn't flash from re-appearing on ratio change due to creating a new camera
+                    FloatingActionButton(AnyIcon(
+                        if (isFlashEnabled) AppIcon.FlashlightOff else AppIcon.FlashlightOn
+                    )) {
+                        isFlashEnabled = !isFlashEnabled
+                        camera?.apply {
+                            if (hasFlash) {
+                                i("Torch supported, state: ${cameraInfo.torchState.value}")
+                                toggleFlash(isFlashEnabled)
+                            } else {
+                                i("Torch not supported")
                             }
-                        )
-                    } else {
-                        i("Torch not supported")
+                        }
                     }
-                }
+                )
             }
         )
     }

@@ -31,16 +31,16 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider? = suspendCorouti
 }
 
 /**
- * This function is used to calculate the size of a box (our camera preview) after scaling it
+ * This function is used to calculate the size of a Box (our camera preview) after scaling it
  * down to be fitted in a Container while preserving the aspect ration of the Box
  *
- * To fit the Box in the Container, we consider the aspect ratio (AR) of both
+ * To fit the Box in the Container, we consider the aspect ratio (AR) cases:
  * 1. Box AR is wider than Container:
  *      1. Set Box width equal to Container width
- *      2. Scale down height of Box to keep Box AR
+ *      2. Scale down height of Box and keep Box AR
  * 2. Box AR is taller than Container:
  *      1. Set Box height equal to Container height
- *      2. Scale down width of Box to keep Box AR
+ *      2. Scale down width of Box and keep Box AR
  */
 fun getSizeOfBoxKeepingRatioGivenContainer(container: Size, box: Size) : Size {
     val boxRatio = box.width / box.height
@@ -120,7 +120,7 @@ val ProcessCameraProvider.isHdrSupported: DynamicRange?
 val Camera?.hasFlash: Boolean
     get() = this?.cameraInfo?.hasFlashUnit() == true
 
-fun Camera.enableFlash(isFlashEnabled: Boolean) {
+fun Camera.toggleFlash(isFlashEnabled: Boolean) {
     cameraControl.enableTorch(isFlashEnabled).addListener( {
         i("Flashlight updated")
     }, executorCommon)
