@@ -21,6 +21,7 @@ import p4ulor.mediapipe.android.utils.launch
 import p4ulor.mediapipe.android.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
+import p4ulor.mediapipe.data.domains.gemini.GeminiStatus
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
@@ -31,16 +32,24 @@ import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.storage.preferences.dataStore
 import p4ulor.mediapipe.data.storage.preferences.secretDataStore
 import p4ulor.mediapipe.data.utils.executorForImgAnalysis
+import p4ulor.mediapipe.data.utils.uriToBase64
 import p4ulor.mediapipe.e
+import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
 
 /**
  * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
- * This class has some data that should survive recomposition like:
- * - [cameraPreviewRatio], [pictureTaken]
+ * This class has some data that should survive recompositions. The most imported for UX are:
+ * - [cameraPreviewRatio], [pictureTaken], [isGeminiEnabled]
+ *
+ * It also handles some logic to lift it out of the UI, like handling connection losses, performing
+ * async calls, loading user preferences and launching coroutines.
+ * Note: [isGeminiEnabled] is also used to toggle on/off the ImageAnalyser used for MediaPipe (and
+ * thus the detection overlays)
  */
 class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
-    val network: NetworkObserver by inject()
+    private val network: NetworkObserver by inject()
+    private val hasConnection = network.hasConnection.toStateFlow(initialValue = false)
 
     // Values that should survive recomposition and be remembered
     private val _cameraPreviewRatio = MutableStateFlow(CameraConstants.RATIO_16_9)
@@ -50,6 +59,10 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     val pictureTaken = _pictureTaken.asStateFlow()
 
     private var geminiApi: GeminiApiService? = null
+
+    private val _geminiStatus = MutableStateFlow(GeminiStatus.OFF)
+    val geminiStatus = _geminiStatus.asStateFlow()
+
     private val _geminiResponse = MutableStateFlow<GeminiResponse?>(null)
     val geminiResponse = _geminiResponse.asStateFlow()
 
@@ -61,6 +74,16 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if (prefs.value.enableAnimations) it.sample(500L) else it
     }.toStateFlow(_objDetectionResults.value) // [toStateFlow] is used instead of [asStateFlow] because [sample] returns a flow
+
+    init {
+        launch {
+            hasConnection.collect {
+                if (!it && _geminiStatus.value.isEnabled){
+                    _geminiStatus.value = GeminiStatus.DISCONNECTED
+                }
+            }
+        }
+    }
 
     fun savePicture(picture: Picture) {
         _pictureTaken.value = picture
@@ -94,7 +117,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         objectDetectorSettings: ObjectDetectorSettings = ObjectDetectorSettings()
     ): ImageAnalysis {
         val myImageAnalyser = MyImageAnalyser(application.applicationContext, objectDetectorSettings)
-        myImageAnalyser.callbacks = object : ObjectDetectorCallbacks {
+        myImageAnalyser.callbacks = object : ObjectDetectorCallbacks { //todo, make these callbacks not set here, but by calling MyImageAnalyser
             override fun onResults(resultBundle: ResultBundle) {
                 _objDetectionResults.value = resultBundle
             }
@@ -110,11 +133,42 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         return cameraImageAnalyser
     }
 
-    fun promptGemini(prompt: GeminiPrompt) {
-        geminiApi?.run {
+    /**
+     * @return true if the command toggled Gemini, or false if there are no conditions to turn on
+     * Gemini (no connection or the loaded [loadUserSecretPrefs] were not performed or are not valid)
+     */
+    fun toggleGemini(): Boolean {
+        return if (hasConnection.value && geminiApi != null) {
+            _geminiStatus.value = _geminiStatus.value.toggle()
+            true
+        } else {
+            false
+        }
+    }
+
+    /**
+     * Prompts Gemini with a [GeminiPrompt] if the [geminiApi] is initialized and
+     * if a picture was taken. Even thought [GeminiChatContainer] would disable the prompt submission
+     * if no picture was taken
+     * @return true if there were *immediate* valid conditions to prompt, false otherwise
+     */
+    fun promptGemini(prompt: String): Boolean {
+        return if (geminiApi != null && pictureTaken.value != null) {
             launch {
-                _geminiResponse.value = promptWithImage(prompt)
+                val geminiPrompt = pictureTaken.value?.run {
+                    val imageBase64 = application.applicationContext.uriToBase64(this)
+                    imageBase64?.run {
+                        GeminiPrompt(prompt, this)
+                    }
+                }
+                if (geminiPrompt != null) {
+                    _geminiResponse.value = geminiApi?.promptWithImage(geminiPrompt)
+                    _pictureTaken.value = null
+                }
             }
+            true
+        } else {
+            false
         }
     }
 

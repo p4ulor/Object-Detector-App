@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -69,6 +70,7 @@ import p4ulor.mediapipe.ui.components.SliderTrack
 import p4ulor.mediapipe.ui.components.geminiLikeText
 import p4ulor.mediapipe.ui.components.mediaPipeLikeText
 import p4ulor.mediapipe.ui.components.utils.getTextSize
+import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 private val GeneralPadding = 12.dp
@@ -113,8 +115,6 @@ fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), colo
 private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserPreferences) -> Unit) {
     val SliderTrackHeight = 10.dp
 
-    SettingsHeader(mediaPipeLikeText(R.string.mediapipe))
-
     var minDetectCertainty by remember { mutableFloatStateOf(currPrefs.minDetectCertainty) }
     var maxObjectsDetections by remember { mutableIntStateOf(currPrefs.maxObjectDetections) }
     var enableAnimations by remember { mutableStateOf(currPrefs.enableAnimations) }
@@ -123,6 +123,8 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
     val detectionCertaintyRange = UserPreferences.Companion.Ranges.detectionCertainty
     val objectDetectionsRange = UserPreferences.Companion.Ranges.objectDetections
     val models = UserPreferences.Companion.Ranges.model
+
+    SettingsHeader(mediaPipeLikeText(R.string.mediapipe))
 
     Row {
         QuickText(R.string.minimum_detection_certainty)
@@ -209,10 +211,11 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
 
 @Composable
 private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (UserSecretPreferences) -> Unit) {
-    SettingsHeader(geminiLikeText(R.string.gemini_api))
-
+    val ctx = LocalContext.current
     var apiKey by remember { mutableStateOf(currPrefs.geminiApiKey) }
     var isVisible by remember { mutableStateOf(false) }
+
+    SettingsHeader(geminiLikeText(R.string.gemini_api))
 
     OutlinedTextField(
         value = apiKey,
@@ -227,7 +230,7 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
         ),
         singleLine = true,
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
+        trailingIcon = { // todo add icon to link to site to get api key
             QuickIcon(
                 if (isVisible) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
                 IconSmallSize
@@ -241,12 +244,11 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
         onClick = {
             i("Saving API Key")
             onNewPrefs(UserSecretPreferences(apiKey))
+            ctx.toast(R.string.saved_gemini_key)
         }
     ) {
         QuickText(R.string.save)
     }
-
-
 }
 
 @Composable

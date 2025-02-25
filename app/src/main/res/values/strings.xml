@@ -23,4 +23,6 @@
     <string name="take_a_picture_first">Take a picture first before prompting</string>
     <string name="cant_prompt_empty_message">Can\'t prompt empty message</string>
     <string name="connection_lost">Connection lost</string>
+    <string name="internal_gemini_api_error">Internal Gemini API error</string>
+    <string name="saved_gemini_key">Saved Gemini Key</string>
 </resources>

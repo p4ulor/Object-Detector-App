@@ -13,6 +13,10 @@ import kotlin.test.assertTrue
 @ExtendWith(LoggingMock::class)
 class GeminiApiServiceTest {
 
+    /**
+     * The tests require have and require their own resources (app/src/test/resources) so
+     * [javaClass.classLoader.getResource] is used to get API key and an image
+     */
     @Test
     fun `Describe app logo`() = runTest {
         with(javaClass.classLoader){

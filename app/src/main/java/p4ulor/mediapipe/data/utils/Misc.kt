@@ -2,7 +2,6 @@ package p4ulor.mediapipe.data.utils
 
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.util.Base64
 import java.util.Date
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -16,6 +15,3 @@ fun getTodaysDate(): String {
     val formatter = SimpleDateFormat("dd/MM/yy")
     return formatter.format(date)
 }
-
-fun encodeToBase64(bytes: ByteArray): String =
-    Base64.getEncoder().withoutPadding().encodeToString(bytes)

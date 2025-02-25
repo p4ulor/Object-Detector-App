@@ -77,7 +77,8 @@ class MyImageAnalyser(
     /**
      * Runs object detection on live streaming cameras frame-by-frame which are obtained and listened
      * to asynchronously through the [MPImageResultListener] set at [resultListener], which calls
-     * the [callbacks] of this [MyImageAnalyser].
+     * the [callbacks] of this [MyImageAnalyser]. Also read the original documentation
+     * [ImageAnalysis.Analyzer.analyze]
      */
     override fun analyze(image: ImageProxy) {
         require(settings.mediaTypeToAnalyze == RunningMode.LIVE_STREAM) {
@@ -110,12 +111,11 @@ class MyImageAnalyser(
 
         /**
          * Run object detection using MediaPipe Object Detector API
-         * As we're using running mode LIVE_STREAM, the detection result will be returned in
-         * [resultListener]
+         * The detection result will be obtained in [resultListener]
          */
         if (objectDetector==null){
             e("objectDetector is null!")
         }
-        objectDetector?.detectAsync(mpImage, frameTime) //todo, investigate com.google.mediapipe.framework.MediaPipeException: failed precondition: The received packets having a smaller timestamp than the processed timestamp
+        objectDetector?.detectAsync(mpImage, frameTime)
     }
 }

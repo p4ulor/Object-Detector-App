@@ -15,7 +15,7 @@ import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 
 /**
  * This is mostly an utility view model to not bloat the [SettingsScreen]
- * All params are injected with Koin
+ * All params are injected automatically with Koin
  */
 @SuppressLint("StaticFieldLeak") // Property ctx will be injected
 @KoinViewModel

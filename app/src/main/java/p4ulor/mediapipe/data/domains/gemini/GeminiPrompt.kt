@@ -1,17 +1,10 @@
 package p4ulor.mediapipe.data.domains.gemini
 
 import p4ulor.mediapipe.android.utils.ImageCaptureDefault
-import p4ulor.mediapipe.android.utils.Picture
 import p4ulor.mediapipe.data.sources.gemini.MimeType
 
 data class GeminiPrompt(
     val text: String,
     val imageBase64: String,
     val format: MimeType = ImageCaptureDefault.mimeType
-) {
-    companion object {
-        fun from(picture: Picture){
-
-        }
-    }
-}
+)

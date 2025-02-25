@@ -64,7 +64,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
         }
 
         if(cameraProvider!=null && prefs!=null && secretPrefs!=null) {
-            HomeScreenGranted(viewModel, cameraProvider!!, prefs!!, secretPrefs!!)
+            HomeScreenGranted(viewModel, cameraProvider!!, prefs!!)
         } else {
             CenteredContent {
                 CircularProgressIndicator(Modifier.size(100.dp))

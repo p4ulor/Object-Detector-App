@@ -1,5 +1,6 @@
 package p4ulor.mediapipe.ui.screens.home
 
+import androidx.annotation.MainThread
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -52,7 +53,6 @@ import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.storage.preferences.UserPreferences
-import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AnyIcon
@@ -82,8 +82,7 @@ import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 fun HomeScreenGranted(
     vm: HomeViewModel,
     cameraProvider: ProcessCameraProvider,
-    prefs: UserPreferences,
-    secretPrefs: UserSecretPreferences
+    prefs: UserPreferences
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val ctx = LocalContext.current
@@ -97,9 +96,8 @@ fun HomeScreenGranted(
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
 
     // Gemini
-    var isGeminiEnabled by rememberSaveable { mutableStateOf(false) }
+    val geminiStatus by vm.geminiStatus.collectAsState()
     val geminiResponse by vm.geminiResponse.collectAsState()
-    val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
 
     val resultsBundle by vm.objDetectionResults.collectAsState()
 
@@ -118,16 +116,13 @@ fun HomeScreenGranted(
         }
     )
 
-    LaunchedEffect(hasConnection) {
-        if(!hasConnection) {
-            if(isGeminiEnabled){
-                ctx.toast(R.string.connection_lost)
-            }
-            isGeminiEnabled = false
+    LaunchedEffect(geminiStatus) {
+        if (geminiStatus.isDisconnected) {
+            ctx.toast(R.string.connection_lost)
         }
     }
 
-    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera uses a lot of resources. And it's used terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to not render the AndroidView in the compose tree)
+    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera uses a lot of resources. And this is also used to terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to cancel the render of the AndroidView in the compose tree)
         Box(Modifier.fillMaxSize()) {
             val (modifier, aligntment) = modifierAndAlignmentFor(cameraPreviewRatio)
             BoxWithConstraints(modifier, aligntment) {
@@ -188,7 +183,7 @@ fun HomeScreenGranted(
             }
 
             AnimatedVisibility(
-                visible = isGeminiEnabled,
+                visible = geminiStatus.isEnabled,
                 Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
@@ -198,10 +193,11 @@ fun HomeScreenGranted(
                     newGeminiMessage = Message.from(geminiResponse) ?: Message.getBlank,
                     pictureTaken = pictureTaken,
                     onValidUserSubmit = { text ->
-                        i("Prompting Gemini")
-                        /*vm.promptGemini(
-                            GeminiPrompt(text, pictureTaken!!.mimeType.value)
-                        )*/
+                        i("Prompting Gemini with $text")
+                        val wasSuccessful = vm.promptGemini(text)
+                        if(!wasSuccessful){
+                            ctx.toast(R.string.internal_gemini_api_error)
+                        }
                     }
                 )
             }
@@ -219,9 +215,7 @@ fun HomeScreenGranted(
                 )
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
-                        if(hasConnection && secretPrefs.geminiApiKey.isNotBlank()){
-                            isGeminiEnabled = !isGeminiEnabled
-                        } else {
+                        if(!vm.toggleGemini()) {
                             ctx.toast(R.string.check_internet_and_gemini_key)
                         }
                     }
@@ -258,6 +252,7 @@ fun HomeScreenGranted(
  * [UseCase]s (max 3), that are used with the camera
  * @return The created [Camera]
  */
+@MainThread
 private fun startCameraAndPreviewView(
     cameraProvider: ProcessCameraProvider,
     cameraPreviewView: PreviewView,
