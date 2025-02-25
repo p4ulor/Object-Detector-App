@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.getActivity
-import p4ulor.mediapipe.android.utils.getCameraProvider
+import p4ulor.mediapipe.android.activities.utils.getActivity
+import p4ulor.mediapipe.android.utils.camera.getCameraProvider
 import p4ulor.mediapipe.android.utils.requestPermission
 import p4ulor.mediapipe.android.utils.requestUserToManuallyAddThePermission
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel

@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.flow
 import org.koin.android.annotation.KoinViewModel
 import p4ulor.mediapipe.android.utils.NetworkObserver
-import p4ulor.mediapipe.android.utils.launch
+import p4ulor.mediapipe.android.viewmodels.utils.launch
 import p4ulor.mediapipe.data.storage.preferences.UserPreferences
 import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.storage.preferences.dataStore

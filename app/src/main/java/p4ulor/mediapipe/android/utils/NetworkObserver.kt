@@ -15,7 +15,7 @@ import org.koin.core.annotation.Single
  * Allows receiving updates to the status of Wifi or Mobile Data connectivity via [hasConnection]
  * @param [context] is injected by Koin. [trySendBlocking] is not used since none of these operations
  * are highly repetitive in a short amount of time
- * todo, make so this doesnt run in background when minimizing app
+ * todo, make so this doesnt run in background when minimizing app, also investigate why other apps like urban sports can display the camera so faster, compare without img analyser and other things back in repo history
  */
 @Single
 class NetworkObserver(context: Context) {

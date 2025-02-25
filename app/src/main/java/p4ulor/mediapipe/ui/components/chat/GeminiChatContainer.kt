@@ -1,6 +1,5 @@
 package p4ulor.mediapipe.ui.components.chat
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -19,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.Picture
+import p4ulor.mediapipe.android.utils.camera.Picture
 import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 

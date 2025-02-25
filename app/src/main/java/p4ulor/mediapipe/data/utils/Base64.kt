@@ -1,11 +1,14 @@
 package p4ulor.mediapipe.data.utils
 
 import android.content.Context
-import p4ulor.mediapipe.android.utils.Picture
+import p4ulor.mediapipe.android.utils.camera.Picture
 import p4ulor.mediapipe.e
 import java.util.Base64
 
-/** Converts a [Picture] to a string in Base64 or null on error */
+/**
+ * Converts a [Picture] to a string in Base64 or null on error
+ * Fun fact: this doesn't require permission `android.permission.READ_EXTERNAL_STORAGE`
+ */
 fun Context.uriToBase64(picture: Picture): String? {
     return try {
         val bytes = contentResolver.openInputStream(picture.path)?.use { inputStream ->

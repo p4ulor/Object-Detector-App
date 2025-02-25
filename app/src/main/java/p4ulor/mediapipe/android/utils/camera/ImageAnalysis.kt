@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.android.utils
+package p4ulor.mediapipe.android.utils.camera
 
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.ImageAnalysis

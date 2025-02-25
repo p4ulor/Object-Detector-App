@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.android.utils
+package p4ulor.mediapipe.android.activities.utils
 
 import android.app.Activity
 import android.content.Context

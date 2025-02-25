@@ -31,7 +31,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.Picture
+import p4ulor.mediapipe.android.utils.camera.Picture
 import p4ulor.mediapipe.ui.components.IconMediumSize
 import p4ulor.mediapipe.ui.components.IconSmallSize
 import p4ulor.mediapipe.ui.components.MaterialIcons

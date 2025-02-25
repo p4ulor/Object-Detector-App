@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.android.utils
+package p4ulor.mediapipe.android.viewmodels.utils
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -5,6 +5,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,13 +13,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import p4ulor.mediapipe.android.utils.CameraConstants
-import p4ulor.mediapipe.android.utils.CameraConstants.toggle
+import p4ulor.mediapipe.android.utils.camera.CameraConstants
+import p4ulor.mediapipe.android.utils.camera.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.NetworkObserver
-import p4ulor.mediapipe.android.utils.Picture
-import p4ulor.mediapipe.android.utils.create
-import p4ulor.mediapipe.android.utils.launch
-import p4ulor.mediapipe.android.utils.toStateFlow
+import p4ulor.mediapipe.android.utils.camera.Picture
+import p4ulor.mediapipe.android.viewmodels.utils.create
+import p4ulor.mediapipe.android.viewmodels.utils.launch
+import p4ulor.mediapipe.android.viewmodels.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import p4ulor.mediapipe.data.domains.gemini.GeminiStatus
@@ -81,6 +82,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                 if (!it && _geminiStatus.value.isEnabled){
                     _geminiStatus.value = GeminiStatus.DISCONNECTED
                 }
+                delay(300) // Give some time for event to be transmitted and valid
+                _geminiStatus.value = GeminiStatus.OFF // This helps in showing the "Connection lost" toast only in HomeScreenGranted (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
             }
         }
     }

@@ -43,8 +43,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.utils.create
-import p4ulor.mediapipe.android.utils.getActivity
+import p4ulor.mediapipe.android.viewmodels.utils.create
+import p4ulor.mediapipe.android.activities.utils.getActivity
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.ui.animations.smooth

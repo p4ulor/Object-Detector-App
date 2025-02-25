@@ -1,6 +1,6 @@
 package p4ulor.mediapipe.data.domains.gemini
 
-import p4ulor.mediapipe.android.utils.ImageCaptureDefault
+import p4ulor.mediapipe.android.utils.camera.ImageCaptureDefault
 import p4ulor.mediapipe.data.sources.gemini.MimeType
 
 data class GeminiPrompt(
