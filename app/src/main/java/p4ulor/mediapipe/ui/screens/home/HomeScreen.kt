@@ -40,7 +40,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
             QuickText(R.string.no_camera_permission)
             Button(onClick = {
                 if(!oneTimePermRequestWasUsed){
-                    ctx.getActivity()?.requestPermission()
+                    ctx.getActivity()?.requestPermission(Manifest.permission.CAMERA)
                     oneTimePermRequestWasUsed = true
                 } else {
                     ctx.requestUserToManuallyAddThePermission()

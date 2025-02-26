@@ -3,10 +3,17 @@ package p4ulor.mediapipe.data.domains.mediapipe
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.components.containers.Detection
 import com.google.mediapipe.tasks.core.OutputHandler
+import com.google.mediapipe.tasks.core.ErrorListener
+import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetector
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectorResult
 
 typealias MPImageResultListener = OutputHandler.ResultListener<ObjectDetectorResult, MPImage>
 
+/**
+ * Callbacks to expose callbacks set in [MyImageAnalyser] for [MPImageResultListener], which is set
+ * at [ObjectDetector.ObjectDetectorOptions.Builder.setResultListener].
+ * And for [ErrorListener] too.
+ */
 interface ObjectDetectorCallbacks {
     fun onResults(resultBundle: ResultBundle)
     fun onError(error: String)

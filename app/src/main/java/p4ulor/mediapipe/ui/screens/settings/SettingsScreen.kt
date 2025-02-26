@@ -1,5 +1,7 @@
 package p4ulor.mediapipe.ui.screens.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -49,12 +52,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
+import p4ulor.mediapipe.data.domains.gemini.GEMINI_AI_STUDIO
 import p4ulor.mediapipe.data.storage.preferences.UserPreferences
 import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.utils.trimToDecimals
@@ -231,11 +236,20 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
         singleLine = true,
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = { // todo add icon to link to site to get api key
-            QuickIcon(
-                if (isVisible) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
-                IconSmallSize
-            ) {
-                isVisible = !isVisible
+            Row {
+                QuickIcon(
+                    MaterialIcons.OpenInNew,
+                    IconSmallSize
+                ) {
+                    val openInBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(GEMINI_AI_STUDIO))
+                    ctx.startActivity(openInBrowser)
+                }
+                QuickIcon(
+                    if (isVisible) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
+                    IconSmallSize
+                ) {
+                    isVisible = !isVisible
+                }
             }
         }
     )

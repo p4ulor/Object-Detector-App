@@ -1,6 +1,5 @@
 package p4ulor.mediapipe.android.utils
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -18,7 +17,7 @@ import p4ulor.mediapipe.R
  * https://developer.android.com/about/versions/11/privacy/permissions
  * https://stackoverflow.com/questions/67825724/how-to-ask-again-for-permission-if-it-was-denied-in-android
  */
-fun Activity.requestPermission(permission: String = Manifest.permission.CAMERA){
+fun Activity.requestPermission(permission: String){
     val hasPermission = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     if(!hasPermission){
         ActivityCompat.requestPermissions(this, arrayOf(permission), 0)

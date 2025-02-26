@@ -19,10 +19,10 @@ import p4ulor.mediapipe.e
  */
 class MyImageAnalyser(
     private val context: Context,
-    private val settings: ObjectDetectorSettings = ObjectDetectorSettings()
+    private val settings: ObjectDetectorSettings = ObjectDetectorSettings(),
+    private val resultCallback: ObjectDetectorCallbacks
 ) : ImageAnalysis.Analyzer {
 
-    var callbacks: ObjectDetectorCallbacks? = null
     private lateinit var objectDetector: ObjectDetector
 
     init {
@@ -56,11 +56,8 @@ class MyImageAnalyser(
     private fun resultListener() = MPImageResultListener { detectedObjects, inputImage ->
         val finishTimeMs = SystemClock.uptimeMillis()
         val inferenceTime = finishTimeMs - detectedObjects.timestampMs()
-        if(callbacks==null){
-            e("Callbacks is null, results will not be reported")
-            return@MPImageResultListener
-        }
-        callbacks?.onResults(
+
+        resultCallback.onResults(
             ResultBundle(
                 detectedObjects,
                 inferenceTime,
@@ -77,7 +74,7 @@ class MyImageAnalyser(
     /**
      * Runs object detection on live streaming cameras frame-by-frame which are obtained and listened
      * to asynchronously through the [MPImageResultListener] set at [resultListener], which calls
-     * the [callbacks] of this [MyImageAnalyser]. Also read the original documentation
+     * the [resultCallback] of this [MyImageAnalyser]. Also read the original documentation
      * [ImageAnalysis.Analyzer.analyze]
      */
     override fun analyze(image: ImageProxy) {

@@ -172,12 +172,14 @@ fun HomeScreenGranted(
 
                     // Show the detected objects overlays
                     resultsBundle?.let {
-                        ObjectBoundsBoxOverlays(
-                            detections = it.detectedObjects.detections() ?: emptyList(),
-                            frameWidth = it.inputImageWidth,
-                            frameHeight = it.inputImageHeight,
-                            animate = prefs.enableAnimations
-                        )
+                        if(!geminiStatus.isEnabled){ // Easy implementation to not have to rebind the camera, and only do it when ratio changes, which is the most important
+                            ObjectBoundsBoxOverlays(
+                                detections = it.detectedObjects.detections() ?: emptyList(),
+                                frameWidth = it.inputImageWidth,
+                                frameHeight = it.inputImageHeight,
+                                animate = prefs.enableAnimations
+                            )
+                        }
                     }
                 }
             }
@@ -214,9 +216,15 @@ fun HomeScreenGranted(
                     }
                 )
                 add(
-                    FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
-                        if(!vm.toggleGemini()) {
-                            ctx.toast(R.string.check_internet_and_gemini_key)
+                    if(geminiStatus.isEnabled){
+                        FloatingActionButton(AnyIcon(AppIcon.MediaPipe)){
+                            vm.toggleGemini()
+                        }
+                    } else {
+                        FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
+                            if(!vm.toggleGemini()) {
+                                ctx.toast(R.string.check_internet_and_gemini_key)
+                            }
                         }
                     }
                 )

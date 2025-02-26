@@ -36,6 +36,7 @@ import p4ulor.mediapipe.data.utils.executorForImgAnalysis
 import p4ulor.mediapipe.data.utils.uriToBase64
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
+import p4ulor.mediapipe.ui.screens.home.overlay.AnimatedDetectionOverlay
 
 /**
  * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
@@ -70,11 +71,17 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     private val prefs = MutableStateFlow(UserPreferences())
     private val secretPrefs = MutableStateFlow(UserSecretPreferences())
 
+    /**
+     * For [objDetectionResults], [toStateFlow] is used instead of [asStateFlow] because [sample]
+     * returns a flow. When animations are enabled, the emissions are cut down to 1 every half a
+     * second so that [AnimatedDetectionOverlay] doesn't have a ton of work to do, otherwise
+     * no animation is visible since there's too much lag.
+     */
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
     @OptIn(FlowPreview::class)
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
         if (prefs.value.enableAnimations) it.sample(500L) else it
-    }.toStateFlow(_objDetectionResults.value) // [toStateFlow] is used instead of [asStateFlow] because [sample] returns a flow
+    }.toStateFlow(_objDetectionResults.value)
 
     init {
         launch {
@@ -119,16 +126,22 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         cameraImageAnalyser: ImageAnalysis,
         objectDetectorSettings: ObjectDetectorSettings = ObjectDetectorSettings()
     ): ImageAnalysis {
-        val myImageAnalyser = MyImageAnalyser(application.applicationContext, objectDetectorSettings)
-        myImageAnalyser.callbacks = object : ObjectDetectorCallbacks { //todo, make these callbacks not set here, but by calling MyImageAnalyser
-            override fun onResults(resultBundle: ResultBundle) {
-                _objDetectionResults.value = resultBundle
-            }
+        val myImageAnalyser = MyImageAnalyser(
+            application.applicationContext,
+            objectDetectorSettings,
+            resultCallback = object : ObjectDetectorCallbacks {
+                override fun onResults(resultBundle: ResultBundle) {
+                    if (!_geminiStatus.value.isEnabled) {
+                        _objDetectionResults.value = resultBundle
+                    }
+                }
 
-            override fun onError(error: String) {
-                e("Error: $error")
+                override fun onError(error: String) {
+                    e("Error: $error")
+                }
             }
-        }
+        )
+
         cameraImageAnalyser.setAnalyzer(
             executorForImgAnalysis,
             myImageAnalyser

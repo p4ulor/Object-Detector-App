@@ -51,6 +51,7 @@ enum class AppIcon(val resourceId: Int, val useOriginalColors: Boolean = false) 
     Scale(R.drawable.scale),
     Settings(R.drawable.settings_vector),
     Camera(R.drawable.camera),
+    MediaPipe(R.drawable.mediapipe, useOriginalColors = true),
     Gemini(R.drawable.gemini, useOriginalColors = true);
 }
 
