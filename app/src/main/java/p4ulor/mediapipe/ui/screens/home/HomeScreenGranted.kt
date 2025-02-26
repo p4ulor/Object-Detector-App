@@ -191,10 +191,7 @@ fun HomeScreenGranted(
                     pictureTaken = pictureTaken,
                     onValidUserSubmit = { text ->
                         i("Prompting Gemini with $text")
-                        val wasSuccessful = vm.promptGemini(text)
-                        if(!wasSuccessful){
-                            ctx.toast(R.string.internal_gemini_api_error)
-                        }
+                        vm.promptGemini(text)
                     }
                 )
             }

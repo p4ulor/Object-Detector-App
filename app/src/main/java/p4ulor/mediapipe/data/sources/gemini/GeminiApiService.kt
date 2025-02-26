@@ -40,8 +40,9 @@ class GeminiApiService(apiKey: String) : Closeable {
                         )
                     }
                 } else { //todo handle more properly
-                    e("promptWithImage error: ${response.bodyAsText()}")
-                    GeminiResponse("Error", 0, "")
+                    val error = response.bodyAsText()
+                    e("promptWithImage error: $error")
+                    GeminiResponse("Error $error", 0, "")
                 }
 
             }

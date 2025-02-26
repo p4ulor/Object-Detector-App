@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.camera.CameraConstants
 import p4ulor.mediapipe.android.utils.camera.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.NetworkObserver
@@ -164,13 +165,12 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     /**
-     * Prompts Gemini with a [GeminiPrompt] if the [geminiApi] is initialized and
-     * if a picture was taken. Even thought [GeminiChatContainer] would disable the prompt submission
-     * if no picture was taken
-     * @return true if there were *immediate* valid conditions to prompt, false otherwise
+     * Prompts Gemini with a [GeminiPrompt] if the [geminiApi] is initialized and [pictureTaken]
+     * is not null. Even thought [GeminiChatContainer] would disable the prompt submission, but
+     * we check here to avoid any problems
      */
-    fun promptGemini(prompt: String): Boolean {
-        return if (geminiApi != null && pictureTaken.value != null) {
+    fun promptGemini(prompt: String){
+        if (geminiApi != null && pictureTaken.value != null) {
             launch {
                 val geminiPrompt = pictureTaken.value?.run {
                     val imageBase64 = application.applicationContext.uriToBase64(this)
@@ -180,14 +180,24 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                 }
                 if (geminiPrompt != null) {
                     _geminiMessage.value = Message.getPending
-                    _geminiMessage.value = Message.from(geminiApi?.promptWithImage(geminiPrompt)) ?: Message.getBlank
+                    val response = Message.from(geminiApi?.promptWithImage(geminiPrompt))
+                    if (response != null) {
+                        _geminiMessage.value = response
+                    } else {
+                        sendGeminiError()
+                    }
                     _pictureTaken.value = null
                 }
             }
-            true
-        } else {
-            false
         }
+    }
+
+    private fun sendGeminiError(){
+        _geminiMessage.value = Message.createGeminiMessage(
+            application.applicationContext.getString(
+                R.string.internal_gemini_api_error
+            )
+        )
     }
 
     override fun onCleared() {

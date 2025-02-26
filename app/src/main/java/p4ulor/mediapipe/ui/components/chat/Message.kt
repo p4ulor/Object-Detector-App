@@ -27,6 +27,8 @@ data class Message(
         val getPending: Message
             get() = Message(authorIsUser = false, isPending = true)
 
+        fun createGeminiMessage(text: String) = Message(text, authorIsUser = false)
+
         fun from(resp: GeminiResponse?): Message? {
             return resp?.let {
                 Message(it.generatedText, authorIsUser = false)
