@@ -25,7 +25,6 @@ import p4ulor.mediapipe.ui.theme.PreviewComposable
 /**
  * Joins the [GeminiChat] and [ChatInput] for ease of use.
  * [isBlank] [Message]s are ignored
- * Also checkout [GeminiChatPreview].
  */
 @Composable
 fun GeminiChatContainer(
@@ -63,10 +62,7 @@ fun GeminiChatContainer(
             pictureTaken = pictureTaken,
             disableSubmit = isPendingOrAnimationInProgress,
             onSubmit = { text ->
-                if (text.isBlank()) {
-                    ctx.toast(R.string.cant_prompt_empty_message)
-                }
-                else if(pictureTaken == null){
+                if(pictureTaken == null){ //todo, change this disableSubmit logic, so it doesn't clear the text
                     ctx.toast(R.string.take_a_picture_first)
                 } else {
                     isPendingOrAnimationInProgress = true
@@ -78,7 +74,7 @@ fun GeminiChatContainer(
     }
 }
 
-/** Use a real device for this preview, so you can type */
+/** Use a real device for this preview, so you can type. Or see [GeminiChatPreview] */
 @Preview
 @Composable
 fun GeminiChatContainerPreview() = PreviewComposable {
@@ -88,11 +84,11 @@ fun GeminiChatContainerPreview() = PreviewComposable {
     LaunchedEffect(Unit) {
         while (this.isActive) {
             delay(10000)
-            geminiResponse = Message(authorIsUser = false, isPending = true)
+            geminiResponse = Message.getPending
             delay(5000)
             geminiResponse = Message("You typed ${userPrompt.text}", authorIsUser = false)
             delay(10000)
-            geminiResponse = Message(authorIsUser = false, isPending = true)
+            geminiResponse = Message.getPending
             delay(5000)
             geminiResponse = Message("You typed2 ${userPrompt.text}", authorIsUser = false)
         }

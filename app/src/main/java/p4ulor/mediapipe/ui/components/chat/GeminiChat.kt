@@ -145,6 +145,6 @@ fun getDummyMessages() = listOf(
     Message("Describe the image"),
     Message("Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity. Showcases technology and creativity", authorIsUser = false),
     Message("Think really hard"),
-    Message(authorIsUser = false, isPending = true),
+    Message.getPending,
     Message("I just wasted neurons", authorIsUser = false)
 )

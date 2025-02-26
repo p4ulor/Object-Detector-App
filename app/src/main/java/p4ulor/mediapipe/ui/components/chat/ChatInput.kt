@@ -38,6 +38,7 @@ import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.QuickIcon
 import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.utils.RoundRectangleShape
+import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**
@@ -86,7 +87,9 @@ fun ChatInput(
                 }
                 val sendIcon = if(disableSubmit) MaterialIcons.Block else MaterialIcons.Send
                 QuickIcon(sendIcon, IconSmallSize) {
-                    if(!disableSubmit){
+                    if (input.isBlank()) {
+                        ctx.toast(R.string.cant_prompt_empty_message)
+                    } else if(!disableSubmit && input.isNotBlank()){
                         onSubmit(input)
                         input = ""
                     }

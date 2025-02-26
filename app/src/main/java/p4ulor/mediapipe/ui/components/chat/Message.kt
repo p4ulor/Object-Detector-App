@@ -20,8 +20,12 @@ data class Message(
         get() = !authorIsUser && !isLoaded && !isPending
 
     companion object {
+        /** Util to handle null Messages so they are ignored because they are empty */
         val getBlank: Message
             get() = Message()
+
+        val getPending: Message
+            get() = Message(authorIsUser = false, isPending = true)
 
         fun from(resp: GeminiResponse?): Message? {
             return resp?.let {

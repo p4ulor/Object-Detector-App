@@ -21,7 +21,6 @@ import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.android.viewmodels.utils.launch
 import p4ulor.mediapipe.android.viewmodels.utils.toStateFlow
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
-import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import p4ulor.mediapipe.data.domains.gemini.GeminiStatus
 import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
@@ -36,6 +35,7 @@ import p4ulor.mediapipe.data.utils.executorForImgAnalysis
 import p4ulor.mediapipe.data.utils.uriToBase64
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
+import p4ulor.mediapipe.ui.components.chat.Message
 import p4ulor.mediapipe.ui.screens.home.overlay.AnimatedDetectionOverlay
 
 /**
@@ -65,8 +65,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     private val _geminiStatus = MutableStateFlow(GeminiStatus.OFF)
     val geminiStatus = _geminiStatus.asStateFlow()
 
-    private val _geminiResponse = MutableStateFlow<GeminiResponse?>(null)
-    val geminiResponse = _geminiResponse.asStateFlow()
+    private val _geminiMessage = MutableStateFlow(Message.getBlank)
+    val geminiMessage = _geminiMessage.asStateFlow()
 
     /** These are [MutableStateFlow]s to make use of the thread safety feature of [.value] access */
     private val prefs = MutableStateFlow(UserPreferences())
@@ -179,7 +179,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                     }
                 }
                 if (geminiPrompt != null) {
-                    _geminiResponse.value = geminiApi?.promptWithImage(geminiPrompt)
+                    _geminiMessage.value = Message.getPending
+                    _geminiMessage.value = Message.from(geminiApi?.promptWithImage(geminiPrompt)) ?: Message.getBlank
                     _pictureTaken.value = null
                 }
             }

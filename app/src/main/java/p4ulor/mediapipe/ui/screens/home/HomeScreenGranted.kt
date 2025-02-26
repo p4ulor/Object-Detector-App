@@ -58,7 +58,6 @@ import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
-import p4ulor.mediapipe.ui.components.chat.Message
 import p4ulor.mediapipe.ui.components.utils.DisplayHeight
 import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
@@ -94,7 +93,7 @@ fun HomeScreenGranted(
 
     // Gemini
     val geminiStatus by vm.geminiStatus.collectAsState()
-    val geminiResponse by vm.geminiResponse.collectAsState()
+    val geminiMessage by vm.geminiMessage.collectAsState()
 
     val resultsBundle by vm.objDetectionResults.collectAsState()
 
@@ -188,7 +187,7 @@ fun HomeScreenGranted(
                     .fillMaxWidth(),
             ) {
                 GeminiChatContainer(
-                    newGeminiMessage = Message.from(geminiResponse) ?: Message.getBlank,
+                    newGeminiMessage = geminiMessage,
                     pictureTaken = pictureTaken,
                     onValidUserSubmit = { text ->
                         i("Prompting Gemini with $text")
