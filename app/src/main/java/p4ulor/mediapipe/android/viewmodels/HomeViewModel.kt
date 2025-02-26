@@ -68,6 +68,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     private val _geminiResponse = MutableStateFlow<GeminiResponse?>(null)
     val geminiResponse = _geminiResponse.asStateFlow()
 
+    /** These are [MutableStateFlow]s to make use of the thread safety feature of [.value] access */
     private val prefs = MutableStateFlow(UserPreferences())
     private val secretPrefs = MutableStateFlow(UserSecretPreferences())
 
@@ -154,7 +155,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
      * Gemini (no connection or the loaded [loadUserSecretPrefs] were not performed or are not valid)
      */
     fun toggleGemini(): Boolean {
-        return if (hasConnection.value && geminiApi != null) {
+        return if (hasConnection.value && secretPrefs.value.isValid && geminiApi != null) {
             _geminiStatus.value = _geminiStatus.value.toggle()
             true
         } else {

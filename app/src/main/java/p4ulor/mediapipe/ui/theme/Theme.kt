@@ -159,7 +159,7 @@ private val LightColorScheme = lightColorScheme(
     errorContainer = Color(0xFFB00020),
     onErrorContainer = Color(0xFF2E000B),
 
-    outline = Color(0xFF313131), // For outlines/borders of OutlinedTextField and OutlinedButton
+    outline = Color(0xFF313131), // For outlines/borders of OutlinedTextField and OutlinedButton and switches on disabled
     outlineVariant = Color(0xFF000000), // For HorizontalDivider
 
     scrim = Color(0xFF737373), // Applied on the background of unfocused content, when some popup/dialog is shown
@@ -167,7 +167,7 @@ private val LightColorScheme = lightColorScheme(
     surfaceBright = unset,
     surfaceContainer = Color(0xFFC3C3C3), // Used in dropdown menus
     surfaceContainerHigh = unset,
-    surfaceContainerHighest = Color(0xFF007CD7), //for card
+    surfaceContainerHighest = Color(0xFF007CD7), //for card and normal switch
     surfaceContainerLow = unset,
     surfaceContainerLowest = unset,
     surfaceDim = unset,
@@ -225,6 +225,7 @@ private fun SampleComposable(){
 
             var isChecked by remember { mutableStateOf(true) }
             Switch(checked = isChecked, onCheckedChange = { isChecked = !isChecked })
+            Switch(checked = false, onCheckedChange = { isChecked = !isChecked })
 
             var slider by remember { mutableFloatStateOf(0.5f) }
             Slider(value = slider, onValueChange = { slider = it })
@@ -283,8 +284,8 @@ private fun SampleComposable(){
             }
 
             Icon(
-                Icons.Filled.Add,
-                "Add",
+                Icons.Filled.Visibility,
+                "Visibility",
                 Modifier.size(50.dp),
                 MaterialTheme.colorScheme.secondary
             )

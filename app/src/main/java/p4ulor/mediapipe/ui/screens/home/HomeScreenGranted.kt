@@ -10,8 +10,6 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -54,7 +52,6 @@ import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.storage.preferences.UserPreferences
 import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcon
 import p4ulor.mediapipe.ui.components.ExpandableFAB
@@ -189,7 +186,6 @@ fun HomeScreenGranted(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
-                enter = fadeIn(smooth()) + scaleIn()
             ) {
                 GeminiChatContainer(
                     newGeminiMessage = Message.from(geminiResponse) ?: Message.getBlank,

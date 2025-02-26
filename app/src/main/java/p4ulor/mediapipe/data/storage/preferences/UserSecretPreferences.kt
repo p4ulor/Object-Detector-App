@@ -19,6 +19,14 @@ import java.io.OutputStream
 data class UserSecretPreferences(
     val geminiApiKey: String = ""
 ) {
+
+    val isValid: Boolean
+        get() = geminiApiKey.isNotBlank()
+
+    suspend fun saveIn(storage: DataStore<UserSecretPreferences>) = withContext(Dispatchers.IO) {
+        storage.updateData { this@UserSecretPreferences }
+    }
+
     companion object {
         const val secretId = "gemini"
 
@@ -27,10 +35,6 @@ data class UserSecretPreferences(
                 .catch { e("Error reading preferences: $it") }
                 .firstOrNull() ?: UserSecretPreferences()
         }
-    }
-
-    suspend fun saveIn(storage: DataStore<UserSecretPreferences>) = withContext(Dispatchers.IO) {
-        storage.updateData { this@UserSecretPreferences }
     }
 }
 
