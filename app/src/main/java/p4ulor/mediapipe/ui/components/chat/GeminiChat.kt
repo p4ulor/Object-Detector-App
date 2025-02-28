@@ -134,7 +134,7 @@ private fun GeminiChatPreview() = AppTheme {
                },
             pictureTaken = null,
             disableSubmit = isPendingOrAnimationInProgress,
-            onSubmit = {
+            onValidUserSubmit = {
 
         })
     }

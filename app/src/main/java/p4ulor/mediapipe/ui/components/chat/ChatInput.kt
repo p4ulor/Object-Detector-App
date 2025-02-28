@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +42,7 @@ import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**
- * @param onSubmit callback where the [String] input is what the user wrote and submitted
+ * @param onValidUserSubmit callback where the [String] input is what the user wrote and submitted
  * @param disableSubmit should only apply regarding the pending or loading status of Gemini ChatMessages
  */
 @Composable
@@ -50,17 +50,28 @@ fun ChatInput(
     modifier: Modifier,
     pictureTaken: Picture?,
     disableSubmit: Boolean,
-    onSubmit: (String) -> Unit
+    onValidUserSubmit: (String) -> Unit
 ) {
     var input by rememberSaveable { mutableStateOf("") }
     val ctx = LocalContext.current
-    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val validateInputAndSubmit = {
+        if (input.isBlank()) {
+            ctx.toast(R.string.cant_prompt_empty_message)
+        } else if(pictureTaken == null){
+            ctx.toast(R.string.take_a_picture_first)
+        } else if(!disableSubmit && input.isNotBlank()){
+            keyboardController?.hide()
+            onValidUserSubmit(input)
+            input = ""
+        }
+    }
 
     OutlinedTextField(
         value = input,
         onValueChange = { input = it },
-        modifier
-            .border(2.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
+        modifier.border(2.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
         placeholder = { QuickText(R.string.ask_gemini) },
         trailingIcon = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -87,12 +98,7 @@ fun ChatInput(
                 }
                 val sendIcon = if(disableSubmit) MaterialIcons.Block else MaterialIcons.Send
                 QuickIcon(sendIcon, IconSmallSize) {
-                    if (input.isBlank()) {
-                        ctx.toast(R.string.cant_prompt_empty_message)
-                    } else if(!disableSubmit && input.isNotBlank()){
-                        onSubmit(input)
-                        input = ""
-                    }
+                    validateInputAndSubmit()
                 }
             }
         },
@@ -100,9 +106,8 @@ fun ChatInput(
             imeAction = ImeAction.Send // Input Method Editor Action
         ),
         keyboardActions = KeyboardActions(
-            onDone = {
-                // Don't submit, only the icon click is used
-                focusManager.clearFocus() // todo see if this is needed
+            onSend = {
+                validateInputAndSubmit()
             }
         ),
         singleLine = true,
@@ -113,7 +118,7 @@ fun ChatInput(
 @Preview
 @Composable
 private fun ChatInputPreview() = PreviewComposable {
-    ChatInput(Modifier.fillMaxWidth(), null, disableSubmit = false, onSubmit = {
+    ChatInput(Modifier.fillMaxWidth(), null, disableSubmit = false, onValidUserSubmit = {
 
     })
 }

@@ -61,14 +61,10 @@ fun GeminiChatContainer(
                 },
             pictureTaken = pictureTaken,
             disableSubmit = isPendingOrAnimationInProgress,
-            onSubmit = { text ->
-                if(pictureTaken == null){ //todo, change this disableSubmit logic, so it doesn't clear the text
-                    ctx.toast(R.string.take_a_picture_first)
-                } else {
-                    isPendingOrAnimationInProgress = true
-                    newMessage = Message(text)
-                    onValidUserSubmit(text)
-                }
+            onValidUserSubmit = { text ->
+                isPendingOrAnimationInProgress = true
+                newMessage = Message(text)
+                onValidUserSubmit(text)
             }
         )
     }

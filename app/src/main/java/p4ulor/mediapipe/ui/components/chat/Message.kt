@@ -9,7 +9,7 @@ data class Message(
     val authorIsUser: Boolean = true,
     var isPending: Boolean = false,
     var isLoaded: Boolean = false,
-    val uuid: String = UUID.randomUUID().toString().take(6)
+    val uuid: String = UUID.randomUUID().toString().take(5)
 ) {
     override fun equals(other: Any?) = uuid == (other as? Message)?.uuid
 
