@@ -8,5 +8,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
 app/src/main/assets/*
 docs/dokka-generated
+app_certificate.jks
+app_certificate.base64
+app/google-services.json

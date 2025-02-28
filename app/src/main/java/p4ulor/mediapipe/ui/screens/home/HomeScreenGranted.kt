@@ -168,7 +168,7 @@ fun HomeScreenGranted(
 
                     // Show the detected objects overlays
                     resultsBundle?.let {
-                        if(!geminiStatus.isEnabled){ // Easy implementation to not have to rebind the camera, and only do it when ratio changes, which is the most important
+                        if(!geminiStatus.isEnabled){ // Easy implementation to not have to rebind the camera (there are other things to do), and only do it when ratio changes, which is the most important
                             ObjectBoundsBoxOverlays(
                                 detections = it.detectedObjects.detections() ?: emptyList(),
                                 frameWidth = it.inputImageWidth,

@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -55,7 +56,7 @@ import p4ulor.mediapipe.ui.components.utils.SmoothHorizontalDivider
 import p4ulor.mediapipe.ui.components.utils.SystemNavigationBarHeight
 import p4ulor.mediapipe.ui.components.utils.currentRoute
 import p4ulor.mediapipe.ui.components.utils.previousRoute
-import p4ulor.mediapipe.ui.screens.about.AboutScreen
+import p4ulor.mediapipe.ui.screens.achievements.AchievementsScreen
 import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
@@ -94,7 +95,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                     startDestination = Screen.Home.name,
                     Modifier.padding(it), // Important so that NavHost can make the screens automatically take in consideration the bottom bar
                 ) {
-                    composable(route = Screen.About.name) { AboutScreen() }
+                    composable(route = Screen.Achievements.name) { AchievementsScreen() }
                     composable(route = Screen.Home.name) { HomeScreen(homeVM) }
                     composable(route = Screen.Settings.name) { SettingsScreen(settingsVM) }
                 }
@@ -184,7 +185,7 @@ enum class Screen(
     val materialIcon: ImageVector? = null,
     val size: Dp = 25.dp
 ) {
-    About(R.string.about, materialIcon = MaterialIcons.Info, size = 22.dp),
+    Achievements(R.string.achievements, materialIcon = MaterialIcons.WorkspacePremium, size = 22.dp),
     Home(R.string.home, materialIcon = MaterialIcons.Home),
     Settings(R.string.settings, icon = AppIcon.Settings);
 

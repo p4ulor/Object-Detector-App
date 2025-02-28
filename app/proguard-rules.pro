@@ -19,3 +19,17 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Added:
+# When building after adding buildTypes -> release, the task :app:minifyDebugWithR8 outputed a file
+# app/build/outputs/mapping/debug/missing_rules.txt
+# requesting to add the following rules
+
+-dontwarn javax.lang.model.SourceVersion
+-dontwarn javax.lang.model.element.Element
+-dontwarn javax.lang.model.element.ElementKind
+-dontwarn javax.lang.model.element.Modifier
+-dontwarn javax.lang.model.type.TypeMirror
+-dontwarn javax.lang.model.type.TypeVisitor
+-dontwarn javax.lang.model.util.SimpleTypeVisitor8
+-dontwarn org.slf4j.impl.StaticLoggerBinder

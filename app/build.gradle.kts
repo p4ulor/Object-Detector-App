@@ -1,6 +1,9 @@
 import org.jetbrains.dokka.DokkaConfiguration.*
 import org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.konan.properties.Properties
+import java.io.FileOutputStream
+import java.util.Base64
 
 plugins {
     alias(libs.plugins.android.application)
@@ -8,8 +11,9 @@ plugins {
     // Added (read readme):
     alias(libs.plugins.de.undercouch.gradle.download)
     alias(libs.plugins.kotlinxSerialization)
-    alias(libs.plugins.dokka)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.firebase)
 }
 
 android {
@@ -28,20 +32,6 @@ android {
             useSupportLibrary = true
         }
     }
-
-    buildTypes {
-        // https://developer.android.com/build/shrink-code
-        release {
-            isDebuggable = false
-            isMinifyEnabled = true // Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
-            isShrinkResources = true // removes unused resources, performed by Android Gradle plugin
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-        debug {  }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -54,7 +44,8 @@ android {
         buildConfig = true // Enables the use of the generated BuildConfig.java, used in Logging.kt
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        // https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
     packaging {
         resources {
@@ -63,7 +54,64 @@ android {
     }
 
     // Added:
-    println("Building version: ${defaultConfig.versionName})")
+    println("Building version: ${defaultConfig.versionName}")
+    val releaseSigning = "release"
+
+    val properties = Properties().apply {
+        val localProperties = project.rootProject.file("local.properties")
+        if (localProperties.exists()) {
+            println("local.properties exists")
+            load(localProperties.reader())
+        } else {
+            error("local.properties does not exist")
+        }
+    }
+
+    /**
+     * Android Studio automatically generates a debug keystore when the project is created
+     * but not for release. Run ./gradlew signingReport
+     * - https://developers.google.com/android/guides/client-auth
+     * - https://developer.android.com/studio/publish/app-signing
+     */
+    signingConfigs {
+        create(releaseSigning) {
+            // set these RELEASE_ constants in local.properties in root dir. And for Github Actions
+            // global variables can be used. Base64 is used for JKS so it's easily set in GA
+
+            val encodedJSKFile = properties.getProperty("RELEASE_JKS_FILE_BASE64")
+            val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
+            val tempKeystore = File(layout.buildDirectory.asFile.get(), "release.keystore") // Create a temp file.
+            FileOutputStream(tempKeystore).use { it.write(decodedBytes) }
+
+            storeFile = tempKeystore
+            storePassword = properties.getProperty("RELEASE_STORE_PASSWORD")
+            keyAlias = properties.getProperty("RELEASE_KEY_ALIAS")
+            keyPassword = properties.getProperty("RELEASE_KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        // https://developer.android.com/build/shrink-code
+        release {
+            isDebuggable = false
+            isMinifyEnabled = true // Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
+            isShrinkResources = true // removes unused resources, performed by Android Gradle plugin
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName(releaseSigning)
+        }
+        debug {
+            isDebuggable = true
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -93,9 +141,9 @@ dependencies {
     // implementation(libs.androidx.camera.extensions) // https://developer.android.com/media/camera/camera-extensions
 
     // MediaPipe - vision tasks
-    // - https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android
-    // - https://ai.google.dev/edge/api/mediapipe/java/com/google/mediapipe/tasks/vision/objectdetector/package-summary
-    // - https://mvnrepository.com/artifact/com.google.mediapipe/tasks-vision
+    // https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android
+    // https://ai.google.dev/edge/api/mediapipe/java/com/google/mediapipe/tasks/vision/objectdetector/package-summary
+    // https://mvnrepository.com/artifact/com.google.mediapipe/tasks-vision
     implementation(libs.tasks.vision)
 
     // Permission utils
@@ -123,9 +171,15 @@ dependencies {
     // Lottie, for animated icons/images
     implementation(libs.lottie.compose)
 
-    // Coil, for loading images outside of the app
+    // Coil, for loading images outside (not in resources) of the app
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // Firebase, using Bill of Materials (so for more FB dependencies, don't specify versions)
+    // https://firebase.google.com/docs/android/setup#available-libraries
+    implementation(platform(libs.google.firebase.bom))
+    implementation(libs.google.firebase.auth)
+    implementation(libs.google.firebase.firestore)
 
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))

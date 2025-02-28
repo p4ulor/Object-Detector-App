@@ -110,9 +110,6 @@ class MyImageAnalyser(
          * Run object detection using MediaPipe Object Detector API
          * The detection result will be obtained in [resultListener]
          */
-        if (objectDetector==null){
-            e("objectDetector is null!")
-        }
-        objectDetector?.detectAsync(mpImage, frameTime)
+        objectDetector.detectAsync(mpImage, frameTime)
     }
 }

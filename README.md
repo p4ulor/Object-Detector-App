@@ -1,15 +1,14 @@
 ## Demo 🎥
 
 ## Main features ✨
-- Detect very simple objects
-- Ask Gemini to talk about the object or describe a picture taken (TODO)
-- Save and manage results (TODO)
+- Detect very simple objects with MediaPipe
+- Ask Gemini to talk about the object or describe a picture taken
+- Showcases the user's achivements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) for those achivements (TODO)
 
 ### Side features
 - Change camera settings: Ratio and flashlight
-- Change model settings: sensitivity, max detection count, etc
-- Achievements list for the 80 Media Pipe objects (TODO)
-- Notification on new object detected as part of an achievement (TODO)
+- Change model settings: sensitivity, max detection count, model, etc
+- Notification of a new object detection that wasn't in the achievements (TODO)
 
 ## Primary Technologies 🛠️
 | MediaPipe | Gemini API | Ktor | Firebase |
@@ -22,7 +21,7 @@
     - I used the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models), which can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
     - I used [mediapipe-samples - object_detection](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android-jetpack-compose) as a reference (warning: insane spaghetti code...)
 - I intended to use [Text Generation](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/android)
-    - But it would require the user to download a LLM to their phone. So I decided to go for the Gemini API, and maybe add this feature later, to make it possible to make use of the advantage of offline AI use and just to see how it can be implemented
+    - But it would require the user to download a LLM to their phone. So I decided to go for the Gemini API.
     - The LLM Inference API support these [types of models](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference#models). The most lightwheight (1.30 GB) is:
 [gemma-1.1-2b-it-cpu-int4, LiteRT/TFLite variation](https://www.kaggle.com/models/google/gemma/tfLite/gemma-1.1-2b-it-cpu-int4)
     - [mediapipe-samples - llm_inference](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/llm_inference/android).
@@ -61,15 +60,17 @@ one and monitor the use of your API key
 - [androidx.camera.* dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
 - [google-accompanist](https://google.github.io/accompanist/) -> For permission utils
 
-## Getting Started / Setup Guide 🙌
+## Setup Guide 🙌
 - [Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
 
 ### Getting API Keys 🔑
 - Gemini API -> https://aistudio.google.com/app/apikey
 
 ### Installing ⬇️
-- a) From .apk file: Download in releases
-- b) With source code: Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
+- a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
+- b) With source code: 
+  - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
+  - Or `./gradlew assembleRelease` to install a release
 
 ## Notes 📝
 - The Machine Learning models used with MediaPipe need to be a compatible with it, the compatability depends on the feature used
@@ -79,13 +80,15 @@ one and monitor the use of your API key
 - I'm using: Jetpack Compose, Gradle's Kotlin DSL, [Gradle version catalogs](https://developer.android.com/build/migrate-to-catalogs)
 - If the object detection overlay isn't smooth, it's because you have toggled on the "Reduce Animations" in your Android's settings
 
-## Technical notes & Project structure
-
-> [!NOTE]  
-> License: © 2024-currentYear, Paulo Rosa, [all reserved to me](https://choosealicense.com/no-permission/). Do not distribute to any public the entirety or individual parts (files and text) of the project without my consent. Do not claim you're the original author. Downloading / git cloning is inevitably allowed, in order to only build the artifacts and modify the project locally and privately for non-commercial use. Pull requests are welcomed. If a fork was done do not modify this current file, specially this license.
+## Project Structure Overview
+- More details in [docs](./docs)
+```mermaid
+flowchart LR
+    A(HomeScreen) <--> B(AchievementsScreen)
+    A <--> C(SettingsScreen)
+```
 
 ## Todo 🕒
-- Add some mermaid diagrams
 - Add sfx
 - Review and clean up the architecture
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer

@@ -31,6 +31,7 @@ import kotlinx.serialization.json.Json
 import p4ulor.mediapipe.data.sources.utils.QueryParams
 import p4ulor.mediapipe.data.sources.utils.addAll
 import p4ulor.mediapipe.data.sources.utils.getIfOkOrNull
+import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 import java.io.Closeable
 
@@ -73,16 +74,21 @@ class KtorClient(private val hostName: String) : Closeable {
             retryOnServerErrors(maxRetries = 1)
         }
         HttpResponseValidator {
-            // This is a like a response interceptor. Alternative for logging: install(CallLogging)
-            // Note: body can only be read once! I've tried to log it here, but I'm not stressing about it, so I only "log" it on errors
+            // This is used like a response interceptor. Alternative for logging: install(CallLogging)
+            // Note: body can only be read once! I've tried to log it here, but I'm not stressing
+            // about it. The body should be read by the GeminiApiService using this KtorClient
             validateResponse { response ->
-                val message = with(response){
+                val responseLog = with(response){
                     val url = response.call.request.url
                     val method = response.call.request.method
                     val contentType = headers.toMap().get(HttpHeaders.ContentType).toString()
                     "KtorClient: status=$status, url=$url, method=$method, contentType=$contentType"
                 }
-                if(!response.status.isSuccess()) error(message+" body=${response.bodyAsText()}") else i(message)
+                if(response.status.isSuccess()) {
+                    i(responseLog)
+                } else {
+                    e(responseLog)
+                }
             }
         }
     }
