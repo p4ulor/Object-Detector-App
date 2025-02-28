@@ -177,7 +177,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
             track = {
                 SliderDefaults.Track(
                     it,
-                    modifier = Modifier.size(width = maxWidth * 0.8f, height = SliderTrackHeight),
+                    Modifier.size(width = maxWidth * 0.8f, height = SliderTrackHeight),
                     thumbTrackGapSize = 0.dp
                 )
             }
@@ -224,10 +224,10 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
     OutlinedTextField(
         value = apiKey,
         onValueChange = { apiKey = it },
-        label = { QuickText(R.string.enter_api_key) },
-        modifier = Modifier
+        Modifier
             .fillMaxWidth()
             .padding(bottom = GeneralPadding),
+        label = { QuickText(R.string.enter_api_key) },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done // Input Method Editor Action
@@ -282,11 +282,11 @@ private fun ColumnScope.ConnectivityStatus(hasConnection: Boolean) {
 private fun ColumnScope.SettingsHeader(styledText: AnnotatedString){
     Text(
         styledText,
+        Modifier
+            .padding(bottom = GeneralPadding)
+            .align(Alignment.Start),
         fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.headlineSmall,
-        modifier = Modifier
-            .padding(bottom = GeneralPadding)
-            .align(Alignment.Start)
     )
 }
 

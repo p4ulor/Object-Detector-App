@@ -120,7 +120,10 @@ fun ExpandableFAB(
             openerFAB()
 
             // The fabs
-            Box(Modifier.offset { IntOffset(0, fabsYoffset) }.zIndex(-1f) ) {// zIndex(-1f) So the expanded buttons dont show on top of the opener
+            Box(Modifier
+                .offset { IntOffset(0, fabsYoffset) }
+                .zIndex(-1f) // Placed under the openerFAB
+            ) {// zIndex(-1f) So the expanded buttons dont show on top of the opener
                 ExpandableFabs(fabs, canOpenUpwards, isVisible = isExpanded)
             }
         }
@@ -130,8 +133,8 @@ fun ExpandableFAB(
 @Composable
 private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolean, isVisible: Boolean) {
     AnimatedVisibility(
-        modifier = Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under the openerFAB when there are many FABs, due to the initial position of the slideIn animation
         visible = isVisible,
+        Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under the openerFAB when there are many FABs, due to the initial position of the slideIn animation
         enter = fadeIn(smooth()) + slideInVertSmooth(openUpwards),
         exit = fadeOut(smooth()) + slideOutVertSmooth(!openUpwards)
     ) {

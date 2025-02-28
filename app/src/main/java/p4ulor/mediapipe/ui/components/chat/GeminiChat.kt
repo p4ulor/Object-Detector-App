@@ -61,8 +61,8 @@ fun GeminiChat(
 
     Column(Modifier.fillMaxSize().padding(bottom = chatInputHeight)) { // Column used in order to use weight
         LazyColumn(
+            Modifier.weight(1f), // weight is necessary for reverseLayout to work. Makes so the LazyColumn to expand and align itself with the bottom edge of the parent Column
             state = scrollPosition,
-            modifier = Modifier.weight(1f), // weight is necessary for reverseLayout to work. Makes so the LazyColumn to expand and align itself with the bottom edge of the parent Column
             reverseLayout = true // reverses order of the items and show them at the bottom
         ) {
             // The key is required for animateItem to work as it's docs say

@@ -67,7 +67,7 @@ val IconSmallSize = 25.dp
 fun QuickIcon(icon: AppIcon, onClick: () -> Unit) = Icon(
     painter = painterResource(icon.resourceId),
     contentDescription = icon.name,
-    modifier = Modifier
+    Modifier
         .size(IconDefaultSize)
         .padding(PaddingAroundIcon)
         .clickable {
@@ -81,7 +81,7 @@ fun QuickIcon(icon: AppIcon, onClick: () -> Unit) = Icon(
 fun QuickIcon(icon: ImageVector, size: Dp? = null, onClick: () -> Unit) = Icon(
     imageVector = icon,
     contentDescription = icon.name,
-    modifier = Modifier
+    Modifier
         .padding(PaddingAroundIcon)
         .size(size ?: IconDefaultSize)
         .clickable {
@@ -114,7 +114,7 @@ fun QuickIconWithBorder(
 ){
     FloatingActionButton(
         onClick = onClick,
-        modifier = Modifier
+        Modifier
             .size(IconContainerDefaultSize)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
@@ -141,7 +141,7 @@ fun QuickIconWithBorder(
 ){
     FloatingActionButton(
         onClick = onClick,
-        modifier = Modifier
+        Modifier
             .size(IconContainerDefaultSize)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }

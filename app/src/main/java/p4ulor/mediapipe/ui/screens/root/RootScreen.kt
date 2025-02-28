@@ -86,7 +86,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
         val settingsVM = koinViewModel<SettingsViewModel>()
 
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             content = {
                 NavHost( // Comes with default fade transitions between routes
@@ -167,7 +167,7 @@ private fun RowScope.buildNavigationBarItem(
                 Icon(
                     painter = item.selectedIcon,
                     contentDescription = item.screen.name,
-                    modifier = Modifier.size(item.size)
+                    Modifier.size(item.size)
                 )
             }
         }

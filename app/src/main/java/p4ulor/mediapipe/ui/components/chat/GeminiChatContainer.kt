@@ -10,6 +10,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -18,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.android.utils.camera.Picture
+import p4ulor.mediapipe.ui.components.utils.DisplayHeight
+import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**
@@ -31,18 +39,34 @@ fun GeminiChatContainer(
     newGeminiMessage: Message,
     onValidUserSubmit: (String) -> Unit
 ) {
-    val density = LocalDensity.current
-    val ctx = LocalContext.current
-
     var newMessage by remember { mutableStateOf(Message()) }
     var isPendingOrAnimationInProgress by remember { mutableStateOf(false) }
     var chatInputHeight by remember { mutableStateOf(0.dp) }
+
+    val density = LocalDensity.current
+    val middleOfTheScreen = DisplayHeight / 2
+    val transparencyGradient = Brush.verticalGradient(
+        colors = listOf(
+            Color.Transparent,
+            Color.Black
+        ),
+        startY = 0f,
+        endY = with(density) { middleOfTheScreen.toPx() - BottomNavigationBarHeight.toPx() }
+    )
 
     LaunchedEffect(newGeminiMessage) {
         newMessage = newGeminiMessage
     }
 
-    Box(modifier) {
+    Box(modifier
+        .drawWithContent {
+            drawContent()
+            drawRect( // Adds fade-out effect
+                transparencyGradient,
+                blendMode = BlendMode.DstIn
+            )
+        }
+    ) {
         GeminiChat(
             newMsg = newMessage,
             chatInputHeight = chatInputHeight,
@@ -71,7 +95,7 @@ fun GeminiChatContainer(
 /** Use a real device for this preview, so you can type. Or see [GeminiChatPreview] */
 @Preview
 @Composable
-fun GeminiChatContainerPreview() = PreviewComposable {
+fun GeminiChatContainerPreview() = PreviewComposable(false) {
     var geminiResponse by remember { mutableStateOf(Message()) }
     var userPrompt by remember { mutableStateOf(Message()) }
 

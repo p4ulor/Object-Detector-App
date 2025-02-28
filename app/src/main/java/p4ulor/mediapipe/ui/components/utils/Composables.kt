@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CenteredContent(content: @Composable () -> Unit){
     Column(
-        modifier = Modifier.fillMaxSize(),
+        Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,11 +49,11 @@ fun BoxWithBackground(
         Image(
             painter = painterResource(resourceId),
             contentDescription = "Background",
-            contentScale = contentScale,
-            modifier = Modifier.fillMaxSize().then(
-               if (invert) Modifier.graphicsLayer { scaleX = -1f } // Scale Horizontally
-               else Modifier
-            )
+            Modifier.fillMaxSize().then(
+                if (invert) Modifier.graphicsLayer { scaleX = -1f } // Scale Horizontally
+                else Modifier
+            ),
+            contentScale = contentScale
         )
         content()
     }

@@ -100,7 +100,7 @@ fun ObjectBoundsBoxOverlays(
             ) {
                 Text(
                     text = "${detection.objectName} ${detection.certaintyScore}",
-                    modifier = Modifier
+                    Modifier
                         .width(box.width.dp)
                         .padding(borderWidth * 2),
                     color = Color.White,

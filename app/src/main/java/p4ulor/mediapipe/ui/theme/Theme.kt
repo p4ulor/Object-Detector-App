@@ -176,7 +176,7 @@ private val LightColorScheme = lightColorScheme(
 private fun SampleComposable(){
     Box {
         Column(
-            modifier = Modifier
+            Modifier
                 .padding(10.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -257,21 +257,21 @@ private fun SampleComposable(){
 
             CenteredRow {
                 Card(
+                    Modifier.widthIn(0.dp, 30.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    shape = roundMessageBox(true),
-                    modifier = Modifier.widthIn(0.dp, 30.dp)
+                    shape = roundMessageBox(true)
                 ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
 
                 Card(
+                    Modifier.widthIn(0.dp, 30.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                    shape = roundMessageBox(true),
-                    modifier = Modifier.widthIn(0.dp, 30.dp)
+                    shape = roundMessageBox(true)
                 ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
 
                 Card(
+                    Modifier.widthIn(0.dp, 30.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
-                    shape = roundMessageBox(true),
-                    modifier = Modifier.widthIn(0.dp, 30.dp)
+                    shape = roundMessageBox(true)
                 ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
 
                 Card(elevation = CardDefaults.outlinedCardElevation(defaultElevation = 5.dp)) {
