@@ -2,7 +2,7 @@ package p4ulor.mediapipe.data.domains.mediapipe
 
 import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
-import p4ulor.mediapipe.data.storage.preferences.UserPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 
 /**
  * A class that encapsulates the different settings that can be to detect objects using MediaPipe

@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.storage.preferences
+package p4ulor.mediapipe.data.sources.local.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore

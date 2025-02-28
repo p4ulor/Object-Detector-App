@@ -52,7 +52,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -60,8 +59,8 @@ import kotlinx.coroutines.flow.first
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.data.domains.gemini.GEMINI_AI_STUDIO
-import p4ulor.mediapipe.data.storage.preferences.UserPreferences
-import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.utils.trimToDecimals
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth

@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.storage
+package p4ulor.mediapipe.data.sources.local
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties

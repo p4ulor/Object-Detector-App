@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.sources.gemini
+package p4ulor.mediapipe.data.sources.cloud.gemini
 
 import kotlinx.serialization.Serializable
 

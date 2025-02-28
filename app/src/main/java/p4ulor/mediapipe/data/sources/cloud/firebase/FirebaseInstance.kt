@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.sources.firebase
+package p4ulor.mediapipe.data.sources.cloud.firebase
 
 import com.google.firebase.auth.FirebaseAuth
 import org.koin.core.annotation.Single

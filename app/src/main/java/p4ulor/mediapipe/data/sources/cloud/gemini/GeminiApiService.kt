@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.sources.gemini
+package p4ulor.mediapipe.data.sources.cloud.gemini
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
@@ -6,19 +6,19 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
-import p4ulor.mediapipe.data.sources.KtorClient
-import p4ulor.mediapipe.data.sources.gemini.GeminiApiEndpoints.Companion.defaultHeaders
-import p4ulor.mediapipe.data.sources.gemini.GenerateContentRequest.Content
-import p4ulor.mediapipe.data.sources.gemini.GenerateContentRequest.Image
-import p4ulor.mediapipe.data.sources.gemini.GenerateContentRequest.Part
+import p4ulor.mediapipe.data.sources.client.KtorClient
+import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiEndpoints.Companion.defaultHeaders
+import p4ulor.mediapipe.data.sources.cloud.gemini.GenerateContentRequest.Content
+import p4ulor.mediapipe.data.sources.cloud.gemini.GenerateContentRequest.Image
+import p4ulor.mediapipe.data.sources.cloud.gemini.GenerateContentRequest.Part
 import p4ulor.mediapipe.e
 import java.io.Closeable
 
 /**
  * Provides a clean interface for making HTTP calls to the [GeminiApiEndpoints] using a [KtorClient]
  * and handles Data Structure (DS) conversions between domain and HTTP bodies.
- * The methods receive DSs from [data.domains.gemini], and use DSs from [data.sources.gemini]
- * to interact with [KtorClient] and then converts them back to DS from [data.domains.gemini]
+ * The methods receive DSs from [data.domains.gemini], and use DSs from [data.sources.cloud.gemini]
+ * to use with [KtorClient] and then converts them back to DS from [data.domains.gemini]
  * See "gemini test2.sh" in docs/gemini-api-curl-test for reference.
  * @returns a [GeminiResponse] or null if there was some internal error in the request or related
  * to [http] KtorClient

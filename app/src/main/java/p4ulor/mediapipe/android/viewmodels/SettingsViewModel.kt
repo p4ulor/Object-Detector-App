@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.flow
 import org.koin.android.annotation.KoinViewModel
 import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.viewmodels.utils.launch
-import p4ulor.mediapipe.data.storage.preferences.UserPreferences
-import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
-import p4ulor.mediapipe.data.storage.preferences.dataStore
-import p4ulor.mediapipe.data.storage.preferences.secretDataStore
+import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.dataStore
+import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 
 /**

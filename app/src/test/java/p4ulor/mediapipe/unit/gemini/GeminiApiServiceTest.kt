@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import p4ulor.mediapipe.data.utils.encodeToBase64
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
-import p4ulor.mediapipe.data.sources.gemini.GeminiApiService
-import p4ulor.mediapipe.data.sources.gemini.MimeType
+import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiService
+import p4ulor.mediapipe.data.sources.cloud.gemini.MimeType
 import p4ulor.mediapipe.utils.LoggingMock
 import kotlin.test.assertTrue
 

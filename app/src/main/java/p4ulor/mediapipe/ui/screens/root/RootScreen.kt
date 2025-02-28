@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -44,10 +43,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
-import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.android.activities.utils.getActivity
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
+import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AppIcon
 import p4ulor.mediapipe.ui.components.MaterialIcons

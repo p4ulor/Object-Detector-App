@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.camera.createCameraImageAnalyser
 import p4ulor.mediapipe.android.utils.camera.createImageCaptureUseCase
-import p4ulor.mediapipe.android.utils.camera.toggleFlash
 import p4ulor.mediapipe.android.utils.camera.getSizeOfBoxKeepingRatioGivenContainer
 import p4ulor.mediapipe.android.utils.camera.hasFlash
 import p4ulor.mediapipe.android.utils.camera.is4by3
@@ -47,10 +46,11 @@ import p4ulor.mediapipe.android.utils.camera.isHdrSupported
 import p4ulor.mediapipe.android.utils.camera.takePic
 import p4ulor.mediapipe.android.utils.camera.toInt
 import p4ulor.mediapipe.android.utils.camera.toSize
+import p4ulor.mediapipe.android.utils.camera.toggleFlash
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
-import p4ulor.mediapipe.data.storage.preferences.UserPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcon

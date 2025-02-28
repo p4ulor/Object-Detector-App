@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.sources.utils
+package p4ulor.mediapipe.data.sources.client
 
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers

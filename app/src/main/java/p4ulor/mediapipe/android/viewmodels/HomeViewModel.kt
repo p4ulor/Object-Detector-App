@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.sample
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.utils.camera.CameraConstants
 import p4ulor.mediapipe.android.utils.camera.CameraConstants.toggle
-import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.utils.camera.Picture
 import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.android.viewmodels.utils.launch
@@ -27,11 +27,11 @@ import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
-import p4ulor.mediapipe.data.sources.gemini.GeminiApiService
-import p4ulor.mediapipe.data.storage.preferences.UserPreferences
-import p4ulor.mediapipe.data.storage.preferences.UserSecretPreferences
-import p4ulor.mediapipe.data.storage.preferences.dataStore
-import p4ulor.mediapipe.data.storage.preferences.secretDataStore
+import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiService
+import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
+import p4ulor.mediapipe.data.sources.local.preferences.dataStore
+import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
 import p4ulor.mediapipe.data.utils.executorForImgAnalysis
 import p4ulor.mediapipe.data.utils.uriToBase64
 import p4ulor.mediapipe.e

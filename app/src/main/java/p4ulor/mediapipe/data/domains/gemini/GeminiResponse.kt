@@ -1,6 +1,6 @@
 package p4ulor.mediapipe.data.domains.gemini
 
-import p4ulor.mediapipe.data.sources.gemini.GenerateContentResponse
+import p4ulor.mediapipe.data.sources.cloud.gemini.GenerateContentResponse
 import p4ulor.mediapipe.data.utils.getTodaysDate
 
 /**

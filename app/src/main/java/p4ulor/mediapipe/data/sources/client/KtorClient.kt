@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.sources
+package p4ulor.mediapipe.data.sources.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -13,7 +13,6 @@ import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -28,9 +27,6 @@ import io.ktor.serialization.Configuration
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.toMap
 import kotlinx.serialization.json.Json
-import p4ulor.mediapipe.data.sources.utils.QueryParams
-import p4ulor.mediapipe.data.sources.utils.addAll
-import p4ulor.mediapipe.data.sources.utils.getIfOkOrNull
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
 import java.io.Closeable

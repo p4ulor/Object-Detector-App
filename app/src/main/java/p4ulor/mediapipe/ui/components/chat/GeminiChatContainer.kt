@@ -17,9 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.utils.camera.Picture
-import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**

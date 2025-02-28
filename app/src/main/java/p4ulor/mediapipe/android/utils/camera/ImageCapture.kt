@@ -7,7 +7,7 @@ import android.provider.MediaStore
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.resolutionselector.ResolutionSelector
-import p4ulor.mediapipe.data.sources.gemini.MimeType
+import p4ulor.mediapipe.data.sources.cloud.gemini.MimeType
 import p4ulor.mediapipe.data.utils.executorCommon
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i

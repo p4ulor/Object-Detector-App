@@ -4,7 +4,7 @@ import io.ktor.client.call.body
 import io.ktor.http.ContentType
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.extension.ExtendWith
-import p4ulor.mediapipe.data.sources.KtorClient
+import p4ulor.mediapipe.data.sources.client.KtorClient
 import p4ulor.mediapipe.unit.ktor.DummyJsonPostCommentsResp.Comment
 import p4ulor.mediapipe.unit.ktor.DummyJsonPostCommentsResp.User
 import p4ulor.mediapipe.utils.LoggingMock
