@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,6 +41,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +59,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.flow.first
+import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.data.domains.gemini.GEMINI_AI_STUDIO
@@ -64,53 +68,77 @@ import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.utils.trimToDecimals
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
-import p4ulor.mediapipe.ui.components.CircleThumb
+import p4ulor.mediapipe.ui.components.CircleThumbCustom
 import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.IconSmallSize
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.QuickIcon
 import p4ulor.mediapipe.ui.components.QuickText
-import p4ulor.mediapipe.ui.components.SliderTrack
+import p4ulor.mediapipe.ui.components.SliderTrackCustom
 import p4ulor.mediapipe.ui.components.geminiLikeText
 import p4ulor.mediapipe.ui.components.mediaPipeLikeText
-import p4ulor.mediapipe.ui.components.utils.getTextSize
+import p4ulor.mediapipe.ui.components.utils.getTextWidth
 import p4ulor.mediapipe.ui.components.utils.toast
-import p4ulor.mediapipe.ui.theme.AppTheme
+import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 private val GeneralPadding = 12.dp
 
 @Composable
-fun SettingsScreen(vm: SettingsViewModel) = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
+fun SettingsScreen() {
+    val vm = koinViewModel<SettingsViewModel>()
     var currentPrefs by remember { mutableStateOf(UserPreferences()) }
-    var currentSecretPrefs by remember { mutableStateOf<UserSecretPreferences?>(null) }
+    var currentSecretPrefs by remember { mutableStateOf(UserSecretPreferences()) }
     val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
+    var isLoaded by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { // Collect only on first composition rendering
         currentPrefs = vm.getUserPrefs().first()
         currentSecretPrefs = vm.getUserSecretPrefs().first()
+        isLoaded = true
     }
 
     AnimatedVisibility(
-        visible = currentSecretPrefs != null,
+        visible = isLoaded,
         enter = fadeIn(smooth()) + scaleIn()
     ) {
-        Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
-            MediaPipeSettings(
-                currPrefs = currentPrefs,
-                onNewPrefs = { vm.saveUserPrefs(it) }
-            )
+        SettingsScreenUi(
+            hasConnection,
+            currentPrefs,
+            currentSecretPrefs,
+            saveUserPrefs = {
+                vm.saveUserPrefs(it)
+            },
+            saveUserSecretPrefs = {
+                vm.saveUserSecretPrefs(it)
+            }
+        )
+    }
+}
 
-            Spacer(Modifier.size(GeneralPadding * 2))
+@Composable
+private fun SettingsScreenUi(
+    hasConnection: Boolean,
+    userPreferences: UserPreferences,
+    userSecretPreferences: UserSecretPreferences,
+    saveUserPrefs: (UserPreferences) -> Unit,
+    saveUserSecretPrefs: (UserSecretPreferences) -> Unit
+) = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
+    Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
+        MediaPipeSettings(
+            currPrefs = userPreferences,
+            onNewPrefs = { saveUserPrefs(it) }
+        )
 
-            GeminiSettings(
-                currPrefs = currentSecretPrefs!!,
-                onNewPrefs = { vm.saveUserSecretPrefs(it) }
-            )
+        Spacer(Modifier.size(GeneralPadding * 2))
 
-            Spacer(Modifier.size(GeneralPadding * 2))
+        GeminiSettings(
+            currPrefs = userSecretPreferences,
+            onNewPrefs = { saveUserSecretPrefs(it) }
+        )
 
-            ConnectivityStatus(hasConnection)
-        }
+        Spacer(Modifier.size(GeneralPadding * 2))
+
+        ConnectivityStatus(hasConnection)
     }
 }
 
@@ -134,7 +162,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
         QuickText(R.string.minimum_detection_certainty)
         Text(
             "${(minDetectCertainty*100).toInt()}%",
-            Modifier.width(getTextSize("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
+            Modifier.width(getTextWidth("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
             fontWeight = FontWeight.Bold,
             maxLines = 1
         )
@@ -150,7 +178,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
                 .padding(GeneralPadding)
                 .widthIn(0.dp, maxWidth * 0.8f),
             valueRange = detectionCertaintyRange.start..detectionCertaintyRange.endInclusive,
-            track = { it.SliderTrack(SliderTrackHeight) }
+            track = { it.SliderTrackCustom(SliderTrackHeight) }
         )
     }
 
@@ -173,7 +201,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
                 .widthIn(0.dp, maxWidth * 0.8f),
             valueRange = objectDetectionsRange.first.toFloat()..objectDetectionsRange.last.toFloat(),
             steps = objectDetectionsRange.last - 2, // I don't know why slider puts 2 extra positions
-            thumb = { CircleThumb() },
+            thumb = { CircleThumbCustom() },
             track = {
                 SliderDefaults.Track(
                     it,
@@ -234,7 +262,7 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
         ),
         singleLine = true,
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = { // todo add icon to link to site to get api key
+        trailingIcon = {
             Row {
                 QuickIcon(
                     MaterialIcons.OpenInNew,
@@ -265,11 +293,11 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
 }
 
 @Composable
-private fun ColumnScope.ConnectivityStatus(hasConnection: Boolean) {
-    val (animation, modifier) = if (hasConnection) {
-        R.raw.success_animation to Modifier
+private fun ConnectivityStatus(hasConnection: Boolean) {
+    val (animation, modifier) = if (hasConnection) { // Because the lottie files have different paddings...
+        R.raw.success_animation to Modifier.height(80.dp)
     } else {
-        R.raw.error_animation to Modifier.size(30.dp, 80.dp)
+        R.raw.error_animation to Modifier.height(30.dp).offset(y = 21.dp)
     }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(animation))
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -292,8 +320,12 @@ private fun ColumnScope.SettingsHeader(styledText: AnnotatedString){
 
 @Preview
 @Composable
-private fun SettingsScreenPreview() = AppTheme(enableDarkTheme = true) {
-    Surface {
-        //SettingsScreen()
-    }
+private fun SettingsScreenPreview() = PreviewComposable {
+    SettingsScreenUi(
+        hasConnection = true,
+        UserPreferences(),
+        UserSecretPreferences(),
+        {},
+        {}
+    )
 }

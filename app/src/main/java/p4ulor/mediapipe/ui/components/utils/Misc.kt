@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavHostController
 
 /**
- * Gets the height system's navigation bar (recent items, home, back). Useful to setting the height
- * of the app's bottomBar when using [enableEdgeToEdge]. And this method seems kinda blocking
+ * Gets the height of the system's navigation bar (recent items, home, back). Useful to setting
+ * the height of the app's bottomBar when using [enableEdgeToEdge]. And this method seems kinda blocking
  */
 val SystemNavigationBarHeight
     @Composable
@@ -21,7 +21,7 @@ val SystemNavigationBarHeight
 
 /** Gets [Dp] size of a text (considering the default text size) */
 @Composable
-fun getTextSize(string: String): Dp {
+fun getTextWidth(string: String): Dp {
     val textMeasurer = rememberTextMeasurer()
     return with(LocalDensity.current) { textMeasurer.measure(string).size.width.toDp() }
 }

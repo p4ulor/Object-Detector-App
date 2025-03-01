@@ -29,7 +29,7 @@ import p4ulor.mediapipe.ui.theme.ColorSchemeGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SliderState.SliderTrack(SliderHeight: Dp) {
+fun SliderState.SliderTrackCustom(SliderHeight: Dp) {
     val trackColor = ColorSchemeGradient()
     val primaryContainer = MaterialTheme.colorScheme.primaryContainer
     Canvas(
@@ -38,7 +38,7 @@ fun SliderState.SliderTrack(SliderHeight: Dp) {
             .height(SliderHeight)) {
         drawRoundRect(
             brush = trackColor,
-            size = Size(size.width * this@SliderTrack.value, size.height),
+            size = Size(size.width * this@SliderTrackCustom.value, size.height),
             cornerRadius = CornerRadius(5.dp.toPx(), 5.dp.toPx()),
             colorFilter = ColorFilter.lighting(primaryContainer, Color(0xFF9B9B9B))
         )
@@ -52,7 +52,7 @@ fun SliderState.SliderTrack(SliderHeight: Dp) {
 }
 
 @Composable
-fun CircleThumb(){
+fun CircleThumbCustom(){
     val color = MaterialTheme.colorScheme.primary
     Canvas(Modifier.size(20.dp))  {
         drawCircle(color)
@@ -62,7 +62,7 @@ fun CircleThumb(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun SliderPreviews() = AppTheme {
+private fun SliderCustomsPreviews() = AppTheme {
     Column {
         val SliderTrackHeight = 10.dp
         var detectionSensitivity by remember { mutableFloatStateOf(0.5f) }
@@ -71,7 +71,7 @@ private fun SliderPreviews() = AppTheme {
             value = detectionSensitivity,
             onValueChange = { detectionSensitivity = it.trimToDecimals(2) },
             valueRange = 0f..1f,
-            track = { it.SliderTrack(SliderTrackHeight) }
+            track = { it.SliderTrackCustom(SliderTrackHeight) }
         )
     }
 }

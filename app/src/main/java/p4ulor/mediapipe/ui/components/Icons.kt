@@ -5,6 +5,8 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -15,9 +17,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.ui.theme.PreviewComposable
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 
 /** Todo, try to find a better solution, maybe */
@@ -107,7 +111,7 @@ fun QuickIconWithBorder(
 }
 
 @Composable
-fun QuickIconWithBorder(
+private fun QuickIconWithBorder(
     icon: AppIcon,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
@@ -134,7 +138,7 @@ fun QuickIconWithBorder(
 }
 
 @Composable
-fun QuickIconWithBorder(
+private fun QuickIconWithBorder(
     icon: ImageVector,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
@@ -154,4 +158,10 @@ fun QuickIconWithBorder(
             tint = Color.White // MaterialTheme.colorScheme.onBackground
         )
     }
+}
+
+@Preview
+@Composable
+private fun QuickIconWithBorderPreview() = PreviewComposable {
+    QuickIconWithBorder(AppIcon.Gemini, {})
 }

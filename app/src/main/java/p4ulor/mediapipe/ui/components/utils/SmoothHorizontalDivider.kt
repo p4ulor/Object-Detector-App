@@ -54,7 +54,7 @@ fun SmoothHorizontalDividerCustom(
                         color, // Opaque at the center
                         color.copy(alpha = 0f) // Transparent at the edges
                     ),
-                    radius = width.value * 2 - (width.value/2)
+                    radius = width.value * 2 - (width.value / 2)
                 )
             )
             .padding(3.dp)

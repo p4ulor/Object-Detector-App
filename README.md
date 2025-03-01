@@ -93,7 +93,6 @@ flowchart LR
 - Review and clean up the architecture
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
 - fix The application may be doing too much work on its main thread.
-- Make more composables previewable
 - CI & CD:
   - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
   - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages

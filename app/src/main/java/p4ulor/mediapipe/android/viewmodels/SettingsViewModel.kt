@@ -5,12 +5,14 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.flow
 import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Single
 import p4ulor.mediapipe.android.utils.NetworkObserver
 import p4ulor.mediapipe.android.viewmodels.utils.launch
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.dataStore
 import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 
 /**
@@ -18,6 +20,7 @@ import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
  * All params are injected automatically with Koin
  */
 @SuppressLint("StaticFieldLeak") // Property ctx will be injected
+@Single // So it's also not re-instantiated on composable destruction's
 @KoinViewModel
 class SettingsViewModel(private val ctx: Context, val network: NetworkObserver) : ViewModel() {
 

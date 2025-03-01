@@ -43,7 +43,7 @@ fun BoxWithBackground(
     boxModifier: Modifier = Modifier.fillMaxSize(),
     contentScale: ContentScale = ContentScale.FillBounds,
     invert: Boolean = false,
-    content: @Composable @UiComposable BoxWithConstraintsScope.() -> Unit
+    content: @Composable BoxWithConstraintsScope.() -> Unit
 ) {
     BoxWithConstraints(boxModifier) {
         Image(

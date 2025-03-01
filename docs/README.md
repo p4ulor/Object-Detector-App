@@ -66,6 +66,10 @@ E(DependencyInjection);
 
 ```
 
-## Resources
+## Things that were not done for the sake of moving out to other things
+- Animated detection overlays only support detection 1 type of object, since an identifier is required for the animation to track, but MediaPipe doesn't provide identifiers.
+- Not worrying about still using ImageDetectionUseCase when toggling Gemini mode
+
+### Resources
 - https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android
 - https://firebase.google.com/docs/samples?hl=en&authuser=0

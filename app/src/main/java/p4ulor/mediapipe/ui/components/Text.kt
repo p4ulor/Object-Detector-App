@@ -75,7 +75,7 @@ fun mediaPipeLikeText(@StringRes text: Int) = buildAnnotatedString {
 
 @Preview
 @Composable
-private fun TextPreviews() = AppTheme(enableDarkTheme = false){
+private fun TextPreviews() = AppTheme(enableDarkTheme = true){
     Surface {
         Column(Modifier.fillMaxWidth()) {
             Text(

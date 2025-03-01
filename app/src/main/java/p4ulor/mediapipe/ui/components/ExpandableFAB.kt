@@ -48,7 +48,7 @@ private val PaddingBetweenButtons = 2.dp
 fun ExpandableFAB(
     listOpenerFAB: FloatingActionButton,
     fabs: List<FloatingActionButton>,
-    initialPosition: FabPosition = FabPosition.Top
+    initialPosition: FabPosition = FabPosition.TopRight
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -60,7 +60,7 @@ fun ExpandableFAB(
     val maxAvailableWidthPx = display.widthPixels - iconContainerSizePx
     val maxAvailableHeightPx = display.heightPixels - bottomBarHeight - iconContainerSizePx
 
-    val initialOffset = if(initialPosition.isTop){
+    val initialOffset = if(initialPosition.isTopRight){
         IntOffset(x = (maxAvailableWidthPx - extraPaddingPx).toInt(), y = extraPaddingPx.toInt())
     } else {
         IntOffset(x = (maxAvailableWidthPx - extraPaddingPx).toInt(), y = maxAvailableHeightPx.toInt())
@@ -71,7 +71,7 @@ fun ExpandableFAB(
         var isExpanded by remember { mutableStateOf(false) }
         var openerFabOffsetX by remember { mutableFloatStateOf(initialOffset.x.toFloat()) } //px
         var openerFabOffsetY by remember { mutableFloatStateOf(initialOffset.y.toFloat()) } //px
-        var canOpenUpwards by remember { mutableStateOf(initialPosition.isBottom) }
+        var canOpenUpwards by remember { mutableStateOf(initialPosition.isBottomRight) }
 
         canOpenUpwards = run {
             val maxYreachOfTheFabs = openerFabOffsetY + iconContainerSizePx + fabs.size * (iconContainerSizePx + paddingBetweenButtonsPx)
@@ -122,8 +122,8 @@ fun ExpandableFAB(
             // The fabs
             Box(Modifier
                 .offset { IntOffset(0, fabsYoffset) }
-                .zIndex(-1f) // Placed under the openerFAB
-            ) {// zIndex(-1f) So the expanded buttons dont show on top of the opener
+                .zIndex(-1f) // So the fabs are placed under the openerFAB
+            ) {
                 ExpandableFabs(fabs, canOpenUpwards, isVisible = isExpanded)
             }
         }
@@ -134,7 +134,7 @@ fun ExpandableFAB(
 private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolean, isVisible: Boolean) {
     AnimatedVisibility(
         visible = isVisible,
-        Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under the openerFAB when there are many FABs, due to the initial position of the slideIn animation
+        Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under and above the openerFAB when there are many FABs, due to the initial position of the slideIn animation
         enter = fadeIn(smooth()) + slideInVertSmooth(openUpwards),
         exit = fadeOut(smooth()) + slideOutVertSmooth(!openUpwards)
     ) {
@@ -152,14 +152,14 @@ data class FloatingActionButton(
 )
 
 enum class FabPosition {
-    Top,
-    Bottom;
+    TopRight,
+    BottomRight;
 
-    val isTop: Boolean
-        get() = this == Top
+    val isTopRight: Boolean
+        get() = this == TopRight
 
-    val isBottom: Boolean
-        get() = this == Bottom
+    val isBottomRight: Boolean
+        get() = this == BottomRight
 }
 
 @Preview
@@ -173,6 +173,6 @@ private fun ExpandableFABPreview() = AppTheme {
             FloatingActionButton(AnyIcon(AppIcon.Camera)) { i("Edit clicked") },
             FloatingActionButton(AnyIcon(AppIcon.Gemini)) { i("Share clicked") }
         ),
-        initialPosition = FabPosition.Top
+        initialPosition = FabPosition.TopRight
     )
 }

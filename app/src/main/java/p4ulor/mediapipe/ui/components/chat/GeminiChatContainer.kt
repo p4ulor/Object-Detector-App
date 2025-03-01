@@ -95,7 +95,7 @@ fun GeminiChatContainer(
 /** Use a real device for this preview, so you can type. Or see [GeminiChatPreview] */
 @Preview
 @Composable
-fun GeminiChatContainerPreview() = PreviewComposable(false) {
+fun GeminiChatContainerPreview() = PreviewComposable(enableDarkTheme = false) {
     var geminiResponse by remember { mutableStateOf(Message()) }
     var userPrompt by remember { mutableStateOf(Message()) }
 

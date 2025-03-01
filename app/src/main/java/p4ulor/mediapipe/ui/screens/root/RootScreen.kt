@@ -79,11 +79,11 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
     }
 
     BoxWithBackground(getBackground(currentScreen)) {
+
         // I'll keep this VM here for demo/historical purposes, the other VM's are injected with Koin
         val homeVM = viewModel<HomeViewModel>(
             factory = create<HomeViewModel>(LocalContext.current.applicationContext)
         )
-        val settingsVM = koinViewModel<SettingsViewModel>()
 
         Scaffold(
             Modifier.fillMaxSize(),
@@ -96,7 +96,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                 ) {
                     composable(route = Screen.Achievements.name) { AchievementsScreen() }
                     composable(route = Screen.Home.name) { HomeScreen(homeVM) }
-                    composable(route = Screen.Settings.name) { SettingsScreen(settingsVM) }
+                    composable(route = Screen.Settings.name) { SettingsScreen() }
                 }
 
                 BackHandler { // Should be placed after NavHost, so it's BackHandler is overridden by this
@@ -121,7 +121,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                     ) {
                         bottomBarDestinations.forEach { item ->
                             buildNavigationBarItem(item, currentScreen, onClick = { barItem ->
-                                if(currentScreen.name != barItem.screen.name){ // Avoids re-loading the route again
+                                if (currentScreen.name != barItem.screen.name) { // Avoids re-loading the route again
                                     navigateTo(barItem.screen)
                                 }
                             })

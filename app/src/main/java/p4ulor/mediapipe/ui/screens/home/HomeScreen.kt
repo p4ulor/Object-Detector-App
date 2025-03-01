@@ -72,3 +72,47 @@ fun HomeScreen(viewModel: HomeViewModel) {
         }
     }
 }
+
+@Composable
+private fun HomeScreenUi(userPreferences: UserPreferences, userSecretPreferences: UserSecretPreferences) {
+    val ctx = LocalContext.current
+
+    val isGranted = requestPermission(Manifest.permission.CAMERA, onPermissionNotGranted = {
+        CenteredContent {
+            /** See [requestPermission] */
+            var oneTimePermRequestWasUsed by rememberSaveable { mutableStateOf(false) }
+            QuickText(R.string.no_camera_permission)
+            Button(onClick = {
+                if(!oneTimePermRequestWasUsed){
+                    ctx.getActivity()?.requestPermission(Manifest.permission.CAMERA)
+                    oneTimePermRequestWasUsed = true
+                } else {
+                    ctx.requestUserToManuallyAddThePermission()
+                }
+            }) {
+                QuickText(R.string.get_permissions)
+            }
+        }
+    })
+
+    /*if(isGranted){
+        var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
+        var prefs by remember { mutableStateOf<UserPreferences?>(null) }
+        var secretPrefs by remember { mutableStateOf<UserSecretPreferences?>(null) }
+
+        LaunchedEffect(Unit) {
+            delay(500) // To let the initial launch animations to breathe
+            prefs = viewModel.loadUserPrefs().first() // Loads prefs which need to be obtained everytime if user changed them in Settings
+            secretPrefs = viewModel.loadUserSecretPrefs().first()
+            cameraProvider = ctx.getCameraProvider()
+        }
+
+        if(cameraProvider!=null && prefs!=null && secretPrefs!=null) {
+            HomeScreenGranted(viewModel, cameraProvider!!, prefs!!)
+        } else {
+            CenteredContent {
+                CircularProgressIndicator(Modifier.size(100.dp))
+            }
+        }
+    }*/
+}

@@ -28,5 +28,10 @@ fun slideOutVertSmooth(slideUp: Boolean = true, durationMillis: Int = 400) = sli
     targetOffsetY = { fullHeight -> fullHeight.handleSlide(!slideUp) } // targetOffsetY essentially inverts the logic of this parameter, but to keep the caller of this function aware of the inversion between the in and out transition, we invert the value here, making it more intuitive to the caller
 )
 
+/** Handles either the initial or target height */
 private fun Int.handleSlide(slideUp: Boolean) =
-    if(slideUp) this / 2 else -this / 2
+    if(slideUp) {
+        this / 2
+    } else {
+        - this / 2
+    }
