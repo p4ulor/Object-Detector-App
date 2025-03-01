@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.NoPhotography
 import androidx.compose.material.icons.filled.Send
@@ -35,6 +36,7 @@ import p4ulor.mediapipe.android.utils.camera.Picture
 import p4ulor.mediapipe.ui.components.IconMediumSize
 import p4ulor.mediapipe.ui.components.IconSmallSize
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.MaterialIconsExt
 import p4ulor.mediapipe.ui.components.QuickIcon
 import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.utils.RoundRectangleShape
@@ -96,7 +98,7 @@ fun ChatInput(
                         contentScale = ContentScale.Crop
                     )
                 }
-                val sendIcon = if(disableSubmit) MaterialIcons.Block else MaterialIcons.Send
+                val sendIcon = if(disableSubmit) MaterialIcons.Block else MaterialIconsExt.Send
                 QuickIcon(sendIcon, IconSmallSize) {
                     validateInputAndSubmit()
                 }

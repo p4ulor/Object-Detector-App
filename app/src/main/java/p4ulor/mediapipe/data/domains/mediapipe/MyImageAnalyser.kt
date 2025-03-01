@@ -11,6 +11,7 @@ import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.core.ErrorListener
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetector
+import p4ulor.mediapipe.android.utils.doesAssetExist
 import p4ulor.mediapipe.e
 
 /**
@@ -23,13 +24,18 @@ class MyImageAnalyser(
     private val resultCallback: ObjectDetectorCallbacks
 ) : ImageAnalysis.Analyzer {
 
-    private lateinit var objectDetector: ObjectDetector
+    private var objectDetector: ObjectDetector? = null
 
     init {
         setupObjectDetector()
     }
 
     private fun setupObjectDetector() = with(settings){
+        if(!context.doesAssetExist(model.id)){
+            e("setupObjectDetector: model ${model.id} not found")
+            return@with
+        }
+
         val mediaPipeBaseOptions = BaseOptions.builder()
             .setDelegate(processor)
             .setModelAssetPath(model.id)
@@ -50,7 +56,11 @@ class MyImageAnalyser(
                     .setErrorListener(errorListener())
         }
 
-        objectDetector = ObjectDetector.createFromOptions(context, objectDetectorOptions.build())
+        objectDetector = runCatching {
+            ObjectDetector.createFromOptions(context, objectDetectorOptions.build())
+        }.onFailure {
+            e("setupObjectDetector error: $it")
+        }.getOrNull()
     }
 
     private fun resultListener() = MPImageResultListener { detectedObjects, inputImage ->
@@ -110,6 +120,6 @@ class MyImageAnalyser(
          * Run object detection using MediaPipe Object Detector API
          * The detection result will be obtained in [resultListener]
          */
-        objectDetector.detectAsync(mpImage, frameTime)
+        objectDetector?.detectAsync(mpImage, frameTime)
     }
 }

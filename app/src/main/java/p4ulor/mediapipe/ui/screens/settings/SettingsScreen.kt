@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -72,6 +73,7 @@ import p4ulor.mediapipe.ui.components.CircleThumbCustom
 import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.IconSmallSize
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.MaterialIconsExt
 import p4ulor.mediapipe.ui.components.QuickIcon
 import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.SliderTrackCustom
@@ -265,7 +267,7 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
         trailingIcon = {
             Row {
                 QuickIcon(
-                    MaterialIcons.OpenInNew,
+                    MaterialIconsExt.OpenInNew,
                     IconSmallSize
                 ) {
                     val openInBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(GEMINI_AI_STUDIO))

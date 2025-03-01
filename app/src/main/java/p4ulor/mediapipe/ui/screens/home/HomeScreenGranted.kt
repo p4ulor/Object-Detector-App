@@ -7,6 +7,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.UseCase
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
@@ -141,7 +142,7 @@ fun HomeScreenGranted(
                     key(imageCaptureUseCase) { // Only re-create this view when imageCaptureUseCase updates (due to a camera ratio toggle)
                         AndroidView( // CameraX isn't providing a composable yet for Camera Preview, so we use AndroidView to use it
                             modifier = Modifier.fillMaxSize(),
-                            factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these usacases and using an AndroidView, may explain this, so maybe this can't be avoided
+                            factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these use cases and using an AndroidView, may explain this, so maybe this can't be avoided
                                 val cameraPreviewView = PreviewView(ctx)
 
                                 val imageAnalysisSettings = vm.initObjectDetector(
@@ -294,7 +295,7 @@ private fun EdgeBars(cameraPreviewSize: Size) {
 }
 
 /**
- * Specifies the right modifer and alignment for 4_3 and 16_9
+ * Specifies the right modifier and alignment for 4_3 and 16_9
  * - 4_3 -> Top with height equal to half of the available height
  * - 16_9 -> Placed on bottom with max size
  */

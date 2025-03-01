@@ -61,6 +61,8 @@ enum class AppIcon(val resourceId: Int, val useOriginalColors: Boolean = false) 
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */
 val MaterialIcons = ComposeMaterialIcons.Default
+/** To handle deprecated icons with the introduction of AutoMirrored */
+val MaterialIconsExt = ComposeMaterialIcons.AutoMirrored.Default
 
 val PaddingAroundIcon = 10.dp
 val IconDefaultSize = 44.dp
