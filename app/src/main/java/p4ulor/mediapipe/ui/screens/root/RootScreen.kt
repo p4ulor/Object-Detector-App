@@ -1,26 +1,16 @@
 package p4ulor.mediapipe.ui.screens.root
 
-import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,42 +22,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.activities.utils.getActivity
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
-import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
 import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.AppIcon
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
-import p4ulor.mediapipe.ui.components.utils.SmoothHorizontalDivider
-import p4ulor.mediapipe.ui.components.utils.SystemNavigationBarHeight
 import p4ulor.mediapipe.ui.components.utils.currentRoute
 import p4ulor.mediapipe.ui.components.utils.previousRoute
 import p4ulor.mediapipe.ui.screens.achievements.AchievementsScreen
 import p4ulor.mediapipe.ui.screens.home.HomeScreen
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
-import p4ulor.mediapipe.ui.theme.AppTheme
 
 val BottomNavigationBarHeight = 60.dp
 
 @Composable
 fun RootScreen() = Surface { // The surface is used to for theming to work properly
+    val ctx = LocalContext.current
     val navController = rememberNavController()
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Home) }
     var isBottomBarVisible by remember { mutableStateOf(false) }
-    val ctx = LocalContext.current
 
     LaunchedEffect(Unit) {
         isBottomBarVisible = true
@@ -114,19 +96,9 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                     visible = isBottomBarVisible,
                     enter = fadeIn(smooth())
                 ) {
-                    SmoothHorizontalDivider()
-                    NavigationBar(
-                        Modifier.height(SystemNavigationBarHeight + BottomNavigationBarHeight),
-                        Color.Transparent
-                    ) {
-                        bottomBarDestinations.forEach { item ->
-                            buildNavigationBarItem(item, currentScreen, onClick = { barItem ->
-                                if (currentScreen.name != barItem.screen.name) { // Avoids re-loading the route again
-                                    navigateTo(barItem.screen)
-                                }
-                            })
-                        }
-                    }
+                    BottomBar(currentScreen, onNavigateTo = { screen ->
+                        navigateTo(screen)
+                    })
                 }
             }
         )
@@ -146,33 +118,6 @@ private fun getBackground(currentScreen: Screen) = if(isSystemInDarkTheme()) {
     }
 }
 
-@Composable
-private fun RowScope.buildNavigationBarItem(
-    item: NavItem,
-    currentScreen: Screen,
-    onClick: (item: NavItem) -> Unit,
-) = NavigationBarItem(
-        selected = currentScreen == item.screen,
-        onClick = { onClick(item) },
-        label = { Text(stringResource(item.screen.nameRes)) },
-        alwaysShowLabel = false, // the label will only be shown when this item is selected
-        icon = {
-            BadgedBox(
-                badge = {
-                    if(item.hasNews) {
-                        Badge()
-                    }
-                }
-            ) {
-                Icon(
-                    painter = item.selectedIcon,
-                    contentDescription = item.screen.name,
-                    Modifier.size(item.size)
-                )
-            }
-        }
-    )
-
 /**
  * This enum defines the order in which the destinations appear.
  * The names of the enums are also the id of the each screen
@@ -191,15 +136,4 @@ enum class Screen(
     companion object {
         fun from(string: String?) = Screen.values().first{ it.name == string }
     }
-}
-
-/** If it's failing, comment out uses of [LocalContext.current]. Find a solution for this */
-@Preview(
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    device = Devices.PIXEL_3
-)
-@Composable
-private fun RootScreenPreview() = AppTheme {
-    RootScreen()
 }

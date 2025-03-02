@@ -20,11 +20,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.activities.utils.getActivity
 import p4ulor.mediapipe.android.utils.camera.getCameraProvider
@@ -33,7 +31,6 @@ import p4ulor.mediapipe.android.utils.requestUserToManuallyAddThePermission
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
-import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.utils.CenteredContent
 import p4ulor.mediapipe.ui.theme.PreviewComposable

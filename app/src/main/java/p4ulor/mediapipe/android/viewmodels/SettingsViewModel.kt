@@ -12,7 +12,6 @@ import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.dataStore
 import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
-import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.screens.settings.SettingsScreen
 
 /**

@@ -116,7 +116,7 @@ android {
 
 dependencies {
 
-    // Default (with some things removed):
+    // Default (with some things removed, and androidTestImplementation moves to bottom):
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -126,9 +126,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -181,6 +178,8 @@ dependencies {
     implementation(libs.google.firebase.auth)
     implementation(libs.google.firebase.firestore)
 
+    /** Test dependencies */
+
     // kotlin.test for utility methods to allow parameter naming, while JUnit does not
     testImplementation(kotlin("test"))
     testImplementation(libs.coroutines.test)
@@ -191,6 +190,11 @@ dependencies {
 
     // Mockk
     testImplementation(libs.mockk)
+
+    // Defauts, for UI tests (AKA Instrumented tests)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 }
 
 // Added:
