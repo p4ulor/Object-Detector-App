@@ -14,6 +14,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -132,7 +133,7 @@ fun HomeScreenGranted(
                     }
                 )
 
-                EdgeBars(cameraPreviewSize)
+                EdgeBars(cameraPreviewSize, aligntment)
 
                 Box(
                     Modifier
@@ -169,7 +170,7 @@ fun HomeScreenGranted(
 
                     // Show the detected objects overlays
                     resultsBundle?.let {
-                        if(!geminiStatus.isEnabled){ // Easy implementation to not have to rebind the camera (there are other things to do), and only do it when ratio changes, which is the most important
+                        if(!geminiStatus.isEnabled){ // Easy implementation to not have to rebind the camera (there are other things to do), and only do it when ratio changes, which is the most important to be able to take pics after doing so
                             ObjectBoundsBoxOverlays(
                                 detections = it.detectedObjects.detections(),
                                 frameWidth = it.inputImageWidth,
@@ -203,7 +204,7 @@ fun HomeScreenGranted(
             fabs = buildList {
                 add(
                     FloatingActionButton(AnyIcon(AppIcon.Camera)) {
-                        imageCaptureUseCase.takePic(ctx) { picture ->
+                        imageCaptureUseCase.takePic(ctx, saveInStorage = prefs.savePictures) { picture ->
                             vm.savePicture(picture)
                         }
                     }
@@ -285,9 +286,10 @@ private fun startCameraAndPreviewView(
  * if(isAppMinimized) is used to avoid displaying this background when changing screens
  */
 @Composable
-private fun EdgeBars(cameraPreviewSize: Size) {
+private fun BoxWithConstraintsScope.EdgeBars(cameraPreviewSize: Size, aligntment: Alignment) {
     Box(
         Modifier
+            .align(aligntment)
             .fillMaxWidth()
             .height(cameraPreviewSize.height.dp)
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))

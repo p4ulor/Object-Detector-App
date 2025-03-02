@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,6 +22,8 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -45,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -62,7 +64,7 @@ import kotlinx.coroutines.flow.first
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
-import p4ulor.mediapipe.data.domains.gemini.GEMINI_AI_STUDIO
+import p4ulor.mediapipe.data.domains.gemini.GEMINI_AI_STUDIO_LINK
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.utils.trimToDecimals
@@ -78,11 +80,12 @@ import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.SliderTrackCustom
 import p4ulor.mediapipe.ui.components.geminiLikeText
 import p4ulor.mediapipe.ui.components.mediaPipeLikeText
-import p4ulor.mediapipe.ui.components.utils.getTextWidth
+import p4ulor.mediapipe.ui.components.utils.textWidthOf
 import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 private val GeneralPadding = 12.dp
+private val HorizontalPadding = 8.dp
 
 @Composable
 fun SettingsScreen() {
@@ -140,6 +143,13 @@ private fun SettingsScreenUi(
         Spacer(Modifier.size(GeneralPadding * 2))
 
         ConnectivityStatus(hasConnection)
+
+        Spacer(Modifier.size(GeneralPadding * 2))
+
+        SavePicturesCheckBox(
+            currPrefs = userPreferences,
+            onNewPrefs = { saveUserPrefs(it) }
+        )
     }
 }
 
@@ -151,7 +161,6 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
     var minDetectCertainty by remember { mutableFloatStateOf(currPrefs.minDetectCertainty) }
     var maxObjectsDetections by remember { mutableIntStateOf(currPrefs.maxObjectDetections) }
     var enableAnimations by remember { mutableStateOf(currPrefs.enableAnimations) }
-    var selectedModel by remember { mutableStateOf(currPrefs.selectedModel) }
 
     val detectionCertaintyRange = UserPreferences.Companion.Ranges.detectionCertainty
     val objectDetectionsRange = UserPreferences.Companion.Ranges.objectDetections
@@ -163,7 +172,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
         QuickText(R.string.minimum_detection_certainty)
         Text(
             "${(minDetectCertainty*100).toInt()}%",
-            Modifier.width(getTextWidth("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
+            Modifier.width(textWidthOf("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
             fontWeight = FontWeight.Bold,
             maxLines = 1
         )
@@ -173,7 +182,9 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
             value = minDetectCertainty,
             onValueChange = { minDetectCertainty = it.trimToDecimals(2) },
             onValueChangeFinished = {
-                onNewPrefs(currPrefs.apply { this.minDetectCertainty = minDetectCertainty })
+                onNewPrefs(currPrefs.apply {
+                    this.minDetectCertainty = minDetectCertainty
+                })
             },
             modifier = Modifier
                 .padding(GeneralPadding)
@@ -195,7 +206,9 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
                 maxObjectsDetections = it.toInt()
             },
             onValueChangeFinished = {
-                onNewPrefs(currPrefs.apply { this.maxObjectDetections = maxObjectsDetections })
+                onNewPrefs(currPrefs.apply {
+                    this.maxObjectDetections = maxObjectsDetections
+                })
             },
             modifier = Modifier
                 .padding(GeneralPadding)
@@ -205,7 +218,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
             thumb = { CircleThumbCustom() },
             track = {
                 SliderDefaults.Track(
-                    it,
+                    sliderState = it,
                     Modifier.size(width = maxWidth * 0.8f, height = SliderTrackHeight),
                     thumbTrackGapSize = 0.dp
                 )
@@ -216,14 +229,17 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
     Row(
         Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.Center
     ) {
         QuickText(R.string.detection_animations)
+        WidthSpacer(GeneralPadding)
         Switch(
             checked = enableAnimations,
             onCheckedChange = {
                 enableAnimations = !enableAnimations
-                onNewPrefs(currPrefs.apply { this.enableAnimations = it })
+                onNewPrefs(currPrefs.apply {
+                    this.enableAnimations = it
+                })
             },
             colors = SwitchDefaults.colors(
                 uncheckedTrackColor = MaterialTheme.colorScheme.scrim
@@ -234,11 +250,15 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
     Spacer(Modifier.size(GeneralPadding))
 
     DropdownOptions(
-        label = "Model",
-        preSelectedOption = selectedModel,
+        label = R.string.model,
+        preSelectedOption = currPrefs.selectedModel,
         options = models,
-        horizontalPadding = 8.dp,
-        onNewOption = { onNewPrefs(currPrefs.apply { this.selectedModel = it }) }
+        horizontalPadding = HorizontalPadding,
+        onNewOption = {
+            onNewPrefs(currPrefs.apply {
+                this.selectedModel = it
+            })
+        }
     )
 }
 
@@ -269,7 +289,7 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
                     MaterialIconsExt.OpenInNew,
                     IconSmallSize
                 ) {
-                    val openInBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(GEMINI_AI_STUDIO))
+                    val openInBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(GEMINI_AI_STUDIO_LINK))
                     ctx.startActivity(openInBrowser)
                 }
                 QuickIcon(
@@ -296,14 +316,49 @@ private fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPr
 @Composable
 private fun ConnectivityStatus(hasConnection: Boolean) {
     val (animation, modifier) = if (hasConnection) { // Because the lottie files have different paddings...
-        R.raw.success_animation to Modifier.height(80.dp)
+        R.raw.success_animation to Modifier
+            .size(30.dp, 30.dp)
+            .scale(3f)
+            .padding(horizontal = 3.dp)
     } else {
-        R.raw.error_animation to Modifier.height(30.dp).offset(y = 21.dp)
+        R.raw.error_animation to Modifier
+            .size(30.dp, 30.dp)
+            .padding(horizontal = 2.dp)
     }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(animation))
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
         QuickText(R.string.connectivity_status)
         LottieAnimation(composition, modifier)
+    }
+}
+
+@Composable
+private fun SavePicturesCheckBox(currPrefs: UserPreferences, onNewPrefs: (UserPreferences) -> Unit) {
+    var savePictures by remember { mutableStateOf(currPrefs.savePictures) }
+
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        QuickText(R.string.save_pictures)
+        WidthSpacer(HorizontalPadding)
+        Checkbox(
+            checked = savePictures,
+            onCheckedChange = {
+                savePictures = !savePictures
+                onNewPrefs(currPrefs.apply {
+                    this.savePictures = it
+                })
+            },
+            colors = CheckboxDefaults.colors(
+                uncheckedColor = MaterialTheme.colorScheme.scrim
+            )
+        )
     }
 }
 
@@ -319,11 +374,14 @@ private fun ColumnScope.SettingsHeader(styledText: AnnotatedString){
     )
 }
 
+@Composable
+private fun WidthSpacer(width: Dp) = Spacer(Modifier.width(width))
+
 @Preview
 @Composable
 private fun SettingsScreenPreview() = PreviewComposable {
     SettingsScreenUi(
-        hasConnection = true,
+        hasConnection = false,
         UserPreferences(),
         UserSecretPreferences(),
         {},

@@ -47,7 +47,7 @@ fun GeminiChatContainer(
             Color.Transparent,
             Color.Black
         ),
-        startY = 0f,
+        startY = with(density) { - BottomNavigationBarHeight.toPx() },
         endY = with(density) { middleOfTheScreen.toPx() - BottomNavigationBarHeight.toPx() }
     )
 

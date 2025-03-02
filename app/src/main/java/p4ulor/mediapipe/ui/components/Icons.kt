@@ -23,20 +23,14 @@ import p4ulor.mediapipe.ui.theme.PreviewComposable
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 
 /** Todo, try to find a better solution, maybe */
-data class AnyIcon private constructor(
+class AnyIcon private constructor(
     val appIcon: AppIcon? = null,
     val materialIcon: ImageVector? = null
 ){
-    init {
-        require(!(appIcon == null && materialIcon == null)) {
-            "Both params can't be null"
-        }
-    }
-
     constructor(appIcon: AppIcon) : this(appIcon, null)
     constructor(materialIcon: ImageVector) : this(null, materialIcon)
 
-    fun isAppIcon() = appIcon != null
+    val isAppIcon get() = appIcon != null
 }
 
 /**
@@ -103,7 +97,7 @@ fun QuickIconWithBorder(
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
 ){
-    if(icon.isAppIcon()) {
+    if(icon.isAppIcon) {
         QuickIconWithBorder(icon.appIcon!!, onClick, onDrag)
     } else {
         QuickIconWithBorder(icon.materialIcon!!, onClick, onDrag)

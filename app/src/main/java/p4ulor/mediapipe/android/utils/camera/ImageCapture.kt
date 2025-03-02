@@ -6,8 +6,10 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import p4ulor.mediapipe.data.sources.cloud.gemini.MimeType
+import p4ulor.mediapipe.data.utils.encodeToBase64
 import p4ulor.mediapipe.data.utils.executorCommon
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.i
@@ -22,41 +24,69 @@ fun createImageCaptureUseCase(cameraPreviewRatio: ResolutionSelector) = ImageCap
     .setFlashMode(ImageCapture.FLASH_MODE_OFF) // User has to manually turn on flash
     .build()
 
-fun ImageCapture.takePic(ctx: Context, onImageSaved: (picture: Picture) -> Unit){
-    val fileName = "${System.currentTimeMillis()}.jpg"
+fun ImageCapture.takePic(ctx: Context, saveInStorage: Boolean, onImageSaved: (picture: Picture) -> Unit){
+    if(saveInStorage){
+        val fileName = "${System.currentTimeMillis()}.jpg"
 
-    val contentValues = ContentValues().apply {
-        put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-        put(MediaStore.Images.Media.MIME_TYPE, ImageCaptureDefault.mimeType.value)
-        put(MediaStore.Images.Media.RELATIVE_PATH, ImageCaptureDefault.picturesFolder)
-    }
-
-    val outputFileOptions = ImageCapture.OutputFileOptions.Builder(
-        ctx.contentResolver,
-        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-        contentValues
-    ).build()
-
-    takePicture(
-        outputFileOptions,
-        executorCommon,
-        object : ImageCapture.OnImageSavedCallback {
-            override fun onError(error: ImageCaptureException) {
-                e("Error capturing image: $error")
-            }
-
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                i("Image saved at: ${outputFileResults.savedUri}")
-                onImageSaved(Picture(outputFileResults.savedUri!!))
-            }
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            put(MediaStore.Images.Media.MIME_TYPE, ImageCaptureDefault.mimeType.value)
+            put(MediaStore.Images.Media.RELATIVE_PATH, ImageCaptureDefault.picturesFolder)
         }
-    )
+
+        val outputFileOptions = ImageCapture.OutputFileOptions.Builder(
+            ctx.contentResolver,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ).build()
+
+        takePicture(
+            outputFileOptions,
+            executorCommon,
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(error: ImageCaptureException) {
+                    e("Error capturing image: $error")
+                }
+
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    i("Image saved at: ${outputFileResults.savedUri}")
+                    outputFileResults.savedUri?.let {
+                        onImageSaved(Picture(it))
+                    }
+                }
+            }
+        )
+    } else {
+        takePicture(
+            executorCommon,
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onError(error: ImageCaptureException) {
+                    e("Error capturing image: $error")
+                }
+
+                /** Captures image in JPEG (read [ImageCapture.OnImageCapturedCallback.onCaptureSuccess]) */
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    val buffer = image.planes[0].buffer // JPEG only has 1 color plane
+                    val bytes = ByteArray(size = buffer.remaining())
+                    buffer.get(/*destination =*/ bytes)
+                    image.close()
+
+                    i("Image captured in Base64 format")
+                    onImageSaved(Picture(base64 = encodeToBase64(bytes)))
+                }
+            }
+        )
+    }
 }
 
 /**
  * @property path should be something like `content://media/external/images/media/1000069851`
  */
-data class Picture(
-    val path: Uri,
+class Picture private constructor(
+    val path: Uri? = null,
+    val base64: String? = null,
     val mimeType: MimeType = ImageCaptureDefault.mimeType
-)
+) {
+    constructor(path: Uri) : this(path, null)
+    constructor(base64: String?) : this(null, base64)
+}

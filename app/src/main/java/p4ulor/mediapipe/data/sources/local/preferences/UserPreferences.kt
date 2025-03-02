@@ -19,7 +19,8 @@ data class UserPreferences(
     var minDetectCertainty: Float = Default.minDetectCertainty,
     var maxObjectDetections: Int = Default.maxObjectsDetections,
     var enableAnimations: Boolean = Default.enableAnimations,
-    var selectedModel: String = Default.selectedModel
+    var selectedModel: String = Default.selectedModel,
+    var savePictures: Boolean = Default.savePictures
 ) {
     companion object {
         // Don't put this inside an object like the other things, or these will be null
@@ -27,12 +28,14 @@ data class UserPreferences(
         val maxObjectDetectionsKey = intPreferencesKey("maxObjectDetections")
         val enableAnimationsKey = booleanPreferencesKey("enableAnimations")
         val selectedModelKey = stringPreferencesKey("selectedModel")
+        val savePicturesKey = booleanPreferencesKey("savePictures")
 
         object Default {
             const val minDetectCertainty = 0.50f
             const val maxObjectsDetections = 3
             const val enableAnimations = false
             val selectedModel = Model.EFFICIENTDETV0.name
+            const val savePictures = false
         }
 
         object Ranges {
@@ -52,6 +55,7 @@ data class UserPreferences(
                         this?.get(maxObjectDetectionsKey) ?: Default.maxObjectsDetections,
                         this?.get(enableAnimationsKey) ?: Default.enableAnimations,
                         this?.get(selectedModelKey) ?: Default.selectedModel,
+                        this?.get(savePicturesKey) ?: Default.savePictures
                     )
                 }
         }
@@ -63,6 +67,7 @@ data class UserPreferences(
             preferences[maxObjectDetectionsKey] = this@UserPreferences.maxObjectDetections
             preferences[enableAnimationsKey] = this@UserPreferences.enableAnimations
             preferences[selectedModelKey] = this@UserPreferences.selectedModel
+            preferences[savePicturesKey] = this@UserPreferences.savePictures
         }
     }
 }

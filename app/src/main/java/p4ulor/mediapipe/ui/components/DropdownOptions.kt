@@ -1,5 +1,6 @@
 package p4ulor.mediapipe.ui.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.ui.components.utils.SmoothHorizontalDividerCustom
 import p4ulor.mediapipe.ui.theme.AppTheme
 
@@ -50,7 +52,7 @@ import p4ulor.mediapipe.ui.theme.AppTheme
  */
 @Composable
 fun DropdownOptions(
-    label: String,
+    @StringRes label: Int,
     preSelectedOption: String,
     options: List<String>,
     horizontalPadding: Dp,
@@ -69,7 +71,7 @@ fun DropdownOptions(
             OutlinedTextField(
                 value = selectedOption,
                 onValueChange = {  },
-                label = { Text(label) },
+                label = { QuickText(label) },
                 readOnly = true,
                 trailingIcon = {
                     Button( // Turn around to make the text clickable. Modifier.clickable doesnt work
@@ -131,7 +133,7 @@ fun DropdownOptions(
 private fun DropdownOptionsPreview() = AppTheme(enableDarkTheme = true) {
     Surface(Modifier.fillMaxSize()) {
         DropdownOptions(
-            label = "Model",
+            label = R.string.model,
             preSelectedOption = "Model1",
             options = listOf("Model1", "Model2"),
             horizontalPadding = 8.dp,

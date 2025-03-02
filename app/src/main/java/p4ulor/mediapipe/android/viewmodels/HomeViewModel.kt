@@ -33,7 +33,7 @@ import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.dataStore
 import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
 import p4ulor.mediapipe.data.utils.executorForImgAnalysis
-import p4ulor.mediapipe.data.utils.uriToBase64
+import p4ulor.mediapipe.data.utils.fileToBase64
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
 import p4ulor.mediapipe.ui.components.chat.Message
@@ -173,7 +173,10 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         if (geminiApi != null && pictureTaken.value != null) {
             launch {
                 val geminiPrompt = pictureTaken.value?.run {
-                    val imageBase64 = application.applicationContext.uriToBase64(this)
+                    val imageBase64 = this.path?.let {
+                        application.applicationContext.fileToBase64(it)
+                    } ?: this.base64
+
                     imageBase64?.run {
                         GeminiPrompt(prompt, this)
                     }
@@ -187,6 +190,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                         sendGeminiError()
                     }
                     _pictureTaken.value = null
+                } else {
+                    e("geminiPrompt is null")
                 }
             }
         }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -20,9 +21,12 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.withContext
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.activities.utils.getActivity
 import p4ulor.mediapipe.android.utils.camera.getCameraProvider
@@ -43,6 +47,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     var prefs by remember { mutableStateOf<UserPreferences?>(null) }
     var secretPrefs by remember { mutableStateOf<UserSecretPreferences?>(null) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         if (!cameraPermission.status.isGranted) {
@@ -51,15 +56,17 @@ fun HomeScreen(viewModel: HomeViewModel) {
     }
 
     LaunchedEffect(cameraPermission.isGranted) {
-        if(cameraPermission.isGranted){
-            delay(100) // Gives time for CircularProgressIndicator and NavigationBar animations to show
-            launch { cameraProvider = ctx.getCameraProvider() }
-            launch { prefs = viewModel.loadUserPrefs().first() } // Loads prefs which need to be obtained everytime if user changed them in Settings
-            launch { secretPrefs = viewModel.loadUserSecretPrefs().first() }
+        if (cameraPermission.isGranted) {
+            delay(50) // Gives time for CircularProgressIndicator and NavigationBar animations to show
+            withContext(Dispatchers.Default){ // So the UI thread is not used
+                launch { cameraProvider = ctx.getCameraProvider() }
+                launch { prefs = viewModel.loadUserPrefs().first() } // Loads prefs which need to be obtained everytime if user changed them in Settings
+                launch { secretPrefs = viewModel.loadUserSecretPrefs().first() }
+            }
         }
     }
 
-    if(cameraPermission.isGranted){
+    if (cameraPermission.isGranted) {
         if (cameraProvider != null && prefs != null && secretPrefs != null) {
             HomeScreenGranted(viewModel, cameraProvider!!, prefs!!)
         } else {
@@ -85,7 +92,7 @@ private fun HomeScreenNotGranted() {
         QuickText(R.string.no_camera_permission)
 
         Button(onClick = {
-            if(!oneTimePermRequestWasUsed){
+            if (!oneTimePermRequestWasUsed) {
                 ctx.getActivity()?.requestPermission(Manifest.permission.CAMERA)
                 oneTimePermRequestWasUsed = true
             } else {

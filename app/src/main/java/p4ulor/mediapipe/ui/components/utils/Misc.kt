@@ -21,7 +21,7 @@ val SystemNavigationBarHeight
 
 /** Gets [Dp] size of a text (considering the default text size) */
 @Composable
-fun getTextWidth(string: String): Dp {
+fun textWidthOf(string: String): Dp {
     val textMeasurer = rememberTextMeasurer()
     return with(LocalDensity.current) { textMeasurer.measure(string).size.width.toDp() }
 }
