@@ -33,6 +33,7 @@ koinAndroidxCompose = "4.0.2"
 lottieCompose = "6.6.2"
 coilCompose = "3.0.4"
 firebaseBom = "32.8.1" # must be compatible with Kotlin version (must have been compiled with a version bellow kotlin 2.0)
+androidxRules = "1.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -79,6 +80,7 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
 jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
+androidx-rules = { group = "androidx.test", name = "rules", version.ref = "androidxRules" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

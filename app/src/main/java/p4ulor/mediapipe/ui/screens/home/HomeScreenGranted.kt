@@ -212,13 +212,13 @@ fun HomeScreenGranted(
                 add(
                     if(geminiStatus.isEnabled){
                         FloatingActionButton(AnyIcon(AppIcon.MediaPipe)){
-                            vm.toggleGemini()
+                            vm.toggleGemini({}) // No need to handle, geminiStatus will do it
                         }
                     } else {
                         FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
-                            if(!vm.toggleGemini()) {
+                            vm.toggleGemini(onFail = {
                                 ctx.toast(R.string.check_internet_and_gemini_key)
-                            }
+                            })
                         }
                     }
                 )

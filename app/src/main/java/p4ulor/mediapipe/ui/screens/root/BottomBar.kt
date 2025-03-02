@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -28,13 +29,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.ui.components.utils.SmoothHorizontalDivider
 import p4ulor.mediapipe.ui.components.utils.SystemNavigationBarHeight
+import p4ulor.mediapipe.ui.components.utils.UiTestTag
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 @Composable
 fun BottomBar(currentScreen: Screen, onNavigateTo: (Screen) -> Unit){
     SmoothHorizontalDivider()
     NavigationBar(
-        Modifier.height(SystemNavigationBarHeight + BottomNavigationBarHeight),
+        Modifier
+            .height(SystemNavigationBarHeight + BottomNavigationBarHeight)
+            .testTag(UiTestTag.bottomAppBar),
         Color.Transparent
     ) {
         bottomBarDestinations.forEach { item ->
@@ -56,7 +60,7 @@ private fun RowScope.buildNavigationBarItem(
     selected = currentScreen == item.screen,
     onClick = { onClick(item) },
     label = { Text(stringResource(item.screen.nameRes)) },
-    alwaysShowLabel = false, // the label will only be shown when this item is selected
+    alwaysShowLabel = false, // the label will only be shown when this item is selected (read docs)
     icon = {
         BadgedBox(
             badge = {
@@ -95,8 +99,8 @@ private val bottomBarDestinations
         NavItem(
             screen = it,
             selectedIcon = when {
-                it.icon?.resourceId != null -> painterResource(id = it.icon.resourceId)
-                it.materialIcon != null -> rememberVectorPainter(it.materialIcon)
+                it.icon?.appIcon?.resourceId != null -> painterResource(id = it.icon?.appIcon?.resourceId)
+                it.icon.materialIcon != null -> rememberVectorPainter(image = it.icon.materialIcon)
                 else -> error("Something wasn't setup properly here")
             },
             hasNews = false,
@@ -104,7 +108,6 @@ private val bottomBarDestinations
         )
     }
 
-/** If it's failing, comment out uses of [LocalContext.current]. Find a solution for this */
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     device = Devices.PIXEL_3

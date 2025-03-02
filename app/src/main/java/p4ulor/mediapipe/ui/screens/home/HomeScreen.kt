@@ -10,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -25,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newCoroutineContext
 import kotlinx.coroutines.withContext
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.activities.utils.getActivity
@@ -47,7 +45,6 @@ fun HomeScreen(viewModel: HomeViewModel) {
     var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     var prefs by remember { mutableStateOf<UserPreferences?>(null) }
     var secretPrefs by remember { mutableStateOf<UserSecretPreferences?>(null) }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         if (!cameraPermission.status.isGranted) {

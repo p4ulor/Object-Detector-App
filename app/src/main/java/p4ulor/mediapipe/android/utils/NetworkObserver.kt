@@ -10,12 +10,12 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.core.annotation.Single
+import p4ulor.mediapipe.i
 
 /**
  * Allows receiving updates to the status of Wifi or Mobile Data connectivity via [hasConnection]
  * @param [context] is injected by Koin. [trySendBlocking] is not used since none of these operations
  * are highly repetitive in a short amount of time
- * todo, make so this doesnt run in background when minimizing app, also investigate why other apps like urban sports can display the camera so faster, compare without img analyser and other things back in repo history
  */
 @Single
 class NetworkObserver(context: Context) {
@@ -50,6 +50,7 @@ class NetworkObserver(context: Context) {
 
         connectivityManager.registerNetworkCallback(networkTypesToObserve, callback)
         awaitClose {
+            i("NetworkObserver closed hasConnection flow")
             connectivityManager.unregisterNetworkCallback(callback)
         }
     }.distinctUntilChanged()

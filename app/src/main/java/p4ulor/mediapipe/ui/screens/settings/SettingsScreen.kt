@@ -92,7 +92,7 @@ fun SettingsScreen() {
     val vm = koinViewModel<SettingsViewModel>()
     var currentPrefs by remember { mutableStateOf(UserPreferences()) }
     var currentSecretPrefs by remember { mutableStateOf(UserSecretPreferences()) }
-    val hasConnection by vm.network.hasConnection.collectAsState(initial = false)
+    val hasConnection by vm.network.hasConnection.collectAsState(initial = false) // Is cancelled when leaving composition
     var isLoaded by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { // Collect only on first composition rendering

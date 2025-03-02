@@ -195,6 +195,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // For granting permissions in tests
+    implementation(libs.androidx.rules)
 }
 
 // Added:

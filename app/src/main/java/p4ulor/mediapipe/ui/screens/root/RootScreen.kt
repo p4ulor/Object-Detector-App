@@ -33,6 +33,7 @@ import p4ulor.mediapipe.android.activities.utils.getActivity
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.ui.animations.smooth
+import p4ulor.mediapipe.ui.components.AnyIcon
 import p4ulor.mediapipe.ui.components.AppIcon
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
@@ -125,13 +126,12 @@ private fun getBackground(currentScreen: Screen) = if(isSystemInDarkTheme()) {
  */
 enum class Screen(
     @StringRes val nameRes: Int,
-    val icon: AppIcon? = null,
-    val materialIcon: ImageVector? = null,
+    val icon: AnyIcon,
     val size: Dp = 25.dp
 ) {
-    Achievements(R.string.achievements, materialIcon = MaterialIcons.WorkspacePremium, size = 22.dp),
-    Home(R.string.home, materialIcon = MaterialIcons.Home),
-    Settings(R.string.settings, icon = AppIcon.Settings);
+    Achievements(R.string.achievements, AnyIcon(MaterialIcons.WorkspacePremium)),
+    Home(R.string.home, AnyIcon(MaterialIcons.Home)),
+    Settings(R.string.settings, AnyIcon(AppIcon.Settings));
 
     companion object {
         fun from(string: String?) = Screen.values().first{ it.name == string }

@@ -9,8 +9,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import p4ulor.mediapipe.R
@@ -35,9 +38,11 @@ import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
 import p4ulor.mediapipe.data.utils.executorForImgAnalysis
 import p4ulor.mediapipe.data.utils.fileToBase64
 import p4ulor.mediapipe.e
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
 import p4ulor.mediapipe.ui.components.chat.Message
 import p4ulor.mediapipe.ui.screens.home.overlay.AnimatedDetectionOverlay
+import kotlin.coroutines.coroutineContext
 
 /**
  * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
@@ -52,7 +57,6 @@ import p4ulor.mediapipe.ui.screens.home.overlay.AnimatedDetectionOverlay
  */
 class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     private val network: NetworkObserver by inject()
-    private val hasConnection = network.hasConnection.toStateFlow(initialValue = false)
 
     // Values that should survive recomposition and be remembered
     private val _cameraPreviewRatio = MutableStateFlow(CameraConstants.RATIO_16_9)
@@ -85,14 +89,16 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         if (prefs.value.enableAnimations) it.sample(500L) else it
     }.toStateFlow(_objDetectionResults.value)
 
-    init {
+    init { // Since geminiStatus needs to be persisted, it is managed like this, contrary to the use of hasConnection in SettingsScreen
         launch {
-            hasConnection.collect {
-                if (!it && _geminiStatus.value.isEnabled){
-                    _geminiStatus.value = GeminiStatus.DISCONNECTED
+            network.hasConnection.collect {
+                if (!it){
+                    if(_geminiStatus.value.isEnabled){
+                        _geminiStatus.value = GeminiStatus.DISCONNECTED
+                        delay(300) // Give some time for event to be transmitted and valid
+                    }
+                    _geminiStatus.value = GeminiStatus.OFF // This helps in showing the "Connection lost" toast only in HomeScreenGranted, since it will capture the DISCONNECTED value (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
                 }
-                delay(300) // Give some time for event to be transmitted and valid
-                _geminiStatus.value = GeminiStatus.OFF // This helps in showing the "Connection lost" toast only in HomeScreenGranted (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
             }
         }
     }
@@ -152,15 +158,16 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     /**
-     * @return true if the command toggled Gemini, or false if there are no conditions to turn on
+     * @param onFail is called if there are no conditions to turn on
      * Gemini (no connection or the loaded [loadUserSecretPrefs] were not performed or are not valid)
      */
-    fun toggleGemini(): Boolean {
-        return if (hasConnection.value && secretPrefs.value.isValid && geminiApi != null) {
-            _geminiStatus.value = _geminiStatus.value.toggle()
-            true
-        } else {
-            false
+    fun toggleGemini(onFail: () -> Unit) {
+        launch {
+            if (network.hasConnection.first() && secretPrefs.value.isValid && geminiApi != null) {
+                _geminiStatus.value = _geminiStatus.value.toggle()
+            } else {
+                onFail()
+            }
         }
     }
 
