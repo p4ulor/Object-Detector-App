@@ -27,6 +27,10 @@ import p4ulor.mediapipe.ui.screens.root.RootScreen
 import p4ulor.mediapipe.ui.screens.root.Screen
 import p4ulor.mediapipe.ui.theme.AppTheme
 
+/**
+ *  Instrumented test (AKA UI tests), which will execute on an Android device.
+ *  See [testing documentation](http://d.android.com/tools/testing).
+ */
 class NavigateScreens {
     @get:Rule
     val composeTestRule = createComposeRule()

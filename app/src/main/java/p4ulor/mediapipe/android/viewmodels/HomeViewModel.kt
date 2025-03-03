@@ -10,10 +10,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import p4ulor.mediapipe.R
@@ -163,7 +166,12 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
      */
     fun toggleGemini(onFail: () -> Unit) {
         launch {
-            if (network.hasConnection.first() && secretPrefs.value.isValid && geminiApi != null) {
+            val hasConnection = runCatching {
+                withTimeout(500L){ // In case there were no emissions to hasConnection yet
+                    network.hasConnection.first()
+                }
+            }.getOrNull() ?: false
+            if (hasConnection && secretPrefs.value.isValid && geminiApi != null) {
                 _geminiStatus.value = _geminiStatus.value.toggle()
             } else {
                 onFail()
@@ -180,9 +188,9 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         if (geminiApi != null && pictureTaken.value != null) {
             launch {
                 val geminiPrompt = pictureTaken.value?.run {
-                    val imageBase64 = this.path?.let {
+                    val imageBase64 = this.asFile?.path?.let {
                         application.applicationContext.fileToBase64(it)
-                    } ?: this.base64
+                    } ?: this.asBase64?.base64
 
                     imageBase64?.run {
                         GeminiPrompt(prompt, this)

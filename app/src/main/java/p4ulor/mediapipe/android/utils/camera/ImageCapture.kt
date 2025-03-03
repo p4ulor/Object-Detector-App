@@ -51,7 +51,7 @@ fun ImageCapture.takePic(ctx: Context, saveInStorage: Boolean, onImageSaved: (pi
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     i("Image saved at: ${outputFileResults.savedUri}")
                     outputFileResults.savedUri?.let {
-                        onImageSaved(Picture(it))
+                        onImageSaved(Picture.File(it))
                     }
                 }
             }
@@ -72,21 +72,21 @@ fun ImageCapture.takePic(ctx: Context, saveInStorage: Boolean, onImageSaved: (pi
                     image.close()
 
                     i("Image captured in Base64 format")
-                    onImageSaved(Picture(base64 = encodeToBase64(bytes)))
+                    onImageSaved(Picture.Base64(encodeToBase64(bytes)))
                 }
             }
         )
     }
 }
 
-/**
- * @property path should be something like `content://media/external/images/media/1000069851`
- */
-class Picture private constructor(
-    val path: Uri? = null,
-    val base64: String? = null,
-    val mimeType: MimeType = ImageCaptureDefault.mimeType
-) {
-    constructor(path: Uri) : this(path, null)
-    constructor(base64: String?) : this(null, base64)
+
+sealed class Picture(val mimeType: MimeType = ImageCaptureDefault.mimeType) {
+    /**
+     * @property path should be something like `content://media/external/images/media/1000069851`
+     */
+    data class File(val path: Uri) : Picture()
+    data class Base64(val base64: String) : Picture()
+
+    val asFile get() = this as? File
+    val asBase64 get() = this as? Base64
 }
