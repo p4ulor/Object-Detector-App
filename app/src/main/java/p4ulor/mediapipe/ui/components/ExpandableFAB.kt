@@ -147,7 +147,7 @@ private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolea
 }
 
 data class FloatingActionButton(
-    val icon: AnyIcon,
+    val icon: Icon,
     val onClick: () -> Unit = {}
 )
 
@@ -166,12 +166,12 @@ enum class FabPosition {
 @Composable
 private fun ExpandableFABPreview() = AppTheme {
     ExpandableFAB(
-        listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
+        listOpenerFAB = FloatingActionButton(Icon.Material(MaterialIcons.Add)),
         listOf(
-            FloatingActionButton(AnyIcon(AppIcon.Camera)) { i("Edit clicked") },
-            FloatingActionButton(AnyIcon(AppIcon.Gemini)) { i("Share clicked") },
-            FloatingActionButton(AnyIcon(AppIcon.Camera)) { i("Edit clicked") },
-            FloatingActionButton(AnyIcon(AppIcon.Gemini)) { i("Share clicked") }
+            FloatingActionButton(Icon.App(ResourcesIcon.Camera)) { i("Edit clicked") },
+            FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) { i("Share clicked") },
+            FloatingActionButton(Icon.App(ResourcesIcon.Camera)) { i("Edit clicked") },
+            FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) { i("Share clicked") }
         ),
         initialPosition = FabPosition.TopRight
     )

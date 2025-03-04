@@ -41,7 +41,7 @@ class KtorClientTest {
 
     @Test
     fun `Test complex json response`() = runTest {
-        val resp = ktorClient.get("/posts/1/comments")?.body<DummyJsonPostCommentsResp>()!!
+        val resp = ktorClient.get("/posts/1/comments").body<DummyJsonPostCommentsResp>()
         val expected = DummyJsonPostCommentsResp(
             comments = listOf(Comment(93, "These are fabulous ideas!", User(190, "leahw"))),
             total = 3,

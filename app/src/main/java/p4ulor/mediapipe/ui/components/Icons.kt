@@ -22,15 +22,12 @@ import p4ulor.mediapipe.R
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 
-/** Todo, try to find a better solution, maybe */
-class AnyIcon private constructor(
-    val appIcon: AppIcon? = null,
-    val materialIcon: ImageVector? = null
-){
-    constructor(appIcon: AppIcon) : this(appIcon, null)
-    constructor(materialIcon: ImageVector) : this(null, materialIcon)
+sealed class Icon private constructor() {
+    data class App(val resourcesIcon: ResourcesIcon) : Icon()
+    data class Material(val materialIcon: ImageVector) : Icon()
 
-    val isAppIcon get() = appIcon != null
+    val asAppIcon get() = this as? App
+    val asMaterialIcon get() = this as? Material
 }
 
 /**
@@ -41,7 +38,7 @@ class AnyIcon private constructor(
  * by opening the .svg in Gimp and saving it as .png)
  * @param [resourceId] a .png or .xml
  */
-enum class AppIcon(val resourceId: Int, val useOriginalColors: Boolean = false) {
+enum class ResourcesIcon(val resourceId: Int, val useOriginalColors: Boolean = false) {
     FlashlightOff(R.drawable.flashlight_off),
     FlashlightOn(R.drawable.flashlight_on),
     Scale(R.drawable.scale),
@@ -62,7 +59,7 @@ val IconMediumSize = 30.dp
 val IconSmallSize = 25.dp
 
 @Composable
-fun QuickIcon(icon: AppIcon, onClick: () -> Unit) = Icon(
+fun QuickIcon(icon: ResourcesIcon, onClick: () -> Unit) = Icon(
     painter = painterResource(icon.resourceId),
     contentDescription = icon.name,
     Modifier
@@ -93,20 +90,20 @@ val IconContainerDefaultSize = 55.dp
 
 @Composable
 fun QuickIconWithBorder(
-    icon: AnyIcon,
+    icon: Icon,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
 ){
-    if(icon.isAppIcon) {
-        QuickIconWithBorder(icon.appIcon!!, onClick, onDrag)
-    } else {
-        QuickIconWithBorder(icon.materialIcon!!, onClick, onDrag)
+    icon.asAppIcon?.let {
+        QuickIconWithBorder(it.resourcesIcon, onClick, onDrag)
+    } ?: icon.asMaterialIcon?.let {
+        QuickIconWithBorder(it.materialIcon, onClick, onDrag)
     }
 }
 
 @Composable
 private fun QuickIconWithBorder(
-    icon: AppIcon,
+    icon: ResourcesIcon,
     onClick: () -> Unit,
     onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
 ){
@@ -157,5 +154,5 @@ private fun QuickIconWithBorder(
 @Preview
 @Composable
 private fun QuickIconWithBorderPreview() = PreviewComposable {
-    QuickIconWithBorder(AppIcon.Gemini, {})
+    QuickIconWithBorder(ResourcesIcon.Gemini, {})
 }

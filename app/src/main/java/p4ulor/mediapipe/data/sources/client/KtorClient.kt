@@ -93,12 +93,12 @@ class KtorClient(private val hostName: String) : Closeable {
         path: String,
         queryParams: QueryParams = emptyList(),
         headers: Headers = headers {}
-    ): HttpResponse? {
+    ): HttpResponse {
         val response = httpClient.get {
             withUrl(path, queryParams)
             headers { addAll(headers) }
         }
-        return response.getIfOkOrNull
+        return response
     }
 
     suspend fun post(
@@ -106,12 +106,12 @@ class KtorClient(private val hostName: String) : Closeable {
         queryParams: QueryParams = emptyList(),
         body: Any, 
         headers: Headers = headers {}
-    ): HttpResponse? {
+    ): HttpResponse {
         val response = httpClient.post {
             withUrl(path, queryParams, extraConfig = { setBody(body) })
             headers { addAll(headers) }
         }
-        return response.getIfOkOrNull
+        return response
     }
 
     override fun close() = httpClient.close()

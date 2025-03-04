@@ -13,11 +13,8 @@ data class Message(
 ) {
     override fun equals(other: Any?) = uuid == (other as? Message)?.uuid
 
-    val isBlank: Boolean
-        get() = authorIsUser && text.isBlank()
-
-    val isNewGeminiMsg: Boolean
-        get() = !authorIsUser && !isLoaded && !isPending
+    val isBlank get() = authorIsUser && text.isBlank()
+    val isNewGeminiMsg get() = !authorIsUser && !isLoaded && !isPending
 
     companion object {
         /** Util to handle null Messages so they are ignored because they are empty */

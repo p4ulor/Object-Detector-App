@@ -232,7 +232,9 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
         horizontalArrangement = Arrangement.Center
     ) {
         QuickText(R.string.detection_animations)
+
         WidthSpacer(GeneralPadding)
+
         Switch(
             checked = enableAnimations,
             onCheckedChange = {
@@ -245,6 +247,20 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
                 uncheckedTrackColor = MaterialTheme.colorScheme.scrim
             )
         )
+
+        WidthSpacer(GeneralPadding)
+
+        /*TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = {
+                PlainTooltip(caretSize = TooltipDefaults.caretSize) { Text("Add to favorites") }
+            },
+            state = rememberTooltipState()
+        ) {
+            IconButton(onClick = { *//* Icon button's click event *//* }) {
+                Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+            }
+        }*/
     }
 
     Spacer(Modifier.size(GeneralPadding))

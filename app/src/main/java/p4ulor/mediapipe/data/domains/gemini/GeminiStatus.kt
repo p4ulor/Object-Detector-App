@@ -15,9 +15,6 @@ enum class GeminiStatus {
         else -> ON
     }
 
-    val isEnabled: Boolean
-        get() = this == ON
-
-    val isDisconnected: Boolean
-        get() = this == DISCONNECTED
+    val isEnabled get() = this == ON
+    val isDisconnected get() = this == DISCONNECTED
 }

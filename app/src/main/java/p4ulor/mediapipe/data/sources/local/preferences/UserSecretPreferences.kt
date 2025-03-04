@@ -20,8 +20,7 @@ data class UserSecretPreferences(
     val geminiApiKey: String = ""
 ) {
 
-    val isValid: Boolean
-        get() = geminiApiKey.isNotBlank()
+    val isValid get() = geminiApiKey.isNotBlank()
 
     suspend fun saveIn(storage: DataStore<UserSecretPreferences>) = withContext(Dispatchers.IO) {
         storage.updateData { this@UserSecretPreferences }

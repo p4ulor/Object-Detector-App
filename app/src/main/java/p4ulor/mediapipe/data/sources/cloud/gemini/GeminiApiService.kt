@@ -7,6 +7,7 @@ import io.ktor.http.isSuccess
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import p4ulor.mediapipe.data.sources.client.KtorClient
+import p4ulor.mediapipe.data.sources.client.handle
 import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiEndpoints.Companion.defaultHeaders
 import p4ulor.mediapipe.data.sources.cloud.gemini.GenerateContentRequest.Content
 import p4ulor.mediapipe.data.sources.cloud.gemini.GenerateContentRequest.Image
@@ -33,13 +34,16 @@ class GeminiApiService(apiKey: String) : Closeable {
 
         return runCatching {
             http.post(path, queryParams, body, defaultHeaders)?.let { response ->
-                if(response.status.isSuccess()){
-                    response.body<GenerateContentResponse>().toDomain()
-                } else {
-                    response.toDomainError().also {
-                        e("promptWithImage error: $it")
+                response.handle(
+                    onSuccess = {
+                        it.body<GenerateContentResponse>().toDomain()
+                    },
+                    onFailure = {
+                        it.toDomainError().also {
+                            e("promptWithImage error: $it")
+                        }
                     }
-                }
+                )
             }
         }.onFailure {
             e("promptWithImage stacktrace: ${it.stackTrace.asList()}")
@@ -62,7 +66,7 @@ class GeminiApiService(apiKey: String) : Closeable {
     )
 
     private suspend fun HttpResponse.toDomainError() = GeminiResponse(
-        generatedText = "Error: ${bodyAsText()}. Status: ${status.description}",
+        generatedText = "Error (this message is shown on purpose): ${bodyAsText()}. Status: ${status.description}",
         totalTokensUsed = 0
     )
 }

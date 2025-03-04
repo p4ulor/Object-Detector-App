@@ -34,3 +34,15 @@ data class GenerateContentResponse(
         val totalTokenCount: Int
     )
 }
+
+/** TODO use in toDomainError */
+@Serializable
+data class ErrorResponse(
+    val error: ErrorContent
+) {
+    @Serializable
+    data class ErrorContent(
+        val code: Int,
+        val message: String
+    )
+}

@@ -98,10 +98,12 @@ private val bottomBarDestinations
     get() = Screen.entries.map {
         NavItem(
             screen = it,
-            selectedIcon = when {
-                it.icon?.appIcon?.resourceId != null -> painterResource(id = it.icon?.appIcon?.resourceId)
-                it.icon.materialIcon != null -> rememberVectorPainter(image = it.icon.materialIcon)
-                else -> error("Something wasn't setup properly here")
+            selectedIcon = run {
+                it.icon.asAppIcon?.resourcesIcon?.let { resourceIcon ->
+                    painterResource(id = resourceIcon.resourceId)
+                } ?: it.icon.asMaterialIcon?.materialIcon?.let { imageVector ->
+                    rememberVectorPainter(image = imageVector)
+                } ?: error("Something went wrong here")
             },
             hasNews = false,
             size = it.size

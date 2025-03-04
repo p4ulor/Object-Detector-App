@@ -20,7 +20,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,8 +32,8 @@ import p4ulor.mediapipe.android.activities.utils.getActivity
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.ui.animations.smooth
-import p4ulor.mediapipe.ui.components.AnyIcon
-import p4ulor.mediapipe.ui.components.AppIcon
+import p4ulor.mediapipe.ui.components.Icon
+import p4ulor.mediapipe.ui.components.ResourcesIcon
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
 import p4ulor.mediapipe.ui.components.utils.currentRoute
@@ -126,12 +125,12 @@ private fun getBackground(currentScreen: Screen) = if(isSystemInDarkTheme()) {
  */
 enum class Screen(
     @StringRes val nameRes: Int,
-    val icon: AnyIcon,
+    val icon: Icon,
     val size: Dp = 25.dp
 ) {
-    Achievements(R.string.achievements, AnyIcon(MaterialIcons.WorkspacePremium)),
-    Home(R.string.home, AnyIcon(MaterialIcons.Home)),
-    Settings(R.string.settings, AnyIcon(AppIcon.Settings));
+    Achievements(R.string.achievements, Icon.Material(MaterialIcons.WorkspacePremium)),
+    Home(R.string.home, Icon.Material(MaterialIcons.Home)),
+    Settings(R.string.settings, Icon.App(ResourcesIcon.Settings));
 
     companion object {
         fun from(string: String?) = Screen.values().first{ it.name == string }

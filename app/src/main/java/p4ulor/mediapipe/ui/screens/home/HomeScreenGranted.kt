@@ -54,10 +54,10 @@ import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.components.AnyIcon
-import p4ulor.mediapipe.ui.components.AppIcon
+import p4ulor.mediapipe.ui.components.ResourcesIcon
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
+import p4ulor.mediapipe.ui.components.Icon
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
 import p4ulor.mediapipe.ui.components.utils.DisplayHeight
@@ -200,10 +200,10 @@ fun HomeScreenGranted(
         }
 
         ExpandableFAB(
-            listOpenerFAB = FloatingActionButton(AnyIcon(MaterialIcons.Add)),
+            listOpenerFAB = FloatingActionButton(Icon.Material(MaterialIcons.Add)),
             fabs = buildList {
                 add(
-                    FloatingActionButton(AnyIcon(AppIcon.Camera)) {
+                    FloatingActionButton(Icon.App(ResourcesIcon.Camera)) {
                         imageCaptureUseCase.takePic(ctx, saveInStorage = prefs.savePictures) { picture ->
                             vm.savePicture(picture)
                         }
@@ -211,11 +211,11 @@ fun HomeScreenGranted(
                 )
                 add(
                     if(geminiStatus.isEnabled){
-                        FloatingActionButton(AnyIcon(AppIcon.MediaPipe)){
+                        FloatingActionButton(Icon.App(ResourcesIcon.MediaPipe)){
                             vm.toggleGemini({}) // No need to handle, geminiStatus will do it
                         }
                     } else {
-                        FloatingActionButton(AnyIcon(AppIcon.Gemini)) {
+                        FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) {
                             vm.toggleGemini(onFail = {
                                 ctx.toast(R.string.check_internet_and_gemini_key)
                             })
@@ -223,15 +223,15 @@ fun HomeScreenGranted(
                     }
                 )
                 add(
-                    FloatingActionButton(AnyIcon(AppIcon.Scale)) {
+                    FloatingActionButton(Icon.App(ResourcesIcon.Scale)) {
                         cameraProvider.unbindAll() // because a new [camera] will be initialized in the AndroidView
                         imageCaptureUseCase = createImageCaptureUseCase(vm.toggleCameraPreviewRatio())
                     }
                 )
 
                 add( // Lazy solution because there are other things to do... Adds flash button regardless of flash support, so the button doesn't flash from re-appearing on ratio change due to creating a new camera
-                    FloatingActionButton(AnyIcon(
-                        if (isFlashEnabled) AppIcon.FlashlightOff else AppIcon.FlashlightOn
+                    FloatingActionButton(Icon.App(
+                        if (isFlashEnabled) ResourcesIcon.FlashlightOff else ResourcesIcon.FlashlightOn
                     )) {
                         isFlashEnabled = !isFlashEnabled
                         camera?.apply {

@@ -79,8 +79,7 @@ fun ImageCapture.takePic(ctx: Context, saveInStorage: Boolean, onImageSaved: (pi
     }
 }
 
-
-sealed class Picture(val mimeType: MimeType = ImageCaptureDefault.mimeType) {
+sealed class Picture private constructor(val mimeType: MimeType = ImageCaptureDefault.mimeType) {
     /**
      * @property path should be something like `content://media/external/images/media/1000069851`
      */
