@@ -69,6 +69,8 @@ E(DependencyInjection);
 ## Things that were not done for the sake of moving out to other things
 - Animated detection overlays only support detection 1 type of object, since an identifier is required for the animation to track, but MediaPipe doesn't provide identifiers.
 - Not worrying about still using ImageDetectionUseCase when toggling Gemini mode
+- Displaying only the latest Gemini message when toggling off and on Gemini, instead of storing the list of messages
+- The notification intent explicitly opening the Achivements screen instead of just pointing to the MainActivity
 
 ### Resources
 - https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android

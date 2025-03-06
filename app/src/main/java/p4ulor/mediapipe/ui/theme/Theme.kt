@@ -90,7 +90,7 @@ private val DarkColorScheme = darkColorScheme(
 
     tertiary = unset, // Used for accents or highlights
     onTertiary = unset, // For text/icons displayed on top of the tertiary color
-    tertiaryContainer = Color(0x771A3C60), // A tonal variation of the tertiary color for containers
+    tertiaryContainer = Color(0xC21A3C60), // A tonal variation of the tertiary color for containers
     onTertiaryContainer = Color(0xFFFFFFFF), // Color for text/icons on tertiary containers
 
     background = Color(0xFA5A5E24), // Background color for screens and larger components
@@ -102,8 +102,8 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = Color(0xFFFFFFFF), // For "Label" in labelled boxes, icons and surface variants
     surfaceTint = unset, // Overlay color for elevated surfaces to create a tint effect
 
-    inverseSurface = unset, // Inverse of the surface color for contrasting UI elements
-    inverseOnSurface = unset, // For text/icons on inverse surfaces
+    inverseSurface = Color(0xFFE1E1E1), // Inverse of the surface color for contrasting UI elements. Used in ToolTip
+    inverseOnSurface = Color.Black, // For text/icons on inverse surfaces. Used in ToolTip text
 
     error = Color(0xFFB00020), // Color used to indicate errors.
     onError = Color(0xFFFFA8A8), // Color for text/icons displayed on top of the error color.
@@ -138,7 +138,7 @@ private val LightColorScheme = lightColorScheme(
 
     tertiary = unset, // Used for accents or highlights
     onTertiary = unset, // For text/icons displayed on top of the tertiary color
-    tertiaryContainer = Color(0x771A3C60), // A tonal variation of the tertiary color for containers
+    tertiaryContainer = Color(0xC21A3C60), // A tonal variation of the tertiary color for containers
     onTertiaryContainer = Color(0xFFFFFFFF), // Color for text/icons on tertiary containers
 
     background = Color(0xFA5A5E24), // Background color for screens and larger components
@@ -150,8 +150,8 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = Color(0xFF242424), // For text/icons on surface variant
     surfaceTint = Color(0xFF303030), // Overlay color for elevated surfaces to create a tint effect
 
-    inverseSurface = unset, // Inverse of the surface color for contrasting UI elements
-    inverseOnSurface = unset, // For text/icons on inverse surfaces
+    inverseSurface = Color(0xFFE1E1E1), // Inverse of the surface color for contrasting UI elements. Used in ToolTip
+    inverseOnSurface = Color.Black, // For text/icons on inverse surfaces. Used in ToolTip text
 
     error = Color(0xFFB00020), // Color used to indicate errors.
     onError = Color(0xFFFFA8A8), // Color for text/icons displayed on top of the error color.

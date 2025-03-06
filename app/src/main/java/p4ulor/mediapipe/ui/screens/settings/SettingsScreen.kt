@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -27,12 +28,16 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,6 +46,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,6 +67,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.viewmodels.SettingsViewModel
@@ -231,9 +238,28 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
+        var toolTipState = rememberTooltipState(isPersistent = true)
+        val scope = rememberCoroutineScope()
+
         QuickText(R.string.detection_animations)
 
-        WidthSpacer(GeneralPadding)
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            tooltip = {
+                RichTooltip(
+                    title = { QuickText(R.string.note) },
+                    action = {},
+                    caretSize = TooltipDefaults.caretSize * 2f
+                ) {
+                    QuickText(R.string.detection_animations_details)
+                }
+            },
+            state = toolTipState
+        ) {
+            QuickIcon(MaterialIcons.Info, IconSmallSize) {
+                scope.launch { toolTipState.show() }
+            }
+        }
 
         Switch(
             checked = enableAnimations,
@@ -249,18 +275,6 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
         )
 
         WidthSpacer(GeneralPadding)
-
-        /*TooltipBox(
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
-            tooltip = {
-                PlainTooltip(caretSize = TooltipDefaults.caretSize) { Text("Add to favorites") }
-            },
-            state = rememberTooltipState()
-        ) {
-            IconButton(onClick = { *//* Icon button's click event *//* }) {
-                Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
-            }
-        }*/
     }
 
     Spacer(Modifier.size(GeneralPadding))

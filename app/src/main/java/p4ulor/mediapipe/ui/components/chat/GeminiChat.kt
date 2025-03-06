@@ -8,16 +8,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,8 +33,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import p4ulor.mediapipe.d
 import p4ulor.mediapipe.ui.animations.smooth
-import p4ulor.mediapipe.ui.theme.AppTheme
+import p4ulor.mediapipe.ui.components.utils.DisplayHeight
+import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
+import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**
  * A Gemini chat box, where [newMsg]s are added to the list of messages.
@@ -41,8 +52,30 @@ fun GeminiChat(
     chatInputHeight: Dp,
     isPendingOrAnimationInProgress: (Boolean) -> Unit = {}
 ){
+    val density = LocalDensity.current
+    val middleOfTheScreen = DisplayHeight / 2
+
     val messages = remember { mutableStateListOf<Message>() }
-    val scrollPosition = rememberLazyListState()
+    val listState = rememberLazyListState()
+
+    /** Enabled if first message is visible */
+    val enableMessagesFadeOut by remember {
+        derivedStateOf { // will cause recomposition only if calculation changed
+            listState.layoutInfo
+                .visibleItemsInfo
+                .any { it.index == 0 }
+        }
+    }
+    val transparencyGradient = remember {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color.Black
+            ),
+            startY = with(density) { - BottomNavigationBarHeight.toPx() },
+            endY = with(density) { middleOfTheScreen.toPx() - BottomNavigationBarHeight.toPx() }
+        )
+    }
 
     LaunchedEffect(newMsg) {
         if(newMsg.isBlank){
@@ -52,17 +85,34 @@ fun GeminiChat(
         val currentMsgIsPending = messages.getOrNull(0)?.isPending == true
         if (currentMsgIsPending && newMsg.isNewGeminiMsg) {
             messages[0] = newMsg // replace the pending message with the new message
-            scrollPosition.animateScrollToItem(0)
+            listState.animateScrollToItem(0)
         } else if (!currentMsgIsPending) {
             messages.add(0, newMsg)
-            scrollPosition.animateScrollToItem(0)
+            listState.animateScrollToItem(0)
         }
     }
 
-    Column(Modifier.fillMaxSize().padding(bottom = chatInputHeight)) { // Column used in order to use weight
+    Column(Modifier
+        .fillMaxSize()
+        .padding(bottom = chatInputHeight)
+        .then(
+            if(enableMessagesFadeOut){
+                Modifier.drawWithContent {
+                    drawContent()
+                    drawRect( // Adds fade-out effect
+                        transparencyGradient,
+                        blendMode = BlendMode.DstIn
+                    )
+                }
+            } else {
+                Modifier
+            }
+        )
+
+    ) { // Column used in order to use weight
         LazyColumn(
             Modifier.weight(1f), // weight is necessary for reverseLayout to work. Makes so the LazyColumn to expand and align itself with the bottom edge of the parent Column
-            state = scrollPosition,
+            state = listState,
             reverseLayout = true // reverses order of the items and show them at the bottom
         ) {
             // The key is required for animateItem to work as it's docs say
@@ -90,7 +140,7 @@ fun GeminiChat(
  */
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun GeminiChatPreview() = AppTheme {
+private fun GeminiChatPreview() = PreviewComposable(enableDarkTheme = false) {
     var newMessage by remember { mutableStateOf(Message()) }
     var isPendingOrAnimationInProgress by remember { mutableStateOf(false) }
     var chatInputHeight by remember { mutableStateOf(0.dp) }

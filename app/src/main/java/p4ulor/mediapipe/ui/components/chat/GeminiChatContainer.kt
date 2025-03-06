@@ -41,29 +41,12 @@ fun GeminiChatContainer(
     var chatInputHeight by remember { mutableStateOf(0.dp) }
 
     val density = LocalDensity.current
-    val middleOfTheScreen = DisplayHeight / 2
-    val transparencyGradient = Brush.verticalGradient(
-        colors = listOf(
-            Color.Transparent,
-            Color.Black
-        ),
-        startY = with(density) { - BottomNavigationBarHeight.toPx() },
-        endY = with(density) { middleOfTheScreen.toPx() - BottomNavigationBarHeight.toPx() }
-    )
 
     LaunchedEffect(newGeminiMessage) {
         newMessage = newGeminiMessage
     }
 
-    Box(modifier
-        .drawWithContent {
-            drawContent()
-            drawRect( // Adds fade-out effect
-                transparencyGradient,
-                blendMode = BlendMode.DstIn
-            )
-        }
-    ) {
+    Box(modifier) {
         GeminiChat(
             newMsg = newMessage,
             chatInputHeight = chatInputHeight,
@@ -97,15 +80,11 @@ fun GeminiChatContainerPreview() = PreviewComposable(enableDarkTheme = false) {
     var userPrompt by remember { mutableStateOf(Message()) }
 
     LaunchedEffect(Unit) {
-        while (this.isActive) {
-            delay(10000)
-            geminiResponse = Message.getPending
+        while(this.isActive){
             delay(5000)
+            geminiResponse = Message.getPending
+            delay(1000)
             geminiResponse = Message("You typed ${userPrompt.text}", authorIsUser = false)
-            delay(10000)
-            geminiResponse = Message.getPending
-            delay(5000)
-            geminiResponse = Message("You typed2 ${userPrompt.text}", authorIsUser = false)
         }
     }
 

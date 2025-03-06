@@ -18,8 +18,7 @@ import p4ulor.mediapipe.R
  * https://stackoverflow.com/questions/67825724/how-to-ask-again-for-permission-if-it-was-denied-in-android
  */
 fun Activity.requestPermission(permission: String){
-    val hasPermission = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-    if(!hasPermission){
+    if(!(this hasPermission permission)){
         ActivityCompat.requestPermissions(this, arrayOf(permission), 0)
     }
 }
@@ -36,3 +35,6 @@ fun Context.requestUserToManuallyAddThePermission(){
             startActivity(goToSettingsIntent)
         }.show()
 }
+
+infix fun Context.hasPermission(permissionId: String) =
+    ContextCompat.checkSelfPermission(this, permissionId) == PackageManager.PERMISSION_GRANTED
