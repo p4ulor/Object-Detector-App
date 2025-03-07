@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components.chat
+package p4ulor.mediapipe.ui.screens.home.chat
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,9 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -33,7 +30,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import p4ulor.mediapipe.d
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.utils.DisplayHeight
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
@@ -58,8 +54,7 @@ fun GeminiChat(
     val messages = remember { mutableStateListOf<Message>() }
     val listState = rememberLazyListState()
 
-    /** Enabled if first message is visible */
-    val enableMessagesFadeOut by remember {
+    val isFirstMessageVisible by remember {
         derivedStateOf { // will cause recomposition only if calculation changed
             listState.layoutInfo
                 .visibleItemsInfo
@@ -96,7 +91,7 @@ fun GeminiChat(
         .fillMaxSize()
         .padding(bottom = chatInputHeight)
         .then(
-            if(enableMessagesFadeOut){
+            if(isFirstMessageVisible){
                 Modifier.drawWithContent {
                     drawContent()
                     drawRect( // Adds fade-out effect

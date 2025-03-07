@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components.chat
+package p4ulor.mediapipe.ui.screens.home.chat
 
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility

@@ -33,8 +33,8 @@ import p4ulor.mediapipe.android.viewmodels.HomeViewModel
 import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.Icon
-import p4ulor.mediapipe.ui.components.ResourcesIcon
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.ResourcesIcon
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
 import p4ulor.mediapipe.ui.components.utils.currentRoute
 import p4ulor.mediapipe.ui.components.utils.previousRoute
@@ -133,6 +133,6 @@ enum class Screen(
     Settings(R.string.settings, Icon.App(ResourcesIcon.Settings));
 
     companion object {
-        fun from(string: String?) = Screen.values().first{ it.name == string }
+        fun from(string: String?) = Screen.entries.first { it.name == string }
     }
 }

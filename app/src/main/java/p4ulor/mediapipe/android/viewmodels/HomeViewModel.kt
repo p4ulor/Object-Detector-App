@@ -10,12 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.sample
-import kotlinx.coroutines.flow.timeout
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -41,14 +37,13 @@ import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
 import p4ulor.mediapipe.data.utils.executorForImgAnalysis
 import p4ulor.mediapipe.data.utils.fileToBase64
 import p4ulor.mediapipe.e
-import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
-import p4ulor.mediapipe.ui.components.chat.Message
-import p4ulor.mediapipe.ui.screens.home.overlay.AnimatedDetectionOverlay
-import kotlin.coroutines.coroutineContext
+import p4ulor.mediapipe.ui.screens.home.chat.GeminiChatContainer
+import p4ulor.mediapipe.ui.screens.home.chat.Message
+import p4ulor.mediapipe.ui.screens.home.outline.AnimatedDetectionOutline
 
 /**
- * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory
+ * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory. And
+ * to keep this AndroidViewModel, just for demo/historical purposes.
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
  * This class has some data that should survive recompositions. The most imported for UX are:
  * - [cameraPreviewRatio], [pictureTaken], [isGeminiEnabled]
@@ -56,7 +51,7 @@ import kotlin.coroutines.coroutineContext
  * It also handles some logic to lift it out of the UI, like handling connection losses, performing
  * async calls, loading user preferences and launching coroutines.
  * Note: [isGeminiEnabled] is also used to toggle on/off the ImageAnalyser used for MediaPipe (and
- * thus the detection overlays)
+ * thus the detection outlines)
  */
 class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     private val network: NetworkObserver by inject()
@@ -83,7 +78,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     /**
      * For [objDetectionResults], [toStateFlow] is used instead of [asStateFlow] because [sample]
      * returns a flow. When animations are enabled, the emissions are cut down to 1 every half a
-     * second so that [AnimatedDetectionOverlay] doesn't have a ton of work to do, otherwise
+     * second so that [AnimatedDetectionOutline] doesn't have a ton of work to do, otherwise
      * no animation is visible since there's too much lag.
      */
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)

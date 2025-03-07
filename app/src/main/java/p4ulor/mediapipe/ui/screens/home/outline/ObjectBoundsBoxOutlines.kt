@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.screens.home.overlay
+package p4ulor.mediapipe.ui.screens.home.outline
 
 import android.graphics.RectF
 import androidx.compose.animation.core.Animatable
@@ -41,7 +41,7 @@ import p4ulor.mediapipe.ui.theme.rainbowWith
 import kotlin.random.Random
 
 @Composable
-fun ObjectBoundsBoxOverlays(
+fun ObjectBoundsBoxOutlines(
     detections: List<Detection>,
     frameWidth: Int,
     frameHeight: Int,
@@ -53,14 +53,14 @@ fun ObjectBoundsBoxOverlays(
      * Tracks positions of a single [Detection.objectName] in order to animate
      * transitions to new position and dimensions. TODO Allow storing various objects w/ same name
      */
-    val currentBoundsForEachObject = remember { mutableMapOf<String, AnimatedDetectionOverlay>() }
+    val currentBoundsForEachObject = remember { mutableMapOf<String, AnimatedDetectionOutline>() }
 
     // Update animation states for all results
     if(animate){
         for (detection in detections) {
             val detectionBounds = detection.boundingBox()
             val animatableState = currentBoundsForEachObject.getOrPut(detection.objectName) {
-                AnimatedDetectionOverlay(
+                AnimatedDetectionOutline(
                     xLeft = Animatable(detectionBounds.left),
                     yTop = Animatable(detectionBounds.top),
                     width = Animatable(detectionBounds.width()),
@@ -68,7 +68,7 @@ fun ObjectBoundsBoxOverlays(
                 )
             }
 
-            // Update the bounds of the overlay progressively as defined by an animation for every new detectionBounds
+            // Update the bounds of the outline progressively as defined by an animation for every new detectionBounds
             LaunchedEffect(detectionBounds) {
                 animatableState.updateBoundingBox(detectionBounds)
             }
@@ -80,7 +80,7 @@ fun ObjectBoundsBoxOverlays(
             // calculating the UI dimensions of the detection bounds based on the container
             // and based on the exact bounds,
 
-            val scaler = OverlayScaler(
+            val scaler = OutlineScaler(
                 frameWidth = frameWidth,
                 frameHeight = frameHeight,
                 containerWidth = this.maxWidth.value,
@@ -151,7 +151,7 @@ fun ObjectBoundsBoxOverlays(
  */
 @Preview
 @Composable
-private fun ObjectBoundsBoxOverlayPreview(
+private fun ObjectBoundsBoxOutlinePreview(
     simulateMovement: Boolean = true,
     animate: Boolean = true
 ) {
@@ -168,7 +168,7 @@ private fun ObjectBoundsBoxOverlayPreview(
         }
     }
 
-    ObjectBoundsBoxOverlays(
+    ObjectBoundsBoxOutlines(
         frameWidth = 720,
         frameHeight = 1280,
         detections = listOf(

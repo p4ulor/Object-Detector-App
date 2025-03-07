@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components.chat
+package p4ulor.mediapipe.ui.screens.home.chat
 
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import java.util.UUID

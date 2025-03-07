@@ -62,12 +62,12 @@ E(DependencyInjection);
     D3 --> D33(root);
     D3 --> D34(settings);
 
-    D32 --> D321(overlay);
+    D32 --> D321(outline);
 
 ```
 
 ## Things that were not done for the sake of moving out to other things
-- Animated detection overlays only support detection 1 type of object, since an identifier is required for the animation to track, but MediaPipe doesn't provide identifiers.
+- Animated detection outlines only support detection 1 type of object, since an identifier is required for the animation to track, but MediaPipe doesn't provide identifiers.
 - Not worrying about still using ImageDetectionUseCase when toggling Gemini mode
 - Displaying only the latest Gemini message when toggling off and on Gemini, instead of storing the list of messages
 - The notification intent explicitly opening the Achivements screen instead of just pointing to the MainActivity

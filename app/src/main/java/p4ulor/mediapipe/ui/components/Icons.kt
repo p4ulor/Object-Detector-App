@@ -46,7 +46,7 @@ enum class ResourcesIcon(val resourceId: Int, val useOriginalColors: Boolean = f
     Settings(R.drawable.settings_vector),
     Camera(R.drawable.camera),
     MediaPipe(R.drawable.mediapipe, useOriginalColors = true),
-    Gemini(R.drawable.gemini, useOriginalColors = true);
+    Gemini(R.drawable.gemini, useOriginalColors = true)
 }
 
 /** Note: icons from [androidx.compose.material.icons.Icons] are [ImageVector]s */

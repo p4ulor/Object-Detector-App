@@ -54,15 +54,15 @@ import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.i
-import p4ulor.mediapipe.ui.components.ResourcesIcon
 import p4ulor.mediapipe.ui.components.ExpandableFAB
 import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.Icon
 import p4ulor.mediapipe.ui.components.MaterialIcons
-import p4ulor.mediapipe.ui.components.chat.GeminiChatContainer
+import p4ulor.mediapipe.ui.components.ResourcesIcon
 import p4ulor.mediapipe.ui.components.utils.DisplayHeight
 import p4ulor.mediapipe.ui.components.utils.toast
-import p4ulor.mediapipe.ui.screens.home.overlay.ObjectBoundsBoxOverlays
+import p4ulor.mediapipe.ui.screens.home.chat.GeminiChatContainer
+import p4ulor.mediapipe.ui.screens.home.outline.ObjectBoundsBoxOutlines
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 /**
@@ -168,10 +168,10 @@ fun HomeScreenGranted(
                         )
                     }
 
-                    // Show the detected objects overlays
+                    // Show the detected objects outlines
                     resultsBundle?.let {
                         if(!geminiStatus.isEnabled){ // Easy implementation to not have to rebind the camera (there are other things to do), and only do it when ratio changes, which is the most important to be able to take pics after doing so
-                            ObjectBoundsBoxOverlays(
+                            ObjectBoundsBoxOutlines(
                                 detections = it.detectedObjects.detections(),
                                 frameWidth = it.inputImageWidth,
                                 frameHeight = it.inputImageHeight,

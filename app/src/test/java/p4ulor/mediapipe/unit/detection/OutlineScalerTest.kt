@@ -4,7 +4,7 @@ import android.graphics.RectF
 import io.mockk.every
 import io.mockk.mockk
 import p4ulor.mediapipe.data.utils.round
-import p4ulor.mediapipe.ui.screens.home.overlay.OverlayScaler
+import p4ulor.mediapipe.ui.screens.home.outline.OutlineScaler
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -12,10 +12,10 @@ import kotlin.test.assertEquals
  * Using mockk because to instantiate Android classes in tests
  * https://developer.android.com/training/testing/local-tests#mocking-dependencies
  */
-class OverlayScalerTest {
+class OutlineScalerTest {
     @Test
     fun `Scale width and height from 1920x1080 to 1280x720`() {
-        val scaler = OverlayScaler(
+        val scaler = OutlineScaler(
             frameWidth = 1920,
             frameHeight = 1080,
             containerWidth = 1280f,

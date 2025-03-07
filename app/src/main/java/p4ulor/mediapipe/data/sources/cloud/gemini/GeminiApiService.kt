@@ -3,7 +3,6 @@ package p4ulor.mediapipe.data.sources.cloud.gemini
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.isSuccess
 import p4ulor.mediapipe.data.domains.gemini.GeminiPrompt
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import p4ulor.mediapipe.data.sources.client.KtorClient

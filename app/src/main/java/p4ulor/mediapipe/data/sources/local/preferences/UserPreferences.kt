@@ -41,7 +41,7 @@ data class UserPreferences(
         object Ranges {
             val detectionCertainty = ObjectDetectorSettings.detectionCertaintyRange
             val objectDetections = 1..ObjectDetectorSettings.maxObjectDetections
-            val model = Model.values().map { it.name }
+            val model = Model.entries.map { it.name }
         }
 
         suspend fun getFrom(storage: DataStore<Preferences>) = withContext(Dispatchers.IO) {

@@ -28,5 +28,7 @@
     <string name="model">Model</string>
     <string name="save_pictures">Save pictures</string>
     <string name="note">Note:</string>
-    <string name="detection_animations_details">Due to limitations, only 1 object type can have it\'s overlay animated</string>
+    <string name="detection_animations_details">Due to limitations, only 1 object type can have it\'s outline animated at one time</string>
+    <string name="your_achievements">Your achievements</string>
+    <string name="leaderboard">Leaderboard</string>
 </resources>

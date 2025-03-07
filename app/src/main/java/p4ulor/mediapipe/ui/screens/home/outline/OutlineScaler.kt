@@ -1,18 +1,18 @@
-package p4ulor.mediapipe.ui.screens.home.overlay
+package p4ulor.mediapipe.ui.screens.home.outline
 
 import android.graphics.RectF
 import androidx.compose.foundation.layout.BoxWithConstraints
 
 /**
- * A utility class to handle the scaling of overlays (the bounding boxes used for object detections)
+ * A utility class to handle the scaling of outlines (the bounding boxes used for object detections)
  * into a container, while keeping the aspect ratio of the original frame (camera ratio)
  *
  * @param frameWidth The width of the frame, captured by the camera
  * @param frameHeight The height of the frame, captured by the camera
- * @param containerWidth The width of the container where the overlay will be drawn
- * @param containerHeight The height of the container where the overlay will be drawn
+ * @param containerWidth The width of the container where the outline will be drawn
+ * @param containerHeight The height of the container where the outline will be drawn
  */
-class OverlayScaler(
+class OutlineScaler(
     private val frameWidth: Int,
     private val frameHeight: Int,
     private val containerWidth: Float,
@@ -31,7 +31,7 @@ class OverlayScaler(
         height = (bounds.height() / frameHeight) * containerHeight,
     )
 
-    fun scaleBox(bounds: AnimatedDetectionOverlay) = scaleBox(
+    fun scaleBox(bounds: AnimatedDetectionOutline) = scaleBox(
         RectF(
             bounds.xLeft.value,
             bounds.yTop.value,

@@ -37,8 +37,10 @@ fun QuickText(
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
     fontFamily: FontFamily? = null,
+    maxLines: Int = Int.MAX_VALUE
 ) = ComposeText(
-    stringResource(text), modifier, color, fontSize, fontStyle, fontWeight, fontFamily
+    stringResource(text), modifier, color, fontSize, fontStyle, fontWeight, fontFamily,
+    maxLines = maxLines
 )
 
 @Composable

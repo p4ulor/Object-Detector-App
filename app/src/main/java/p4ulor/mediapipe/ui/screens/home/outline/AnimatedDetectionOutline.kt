@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.screens.home.overlay
+package p4ulor.mediapipe.ui.screens.home.outline
 
 import android.graphics.RectF
 import androidx.compose.animation.core.Animatable
@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 import p4ulor.mediapipe.ui.animations.smooth
 
 /** Utility class used for animating the bounds of a detection, by using the 4 corners of the box */
-class AnimatedDetectionOverlay(
+class AnimatedDetectionOutline(
     val xLeft: Animatable<Float, AnimationVector1D>,
     val yTop: Animatable<Float, AnimationVector1D>,
     val width: Animatable<Float, AnimationVector1D>,

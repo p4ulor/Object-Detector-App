@@ -30,7 +30,7 @@ enum class Model(val id: String) {
     EFFICIENTDETV2("efficientdet-lite2.tflite");
 
     companion object {
-        fun getFrom(prefs: UserPreferences) = Model.values().firstOrNull {
+        fun getFrom(prefs: UserPreferences) = Model.entries.firstOrNull {
             it.name == prefs.selectedModel
         } ?: EFFICIENTDETV0
     }

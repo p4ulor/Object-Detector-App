@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.ui.components.chat
+package p4ulor.mediapipe.ui.screens.home.chat
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,10 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,8 +17,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.android.utils.camera.Picture
-import p4ulor.mediapipe.ui.components.utils.DisplayHeight
-import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**

@@ -6,11 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import org.koin.core.annotation.Single
@@ -25,28 +21,29 @@ class NotificationManager(private val ctx: Context) {
     private val notificationChannel = NotificationChannel(
         /* id = */ notificationChannelId,
         /* name = */ ctx.getString(R.string.achievements),
-                /* importance = */ NotificationManager.IMPORTANCE_DEFAULT
-    ).apply {
-        lightColor = Color.GRAY
-    }
+        /* importance = */ NotificationManager.IMPORTANCE_DEFAULT
+    )
 
     init {
         // Register the channel with the OS
         notificationManager.createNotificationChannel(notificationChannel)
-
     }
-
 
     @SuppressLint("MissingPermission") // Because IDE isn't recognizing the hasPermission check
     fun sendAchievementNotification(title: String, description: String){
         // Explicit intent for MainActivity
-        val intent = Intent(ctx, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            /* context = */ ctx,
+            /* requestCode = */ 0,
+            /* intent = */ Intent(ctx, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            },
+            /* flags = */ PendingIntent.FLAG_IMMUTABLE
+        )
 
         val notification = NotificationCompat.Builder(ctx, notificationChannelId)
-            .setSmallIcon(R.mipmap.app_icon_foreground)
+            .setSmallIcon(R.mipmap.app_icon_round)
+            .setLargeIcon(ctx.getBitmapFor(R.mipmap.app_icon_round))
             .setContentTitle(title)
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
