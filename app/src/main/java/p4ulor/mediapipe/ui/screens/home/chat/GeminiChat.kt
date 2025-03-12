@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.utils.DisplayHeight
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
@@ -54,13 +55,7 @@ fun GeminiChat(
     val messages = remember { mutableStateListOf<Message>() }
     val listState = rememberLazyListState()
 
-    val isFirstMessageVisible by remember {
-        derivedStateOf { // will cause recomposition only if calculation changed
-            listState.layoutInfo
-                .visibleItemsInfo
-                .any { it.index == 0 }
-        }
-    }
+    var isFirstMessageVisible by remember { mutableStateOf(true) }
     val transparencyGradient = remember {
         Brush.verticalGradient(
             colors = listOf(
@@ -80,18 +75,22 @@ fun GeminiChat(
         val currentMsgIsPending = messages.getOrNull(0)?.isPending == true
         if (currentMsgIsPending && newMsg.isNewGeminiMsg) {
             messages[0] = newMsg // replace the pending message with the new message
-            listState.animateScrollToItem(0)
+            listState.animateScrollToItem(0) // scroll down on new messages
         } else if (!currentMsgIsPending) {
             messages.add(0, newMsg)
-            listState.animateScrollToItem(0)
+            listState.animateScrollToItem(0) // scroll down on new messages
         }
+
+        isFirstMessageVisible = listState.layoutInfo
+            .visibleItemsInfo
+            .any { it.index + 1 == messages.size }
     }
 
     Column(Modifier
         .fillMaxSize()
         .padding(bottom = chatInputHeight)
         .then(
-            if(isFirstMessageVisible){
+            if(!isFirstMessageVisible && messages.isNotEmpty()){
                 Modifier.drawWithContent {
                     drawContent()
                     drawRect( // Adds fade-out effect

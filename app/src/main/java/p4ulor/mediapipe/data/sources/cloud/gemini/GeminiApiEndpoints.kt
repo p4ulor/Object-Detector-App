@@ -29,9 +29,9 @@ import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiEndpoints.Endpoint
  */
 class GeminiApiEndpoints(private val apiKey: String) {
 
-    sealed class Resources {
+    sealed interface Resources {
         /** https://ai.google.dev/api/all-methods#rest-resource:-v1beta.models */
-        sealed class Models {
+        sealed interface Models {
             /** https://ai.google.dev/api/generate-content#method:-models.generatecontent */
             object GenerateContent : Endpoint("/models/$defaultModel:generateContent", HttpMethod.Post)
 
@@ -45,7 +45,10 @@ class GeminiApiEndpoints(private val apiKey: String) {
         val path = "$baseBath$endpointPath"
     }
 
-    /** @return a [Pair] where [Pair.first] = path and [Pair.second] = [QueryParams]. Read [KtorClient] */
+    /**
+     * Util method to extract the HTTP URI path and queryParams (which will have the [apiKey])
+     * @return a [Pair] where [Pair.first] = path and [Pair.second] = [QueryParams]. Read [KtorClient]
+     */
     fun postTo(endpoint: Endpoint) = run {
         require(endpoint.method == HttpMethod.Post)
         Pair(endpoint.path, listOf(QueryParam(QueryKey.key.name, apiKey)))

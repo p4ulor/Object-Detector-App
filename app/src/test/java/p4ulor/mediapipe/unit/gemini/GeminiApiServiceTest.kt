@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 class GeminiApiServiceTest {
 
     /**
-     * The tests require have and require their own resources (app/src/test/resources) so
+     * The tests require their own resources (app/src/test/resources) so
      * [javaClass.classLoader.getResource] is used to get API key and an image
      */
     @Test

@@ -1,11 +1,15 @@
 ## Technical documentation
 Details about conditions, state handling, errors, user experience, etc
-### HomeScreen
 
+### HomeScreen
+- Everytime the user navigates to this screen the preferences are loaded
+- When existing the screen or minimizing the app, the camera is unbinded
+- Toggling on Gemini doesn't stop the image analysis from MediaPipe from running in the background because I didn't want to have to rebind the camera just to do so, but it stops the flow emissions of results
+- For simplicity sake, only the latest message of Gemini is saved when the user leaves the screen or toggled off/on Gemini
 
 ### SettingsScreen
-- When the app that's installed doesn't have the MediaPipe models: TODO
-- 
+- Everytime the user navigates to this screen the preferences are loaded
+- When the app that's installed doesn't have the MediaPipe models: The preferences are still step, but MediaPipe won't be running in the ImageAnalysis use case
 ### AchievementsScreen
 
 
@@ -66,12 +70,24 @@ E(DependencyInjection);
 
 ```
 
+## Main challenges
+- Custom and made from the ground up floating action button and it's bounds and state handling
+- GeminiChat feature, state management and persistence (could be improved)
+
 ## Things that were not done for the sake of moving out to other things
 - Animated detection outlines only support detection 1 type of object, since an identifier is required for the animation to track, but MediaPipe doesn't provide identifiers.
 - Not worrying about still using ImageDetectionUseCase when toggling Gemini mode
 - Displaying only the latest Gemini message when toggling off and on Gemini, instead of storing the list of messages
 - The notification intent explicitly opening the Achivements screen instead of just pointing to the MainActivity
+- Supporting Geminis response markdown format (see if it's feasible)
 
 ### Resources
 - https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android
 - https://firebase.google.com/docs/samples?hl=en&authuser=0
+
+### Trivia
+- In the past before my decision to use Gemini, I intended to use [Text Generation](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/android)
+    - But it would require the user to download a LLM to their phone. So I decided to go for the Gemini API.
+    - The LLM Inference API support these [types of models](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference#models). The most lightwheight (1.30 GB) is:
+[gemma-1.1-2b-it-cpu-int4, LiteRT/TFLite variation](https://www.kaggle.com/models/google/gemma/tfLite/gemma-1.1-2b-it-cpu-int4)
+    - [mediapipe-samples - llm_inference](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/llm_inference/android).

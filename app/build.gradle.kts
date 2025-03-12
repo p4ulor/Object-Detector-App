@@ -137,16 +137,23 @@ dependencies {
     implementation(libs.androidx.camera.view)
     // implementation(libs.androidx.camera.extensions) // https://developer.android.com/media/camera/camera-extensions
 
+    // Permission utils
+    implementation(libs.accompanist.permissions)
+    // More MaterialIcons
+    implementation(libs.androidx.material.icons.extended.android)
+    // Datastore, to store app settings
+    implementation(libs.androidx.datastore.preferences)
+
+    // Room, to store achievements. And the KSP for Room annotations and Kotlin Extensions and Coroutines support
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+
     // MediaPipe - vision tasks
     // https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android
     // https://ai.google.dev/edge/api/mediapipe/java/com/google/mediapipe/tasks/vision/objectdetector/package-summary
     // https://mvnrepository.com/artifact/com.google.mediapipe/tasks-vision
     implementation(libs.tasks.vision)
-
-    // Permission utils
-    implementation(libs.accompanist.permissions)
-    // More MaterialIcons
-    implementation(libs.androidx.material.icons.extended.android)
 
     // Ktor HTTP client, to make HTTP requests to the Gemini API
     implementation(libs.ktor.client.core)
@@ -161,9 +168,6 @@ dependencies {
     implementation(libs.koin.androidx.compose) // https://insert-koin.io/docs/quickstart/android-compose/#injecting-viewmodel-in-compose
     implementation(libs.koin.annotations)
     ksp(libs.koin.ksp.compiler) // Indicate gradle to use Koin's KSP compiler with KSP to generate code, and use that code as a dependency
-
-    // Datastore, to store app settings
-    implementation(libs.androidx.datastore.preferences)
 
     // Lottie, for animated icons/images
     implementation(libs.lottie.compose)

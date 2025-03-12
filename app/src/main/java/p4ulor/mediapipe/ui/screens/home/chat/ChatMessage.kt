@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,15 +45,16 @@ fun ChatMessage(
     modifier: Modifier = Modifier,
     isAnimationInProgress: (Boolean) -> Unit = {}
 ) = with(msg) {
-    var animatedText by remember { mutableStateOf("") }
+    var animatedText by remember { mutableStateOf(AnnotatedString("")) }
 
     if (isNewGeminiMsg) {
         isAnimationInProgress(true)
         LaunchedEffect(text) {
-            animatedText = ""
-            text.forEachIndexed { index, _ ->
+            var currentText = StringBuilder("")
+            text.forEachIndexed { index, char ->
                 delay(5)
-                animatedText = text.substring(0, index + 1)
+                currentText.append(char)
+                animatedText = parseMarkdownBold(currentText.toString())
             }
             isAnimationInProgress(false)
         }
@@ -91,7 +93,7 @@ fun ChatMessage(
                     CircularProgressIndicator(Modifier.padding(PaddingInsideCard))
                 } else {
                     Text(
-                        if(authorIsUser || isLoaded) text else animatedText,
+                        if(authorIsUser || isLoaded) parseMarkdownBold(text) else animatedText,
                         Modifier.padding(PaddingInsideCard).animateContentSize()
                     )
                 }
@@ -117,8 +119,8 @@ private fun ChatMessagePreview() = PreviewComposable {
 
         ChatMessage(
             Message(
-                "Witness the convergence of advanced technology and creative vision. " +
-                        "This image encapsulates the spirit of modern photographyyyyyyyyyyyyyyyyyyyyyyyyyy.",
+                "**Witness** the convergence of advanced technology and creative vision. " +
+                        "This image encapsulates **the spirit** of modern photographyyyyyyyyyyyyyyyyyyyyyyyyyy.",
                 authorIsUser = false,
                 isPending = false
             )

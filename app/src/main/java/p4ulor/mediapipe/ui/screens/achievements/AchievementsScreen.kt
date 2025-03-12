@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.android.viewmodels.AchievementsViewModel
@@ -31,12 +32,15 @@ fun AchievementsScreenUi(){
     var selectedTab by remember { mutableStateOf(Tab.YourAchievements) }
 
     Column {
-        PrimaryTabRow(selectedTabIndex = selectedTab.ordinal) {
+        PrimaryTabRow(
+            selectedTabIndex = selectedTab.ordinal,
+            containerColor = Color.Transparent,
+        ) {
             Tab.entries.forEachIndexed { index, tab ->
                 Tab(
                     selected = selectedTab.ordinal == index,
+                    text = { QuickText(tab.label, maxLines = 1) },
                     onClick = { selectedTab = tab },
-                    text = { QuickText(tab.label, maxLines = 1) }
                 )
             }
         }

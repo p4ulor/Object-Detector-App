@@ -20,16 +20,11 @@
 - I'm using [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android)
     - I used the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models), which can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
     - I used [mediapipe-samples - object_detection](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android-jetpack-compose) as a reference (warning: insane spaghetti code...)
-- I intended to use [Text Generation](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/android)
-    - But it would require the user to download a LLM to their phone. So I decided to go for the Gemini API.
-    - The LLM Inference API support these [types of models](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference#models). The most lightwheight (1.30 GB) is:
-[gemma-1.1-2b-it-cpu-int4, LiteRT/TFLite variation](https://www.kaggle.com/models/google/gemma/tfLite/gemma-1.1-2b-it-cpu-int4)
-    - [mediapipe-samples - llm_inference](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/llm_inference/android).
 
 ### 2. [Gemini API](https://aistudio.google.com/app/apikey)
 - A RESTful API that allows you to perform HTTP requests to a Gemini model,
 running in Google Cloud Platform. Doesn't require a GCP project, although you can associate it to
-one and monitor the use of your API key
+one or monitor the use of your API key
 - Pricing: It has a reasonable free tier of [1.5k requests per day and other limits](https://ai.google.dev/gemini-api/docs/billing#about-billing) for Gemini 1.5 Flash. [See it's capabilities and various details](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash)
 
 ### 3. [Ktor (client)](https://ktor.io/docs/client-create-new-application.html)
@@ -39,7 +34,7 @@ one and monitor the use of your API key
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
 - A cloud platform or BaaS (Backend As A Service) that provides a range of utilities for different environments (and programming languages) via SDK's (Software Development Kits)
-- I use it to store the results of prompts from the Gemini API and the achivement ranking of the users with [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0)
+- I use it to store the achivement leaderboard of the users with [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0)
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
 ## Secondary Technologies 🛠️
@@ -54,11 +49,13 @@ one and monitor the use of your API key
 - [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) -> Used to process Kotlin's @Serialization annonations
 - [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-quickstart.html#add-a-processor) -> Used to process Koin's annonations and build the dependencies
 - [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> API documentation engine for KDocs comments. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
-- [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin) -> to think
+- [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin) -> to investigate
 
 #### Other Dependencies
 - [androidx.camera.* dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
 - [google-accompanist](https://google.github.io/accompanist/) -> For permission utils
+- [androix.datastore](https://developer.android.com/jetpack/androidx/releases/datastore) -> For the storage of user preferences
+- [androidx.room](https://developer.android.com/jetpack/androidx/releases/room) -> For storage of more complex data-structures, like the achievements
 
 ## Setup Guide 🙌
 - [Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
@@ -70,7 +67,7 @@ one and monitor the use of your API key
 - a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
 - b) With source code: 
   - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
-  - Or `./gradlew assembleRelease` to install a release
+  - Or `./gradlew assembleDebug` to build a debug version, which will output to []
 
 ## Notes 📝
 - The Machine Learning models used with MediaPipe need to be a compatible with it, the compatability depends on the feature used
@@ -99,6 +96,7 @@ flowchart LR
   - https://github.com/marketplace/actions/github-pages-overwriter
   - https://github.com/skydoves/Balloon/blob/main/.github/workflows/release-docs.yaml
 ### Fixes
+- installing through .apk not working "app not installed as package appears to be invalid"
 - Fix not using deprecated resolution selector causing
 ```
 java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer

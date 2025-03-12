@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -22,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,10 +31,12 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
@@ -59,9 +63,11 @@ import p4ulor.mediapipe.R
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.DropdownOptions
 import p4ulor.mediapipe.ui.components.MaterialIcons
+import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.components.utils.BoxWithBackground
 import p4ulor.mediapipe.ui.components.utils.CenteredRow
 import p4ulor.mediapipe.ui.components.utils.roundMessageBox
+import p4ulor.mediapipe.ui.screens.achievements.Tab
 
 /**
  * Run in interactive mode to see the animations.
@@ -96,7 +102,7 @@ private val DarkColorScheme = darkColorScheme(
     background = Color(0xFA5A5E24), // Background color for screens and larger components
     onBackground = unset, // Color for text/icons displayed on top of the background color
 
-    surface = Color(0xFF151313), // For surfaces, cards and menus
+    surface = Color(0xFF151313), // For surfaces, cards, menus and tabs
     onSurface = Color(0xFFFFFFFF), // For text/icons displayed on top of the surface color
     surfaceVariant = unset, // Another surface color variant for differentiation
     onSurfaceVariant = Color(0xFFFFFFFF), // For "Label" in labelled boxes, icons and surface variants
@@ -144,7 +150,7 @@ private val LightColorScheme = lightColorScheme(
     background = Color(0xFA5A5E24), // Background color for screens and larger components
     onBackground = Color(0xFFFFFFFF), // Color for text/icons displayed on top of the background color
 
-    surface = Color(0xFFE2E2E2), // For surfaces, cards and menus
+    surface = Color(0xFFE2E2E2), // For surfaces, cards, menus and tabs
     onSurface = Color(0xFF000000), // For text/icons displayed on top of the surface color
     surfaceVariant = Color(0xFF303030), // Another surface color variant for differentiation
     onSurfaceVariant = Color(0xFF242424), // For text/icons on surface variant
@@ -172,6 +178,7 @@ private val LightColorScheme = lightColorScheme(
     surfaceDim = unset,
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SampleComposable(){
     Box {
@@ -286,7 +293,7 @@ private fun SampleComposable(){
                 Icons.Filled.Visibility,
                 "Visibility",
                 Modifier.size(50.dp),
-                MaterialTheme.colorScheme.secondary
+                //MaterialTheme.colorScheme.secondary
             )
 
             DropdownOptions(
@@ -296,6 +303,24 @@ private fun SampleComposable(){
                 horizontalPadding = 8.dp,
                 onNewOption = {}
             )
+
+            var selectedTab by remember { mutableStateOf(Tab.YourAchievements) }
+
+            Column(Modifier.fillMaxWidth()) {
+                PrimaryTabRow(
+                    selectedTabIndex = selectedTab.ordinal,
+                    Modifier.fillMaxWidth(),
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                ) {
+                    Tab.entries.forEachIndexed { index, tab ->
+                        Tab(
+                            selected = selectedTab.ordinal == index,
+                            onClick = { selectedTab = tab },
+                            text = { QuickText(tab.label, maxLines = 1) }
+                        )
+                    }
+                }
+            }
         }
     }
 }

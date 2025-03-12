@@ -3,6 +3,7 @@ package p4ulor.mediapipe.utils
 import android.util.Log
 import io.mockk.every
 import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -21,5 +22,7 @@ class LoggingMock : BeforeAllCallback, AfterAllCallback {
         every { Log.e(any(), any()) } answers { println(secondArg<String>()); 0 }
     }
 
-    override fun afterAll(context: ExtensionContext) {}
+    override fun afterAll(context: ExtensionContext) {
+        unmockkStatic(Log::class)
+    }
 }
