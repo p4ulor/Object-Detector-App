@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import p4ulor.mediapipe.d
-import p4ulor.mediapipe.data.sources.local.Crypto
+import p4ulor.mediapipe.data.sources.local.utils.Crypto
 import p4ulor.mediapipe.e
 import java.io.InputStream
 import java.io.OutputStream

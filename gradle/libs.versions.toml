@@ -34,8 +34,8 @@ lottieCompose = "6.6.2"
 coilCompose = "3.0.4"
 firebaseBom = "32.8.1" # must be compatible with Kotlin version (must have been compiled with a version bellow kotlin 2.0)
 androidxRules = "1.6.1"
-roomRuntime = "2.6.1"
-roomKtx = "2.6.1"
+roomRuntime = "2.5.2"
+roomKtx = "2.5.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

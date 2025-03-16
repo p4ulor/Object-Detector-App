@@ -91,6 +91,7 @@ private fun HomeScreenNotGranted() {
         Button(onClick = {
             if (!oneTimePermRequestWasUsed) {
                 ctx.getActivity()?.requestPermission(Manifest.permission.CAMERA)
+                ctx.getActivity()?.requestPermission(Manifest.permission.POST_NOTIFICATIONS)
                 oneTimePermRequestWasUsed = true
             } else {
                 ctx.requestUserToManuallyAddThePermission()

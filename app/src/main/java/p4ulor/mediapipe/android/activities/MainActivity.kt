@@ -5,11 +5,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import p4ulor.mediapipe.R
+import p4ulor.mediapipe.android.MyApplication
+import p4ulor.mediapipe.android.utils.readFromRaw
+import p4ulor.mediapipe.data.domains.mediapipe.Achievement
+import p4ulor.mediapipe.data.sources.local.storage.AppDatabase
+import p4ulor.mediapipe.data.sources.local.storage.achievements.AchievementsTableTuple
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.screens.root.RootScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         i("onCreate")
@@ -17,6 +28,12 @@ class MainActivity : ComponentActivity() {
         // Lock screen to portrait
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
+
+        // Initialize DB
+        val app = application as MyApplication
+        lifecycleScope.launch(Dispatchers.IO) {
+            initializeDb(app.appDb)
+        }
 
         setContent {
             AppTheme {
@@ -34,5 +51,20 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         i("Destroyed")
+    }
+
+    /** Initialize DB with the the objects */
+    private suspend fun initializeDb(db: AppDatabase) {
+        val achievements = db.achivements()
+        if (achievements.getAll().isEmpty()) {
+            val allAchivements = readFromRaw(R.raw.mediapipe_detectable_objects).mapNotNull { objectName ->
+                if (objectName != Achievement.invalidName) {
+                    AchievementsTableTuple(objectName)
+                } else {
+                    null
+                }
+            }
+            achievements.insertAll(allAchivements)
+        }
     }
 }
