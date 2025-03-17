@@ -66,7 +66,7 @@ import p4ulor.mediapipe.ui.screens.home.outline.ObjectBoundsBoxOutlines
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 /**
- * This class has a lot of nested calls, but in the way it's now, it's more readable because it's
+ * This function has a lot of nested calls, but in the way it's now, it's more readable because it's
  * more direct. Breaking it down into more util functions would make it cluttered with the amount
  * of common variables each component uses
  *

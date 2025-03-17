@@ -23,7 +23,7 @@ class AchievementsViewModel(
     private val notificationManager: NotificationManager,
 ) : AndroidViewModel(application) {
 
-    private val achievementsDao by lazy { getApplication<MyApplication>().appDb.achivements() }
+    private val achievementsDao by lazy { getApplication<MyApplication>().appDb.achievements() }
 
     private val _userAchievements= MutableStateFlow<UserAchievements?>(null)
     val userAchievements = _userAchievements.asStateFlow()

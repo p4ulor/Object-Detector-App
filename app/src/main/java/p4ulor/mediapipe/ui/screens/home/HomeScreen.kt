@@ -55,7 +55,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
     LaunchedEffect(cameraPermission.isGranted) {
         if (cameraPermission.isGranted) {
             delay(50) // Gives time for CircularProgressIndicator and NavigationBar animations to show
-            withContext(Dispatchers.Default){ // So the UI thread is not used
+            withContext(Dispatchers.Default){ // So the UI thread is not used and 3 coroutines are used to try to load ASAP
                 launch { cameraProvider = ctx.getCameraProvider() }
                 launch { prefs = viewModel.loadUserPrefs().first() } // Loads prefs which need to be obtained everytime if user changed them in Settings
                 launch { secretPrefs = viewModel.loadUserSecretPrefs().first() }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,7 +30,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -52,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -97,13 +94,13 @@ private val HorizontalPadding = 8.dp
 @Composable
 fun SettingsScreen() {
     val vm = koinViewModel<SettingsViewModel>()
-    var currentPrefs by remember { mutableStateOf(UserPreferences()) }
+    var currentPrefs by remember { mutableStateOf(UserPreferences()) } // Initial value of null is not used to avoid using !!
     var currentSecretPrefs by remember { mutableStateOf(UserSecretPreferences()) }
     val hasConnection by vm.network.hasConnection.collectAsState(initial = false) // Is cancelled when leaving composition
     var isLoaded by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { // Collect only on first composition rendering
-        currentPrefs = vm.getUserPrefs().first()
+        currentPrefs = vm.getUserPrefs().first() // These need to be loaded everytime
         currentSecretPrefs = vm.getUserSecretPrefs().first()
         isLoaded = true
     }
@@ -116,10 +113,10 @@ fun SettingsScreen() {
             hasConnection,
             currentPrefs,
             currentSecretPrefs,
-            saveUserPrefs = {
+            onSaveUserPrefs = {
                 vm.saveUserPrefs(it)
             },
-            saveUserSecretPrefs = {
+            onSaveUserSecretPrefs = {
                 vm.saveUserSecretPrefs(it)
             }
         )
@@ -131,20 +128,20 @@ private fun SettingsScreenUi(
     hasConnection: Boolean,
     userPreferences: UserPreferences,
     userSecretPreferences: UserSecretPreferences,
-    saveUserPrefs: (UserPreferences) -> Unit,
-    saveUserSecretPrefs: (UserSecretPreferences) -> Unit
-) = Surface(Modifier.fillMaxSize(), color = Color.Transparent) {
+    onSaveUserPrefs: (UserPreferences) -> Unit,
+    onSaveUserSecretPrefs: (UserSecretPreferences) -> Unit
+) {
     Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
         MediaPipeSettings(
             currPrefs = userPreferences,
-            onNewPrefs = { saveUserPrefs(it) }
+            onNewPrefs = { onSaveUserPrefs(it) }
         )
 
         Spacer(Modifier.size(GeneralPadding * 2))
 
         GeminiSettings(
             currPrefs = userSecretPreferences,
-            onNewPrefs = { saveUserSecretPrefs(it) }
+            onNewPrefs = { onSaveUserSecretPrefs(it) }
         )
 
         Spacer(Modifier.size(GeneralPadding * 2))
@@ -155,7 +152,7 @@ private fun SettingsScreenUi(
 
         SavePicturesCheckBox(
             currPrefs = userPreferences,
-            onNewPrefs = { saveUserPrefs(it) }
+            onNewPrefs = { onSaveUserPrefs(it) }
         )
     }
 }
@@ -247,6 +244,7 @@ private fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs
             positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
             tooltip = {
                 RichTooltip(
+                    Modifier.padding(horizontal = GeneralPadding),
                     title = { QuickText(R.string.note) },
                     action = {},
                     caretSize = TooltipDefaults.caretSize * 2f

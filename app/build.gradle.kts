@@ -120,7 +120,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(platform(libs.androidx.compose.bom)) // https://developer.android.com/develop/ui/compose/bom/bom-mapping
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -146,7 +146,7 @@ dependencies {
 
     // Room, to store achievements. And the KSP for Room annotations and Kotlin Extensions and Coroutines support
     implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
     // MediaPipe - vision tasks

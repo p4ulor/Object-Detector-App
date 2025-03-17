@@ -20,7 +20,6 @@ import p4ulor.mediapipe.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         i("onCreate")
@@ -53,18 +52,18 @@ class MainActivity : ComponentActivity() {
         i("Destroyed")
     }
 
-    /** Initialize DB with the the objects */
+    /** Initialize the DB tables */
     private suspend fun initializeDb(db: AppDatabase) {
-        val achievements = db.achivements()
+        val achievements = db.achievements()
         if (achievements.getAll().isEmpty()) {
-            val allAchivements = readFromRaw(R.raw.mediapipe_detectable_objects).mapNotNull { objectName ->
+            val allAchievements = readFromRaw(R.raw.mediapipe_detectable_objects).mapNotNull { objectName ->
                 if (objectName != Achievement.invalidName) {
                     AchievementsTableTuple(objectName)
                 } else {
                     null
                 }
             }
-            achievements.insertAll(allAchivements)
+            achievements.insertAll(allAchievements)
         }
     }
 }

@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import p4ulor.mediapipe.data.sources.local.storage.achievements.AchievementsDao
 import p4ulor.mediapipe.data.sources.local.storage.achievements.AchievementsTableTuple
 
-/** Defines a RoomDatabase for the application, and it's tables */
+/** Defines a Room database for the application, and the Data Access Objects for it's tables */
 @Database(
     entities = [
         AchievementsTableTuple::class
@@ -14,5 +14,5 @@ import p4ulor.mediapipe.data.sources.local.storage.achievements.AchievementsTabl
 )
 //@TypeConverters(::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun achivements(): AchievementsDao
+    abstract fun achievements(): AchievementsDao
 }

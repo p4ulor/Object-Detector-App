@@ -46,8 +46,8 @@ one or monitor the use of your API key
 ### Plugins Used & Other Dependencies 🔌
 #### Gradle Plugins 🐘
 - [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite ML models. It is ran automatically after building the project. In gradle tool window, access it in the task category "other"
-- [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) -> Used to process Kotlin's @Serialization annonations
-- [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-quickstart.html#add-a-processor) -> Used to process Koin's annonations and build the dependencies
+- [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) -> Used to process Kotlin's @Serialization annotations
+- [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-quickstart.html#add-a-processor) -> Used to process Koin's and Room's annotations and build the dependencies
 - [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> API documentation engine for KDocs comments. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
 - [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin) -> to investigate
 

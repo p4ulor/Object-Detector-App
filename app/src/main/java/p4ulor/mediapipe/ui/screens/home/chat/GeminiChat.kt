@@ -18,10 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +26,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.mediapipe.ui.animations.smooth
-import p4ulor.mediapipe.ui.components.utils.DisplayHeight
-import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
+import p4ulor.mediapipe.ui.components.utils.TransparencyGradient
+import p4ulor.mediapipe.ui.components.utils.TransparentGradientPosition
+import p4ulor.mediapipe.ui.components.utils.fadingEdge
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 /**
@@ -47,23 +44,11 @@ fun GeminiChat(
     chatInputHeight: Dp,
     isPendingOrAnimationInProgress: (Boolean) -> Unit = {}
 ){
-    val density = LocalDensity.current
-    val middleOfTheScreen = DisplayHeight / 2
 
     val messages = remember { mutableStateListOf<Message>() }
     val listState = rememberLazyListState()
 
-    var isFirstMessageVisible by remember { mutableStateOf(true) }
-    val transparencyGradient = remember {
-        Brush.verticalGradient(
-            colors = listOf(
-                Color.Transparent,
-                Color.Black
-            ),
-            startY = with(density) { - BottomNavigationBarHeight.toPx() },
-            endY = with(density) { middleOfTheScreen.toPx() - BottomNavigationBarHeight.toPx() }
-        )
-    }
+    var isFirstNotMessageVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(newMsg) {
         if(newMsg.isBlank){
@@ -78,24 +63,20 @@ fun GeminiChat(
             messages.add(0, newMsg)
             listState.animateScrollToItem(0) // scroll down on new messages
         }
+    }
 
-        isFirstMessageVisible = listState.layoutInfo
+    LaunchedEffect(listState.isScrollInProgress) {
+        isFirstNotMessageVisible = listState.layoutInfo
             .visibleItemsInfo
-            .any { it.index + 1 == messages.size }
+            .any { it.index + 1 == messages.size }.not()
     }
 
     Column(Modifier
         .fillMaxSize()
         .padding(bottom = chatInputHeight)
         .then(
-            if(!isFirstMessageVisible && messages.isNotEmpty()){
-                Modifier.drawWithContent {
-                    drawContent()
-                    drawRect( // Adds fade-out effect
-                        transparencyGradient,
-                        blendMode = BlendMode.DstIn
-                    )
-                }
+            if (isFirstNotMessageVisible && messages.isNotEmpty()) {
+                Modifier.fadingEdge(TransparencyGradient(TransparentGradientPosition.Top))
             } else {
                 Modifier
             }
@@ -128,6 +109,7 @@ fun GeminiChat(
  * This has some logic to constrain new newMessages but it's all so simulate a real use. New messages
  * are blocked by ChatInput by disabling the click of the trailing icon.
  * Note: Compose preview with interaction mode doesn't allow typing in the [ChatInput]
+ * To do so, use [GeminiChatContainerPreview]
  */
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -175,9 +157,8 @@ private fun GeminiChatPreview() = PreviewComposable(enableDarkTheme = false) {
                },
             pictureTaken = null,
             disableSubmit = isPendingOrAnimationInProgress,
-            onValidUserSubmit = {
-
-        })
+            onValidUserSubmit = {}
+        )
     }
 }
 

@@ -74,7 +74,7 @@ fun ChatMessage(
                 stringResource(R.string.gemini)
             },
             Modifier.padding(GeneralPadding),
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold
         )
 
