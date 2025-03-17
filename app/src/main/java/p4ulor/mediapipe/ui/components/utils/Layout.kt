@@ -1,12 +1,17 @@
 package p4ulor.mediapipe.ui.components.utils
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,4 +61,14 @@ fun BoxWithBackground(
         )
         content()
     }
+}
+
+@Composable
+fun RowScope.TableCell(content: @Composable () -> Unit
+) = Box(Modifier
+    .border(2.dp, MaterialTheme.colorScheme.outlineVariant)
+    .padding(5.dp),
+    contentAlignment = Alignment.Center
+) {
+    content()
 }

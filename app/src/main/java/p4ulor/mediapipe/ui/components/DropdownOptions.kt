@@ -44,9 +44,9 @@ import p4ulor.mediapipe.ui.theme.AppTheme
 /**
  * I did this because:
  * 1. The [ExposedDropdownMenuBox] is an [ExperimentalMaterial3Api]
- * 2. The interactive mode preview of the composable isn't working (at least ocassionaly)
+ * 2. The interactive mode preview of the composable isn't working (at least occasionally)
  * 3. I wanted the click of the widget to have a rounded look on it, so I made the
- * [OutlinedTextField] have a button inside it.
+ * [OutlinedTextField] have a button inside it and it looks great.
  * 4. This gives more customization options
  * - https://stackoverflow.com/questions/67111020/exposed-drop-down-menu-for-jetpack-compose
  */

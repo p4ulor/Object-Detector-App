@@ -28,11 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.ui.components.utils.HorizontalPadding
+import p4ulor.mediapipe.ui.components.utils.GeneralPaddingSmall
 import p4ulor.mediapipe.ui.components.utils.roundMessageBox
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
-private val GeneralPadding = 4.dp
-private val HorizontalPadding = 8.dp
+
 private val PaddingInsideCard = 16.dp
 
 /**
@@ -62,7 +63,7 @@ fun ChatMessage(
 
     Column(
         modifier
-            .padding(horizontal = HorizontalPadding, vertical = GeneralPadding)
+            .padding(horizontal = HorizontalPadding, vertical = GeneralPaddingSmall)
             .fillMaxWidth(),
         horizontalAlignment = if (authorIsUser) Alignment.End else Alignment.Start,
     ) {
@@ -73,7 +74,7 @@ fun ChatMessage(
             } else {
                 stringResource(R.string.gemini)
             },
-            Modifier.padding(GeneralPadding),
+            Modifier.padding(GeneralPaddingSmall),
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold
         )

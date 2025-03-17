@@ -1,6 +1,6 @@
 package p4ulor.mediapipe.data.domains.mediapipe
 
-import p4ulor.mediapipe.data.sources.local.storage.achievements.AchievementsTableTuple
+import p4ulor.mediapipe.data.sources.local.database.achievements.AchievementsTableTuple
 
 /**
  * @param objectName one of the strings in the [80 objects list](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)

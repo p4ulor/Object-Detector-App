@@ -1,4 +1,4 @@
-package p4ulor.mediapipe.data.sources.local.storage.achievements
+package p4ulor.mediapipe.data.sources.local.database.achievements
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

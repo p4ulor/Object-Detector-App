@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.android.viewmodels.AchievementsViewModel
 import p4ulor.mediapipe.data.domains.mediapipe.Achievement
@@ -28,8 +27,6 @@ import p4ulor.mediapipe.data.utils.getTodaysDate
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.QuickText
 import p4ulor.mediapipe.ui.theme.PreviewComposable
-
-private val GeneralPadding = 12.dp
 
 @Composable
 fun AchievementsScreen(){
@@ -76,7 +73,7 @@ fun AchievementsScreenUi(userAchievements: UserAchievements) {
         if(selectedTab == Tab.YourAchievements) {
             YourAchievementsTab(userAchievements)
         } else {
-
+            LeaderboardTab()
         }
     }
 }

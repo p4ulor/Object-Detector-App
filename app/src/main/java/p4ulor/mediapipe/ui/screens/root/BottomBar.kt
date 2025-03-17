@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -41,7 +40,7 @@ fun BottomBar(currentScreen: Screen, onNavigateTo: (Screen) -> Unit){
         Color.Transparent
     ) {
         bottomBarDestinations.forEach { item ->
-            buildNavigationBarItem(item, currentScreen, onClick = { barItem ->
+            BuildNavigationBarItem(item, currentScreen, onClick = { barItem ->
                 if (currentScreen.name != barItem.screen.name) { // Avoids re-loading the route again
                     onNavigateTo(barItem.screen)
                 }
@@ -51,7 +50,7 @@ fun BottomBar(currentScreen: Screen, onNavigateTo: (Screen) -> Unit){
 }
 
 @Composable
-private fun RowScope.buildNavigationBarItem(
+private fun RowScope.BuildNavigationBarItem(
     item: NavItem,
     currentScreen: Screen,
     onClick: (item: NavItem) -> Unit,
@@ -115,6 +114,6 @@ private val bottomBarDestinations
 )
 @Composable
 private fun RootScreenPreview() = AppTheme {
-    var currentScreen by rememberSaveable { mutableStateOf(Screen.Home) }
+    val currentScreen by rememberSaveable { mutableStateOf(Screen.Home) }
     BottomBar(currentScreen, onNavigateTo = {})
 }
