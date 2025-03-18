@@ -172,7 +172,7 @@ dependencies {
     // Lottie, for animated icons/images
     implementation(libs.lottie.compose)
 
-    // Coil, for loading images outside (not in resources) of the app
+    // Coil, for loading images outside of the app (not in resources)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 

@@ -18,7 +18,7 @@ interface AchievementsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<AchievementsTableTuple>)
 
-    @Query("SELECT * FROM $tableAchivements LIMIT :limit")
+    @Query("SELECT * FROM $tableAchivements ORDER BY objectName DESC LIMIT :limit ")
     suspend fun getAll(limit: Short = Short.MAX_VALUE) : List<AchievementsTableTuple>
 
     @Query("SELECT * FROM $tableAchivements WHERE objectName=:objectName")

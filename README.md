@@ -3,7 +3,7 @@
 ## Main features ✨
 - Detect very simple objects with MediaPipe
 - Ask Gemini to talk about the object or describe a picture taken
-- Showcases the user's achivements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) for those achivements (TODO)
+- Showcases the user's achievements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) for those achievements
 
 ### Side features
 - Change camera settings: Ratio and flashlight
@@ -49,7 +49,6 @@ one or monitor the use of your API key
 - [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) -> Used to process Kotlin's @Serialization annotations
 - [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-quickstart.html#add-a-processor) -> Used to process Koin's and Room's annotations and build the dependencies
 - [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> API documentation engine for KDocs comments. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
-- [secrets-gradle-plugin by Google](https://github.com/google/secrets-gradle-plugin) -> to investigate
 
 #### Other Dependencies
 - [androidx.camera.* dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
@@ -58,46 +57,79 @@ one or monitor the use of your API key
 - [androidx.room](https://developer.android.com/jetpack/androidx/releases/room) -> For storage of more complex data-structures, like the achievements
 
 ## Setup Guide 🙌
-- [Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
+1. [Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
+2. Getting API Keys 🔑
+    - Gemini API -> https://aistudio.google.com/app/apikey
+    - There's a link to this in the app too
+3. Installing ⬇️
+    - a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
+    - b) With source code: 
+        - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
+        - Or `./gradlew assembleDebug` to build a debug version, which will output to `app/build/outputs/apk/debug`
 
-### Getting API Keys 🔑
-- Gemini API -> https://aistudio.google.com/app/apikey
-
-### Installing ⬇️
-- a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
-- b) With source code: 
-  - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
-  - Or `./gradlew assembleDebug` to build a debug version, which will output to []
-
-## Notes 📝
-- The Machine Learning models used with MediaPipe need to be a compatible with it, the compatability depends on the feature used
-- MediaPipe uses/is based on the TensorFlow Lite, and provides an easier way to add some basic ML capabilities to your apps. Checkout the [ML on Android with MediaPipe](https://www.youtube.com/playlist?list=PLOU2XLYxmsILZnKn6Erxdyhxmc3fxyitP) YT playlist.
-- Apps that use MediaPipe will generally not run in phone emulators, you will need a physical Android device to run this app
-- MediaPipe's runs the model on your phone's CPU or GPU.
-- I'm using: Jetpack Compose, Gradle's Kotlin DSL, [Gradle version catalogs](https://developer.android.com/build/migrate-to-catalogs)
-- If the object detection outline isn't smooth, it's because you have toggled on the "Reduce Animations" in your Android's settings
-
-## Project Structure Overview
+## Tech use throughout the app (simplified)
 - More details in [docs](./docs)
+
 ```mermaid
-flowchart LR
-    A(HomeScreen) <--> B(AchievementsScreen)
-    A <--> C(SettingsScreen)
+%% TD -> Top-Down
+    flowchart TD
+
+%% Nodes
+    %% Normal Nodes
+        HS(HomeScreen 🏠)
+        AS(AchievementsScreen 🏅)
+        SC(SettingsScreen 🔧)
+        FAB{"<p style="font-size: 10px;"> Floating </br> Action </br> Button </>"}
+
+    %% Icon Nodes
+        DB("<img style="max-height: 50px; object-fit: contain" src='./docs/imgs/db.png'> Room DB </>")
+        FB("<img style="max-height: 50px; object-fit: contain" src="https://firebase.google.com/static/images/brand-guidelines/logo-logomark.png"> Firebase </>")
+        PD("<img style="max-height: 50px; object-fit: contain" src='./docs/imgs/encrypted-db.png'> Preferences </br> DataStore </>")
+        MP("<img style="max-height: 50px; object-fit: contain" src='./app/src/main/res/drawable/mediapipe.png'> MediaPipe </>")
+        GEM("<img style="max-height: 50px; object-fit: contain" src='./app/src/main/res/drawable/gemini.png'> Gemini </>")
+        KTOR("<img style="max-height: 50px; object-fit: contain" src="https://resources.jetbrains.com/storage/products/company/brand/logos/Ktor_icon.png"> Ktor </>")
+
+%% Connections
+    HS === AS
+    HS === SC
+    HS --- FAB 
+
+    FAB -.- MP
+    FAB -.- GeminiApiService
+
+    subgraph GeminiApiService
+        direction LR
+        KTOR --> GEM
+    end
+    
+    AS <-- Your Achievements --> DB
+    AS <-- Leaderboard--> FB
+
+    SC <--> PD
+
+%% Styling. #0d1117 == github dark color
+    classDef screenStyle color:#FFFFFF, stroke:#00C853
+    classDef noBackgroundStyle color:#FFFFFF, fill:#0d1117
+
+    class HS,SC,AS screenStyle
+    class DB,FB,PD,MP,GEM,KTOR,GeminiApiService noBackgroundStyle
+
+    style FAB color:#FFFFFF, fill:#163a9e 
 ```
 
-## Todo 🕒
+## Todo 
+- installing through .apk not working "app not installed as package appears to be invalid"
+- when scale is 4:3 gemini chat container should occupy half of the screen
 - Add sfx
-- Review and clean up the architecture
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
-- fix The application may be doing too much work on its main thread.
 - CI & CD:
   - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
   - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
   - https://github.com/marketplace/actions/github-pages-overwriter
   - https://github.com/skydoves/Balloon/blob/main/.github/workflows/release-docs.yaml
-### Fixes
-- installing through .apk not working "app not installed as package appears to be invalid"
-- Fix not using deprecated resolution selector causing
+### Fixes To-do 🕒
+
+- Not using the deprecated resolution selector causes
 ```
 java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer
 ```
