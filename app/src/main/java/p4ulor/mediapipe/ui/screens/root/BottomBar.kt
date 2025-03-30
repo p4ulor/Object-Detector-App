@@ -37,7 +37,7 @@ fun BottomBar(currentScreen: Screen, onNavigateTo: (Screen) -> Unit){
         Modifier
             .height(SystemNavigationBarHeight + BottomNavigationBarHeight)
             .testTag(UiTestTag.bottomAppBar),
-        Color.Transparent
+        containerColor = Color.Transparent
     ) {
         bottomBarDestinations.forEach { item ->
             BuildNavigationBarItem(item, currentScreen, onClick = { barItem ->
@@ -78,7 +78,7 @@ private fun RowScope.BuildNavigationBarItem(
 
 /**
  * An abstraction over [Screen]. Specially to aid in the transformation of the icons.
- * [Painter] is used to support Image and Vector resources and ImageVectors
+ * The [Painter] type is used to support Image and Vector resources (.png and .xml) and ImageVectors
  */
 private data class NavItem(
     val screen: Screen,

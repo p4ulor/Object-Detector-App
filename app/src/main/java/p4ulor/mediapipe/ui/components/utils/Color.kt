@@ -1,7 +1,5 @@
-package p4ulor.mediapipe.ui.theme
+package p4ulor.mediapipe.ui.components.utils
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -19,14 +17,6 @@ fun rainbowWith(hueShift: Float, saturation: Float = 1f, lightness: Float = 0.5f
     0.8f to Color.hsl((240f + hueShift) % 360f, saturation, lightness),
     1f to Color.hsl((300f + hueShift) % 360f, saturation, lightness)
 )
-
-val GeminiLikeGradient = listOf(Color(0xFF2E78F4), Color(0xFFF76744)) // Blue to Red (Similar to Gemini colors)
-val MediaPipeLikeGradient = listOf(Color(0xFF5FFFB2), Color(0xFF00FF91))
-
-@Composable
-fun ColorSchemeGradient() = Brush.horizontalGradient(listOf(
-    MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.primaryContainer
-))
 
 // Might be useful
 val ColorInvertFilter = ColorFilter.colorMatrix(

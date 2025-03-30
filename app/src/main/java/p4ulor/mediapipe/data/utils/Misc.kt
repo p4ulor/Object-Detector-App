@@ -10,8 +10,11 @@ import java.util.concurrent.Executors
 val executorCommon: ExecutorService = Executors.newSingleThreadExecutor()
 val executorForImgAnalysis: ExecutorService = Executors.newSingleThreadExecutor()
 
+val globalDateFormat = SimpleDateFormat("dd/MM/yy")
+
 fun getTodaysDate(): String {
     val date = Date.from(Instant.now())
-    val formatter = SimpleDateFormat("dd/MM/yy")
-    return formatter.format(date)
+    return globalDateFormat.format(date)
 }
+
+fun Date.toGlobalDateFormat(): String = globalDateFormat.format(this)

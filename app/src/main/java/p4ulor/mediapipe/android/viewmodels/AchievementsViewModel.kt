@@ -9,7 +9,6 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Single
 import p4ulor.mediapipe.android.MyApplication
 import p4ulor.mediapipe.android.utils.NetworkObserver
-import p4ulor.mediapipe.android.utils.NotificationManager
 import p4ulor.mediapipe.android.viewmodels.utils.launch
 import p4ulor.mediapipe.data.domains.mediapipe.Achievement
 import p4ulor.mediapipe.data.domains.mediapipe.UserAchievements
@@ -18,12 +17,13 @@ import p4ulor.mediapipe.data.domains.mediapipe.UserAchievements
 @Single // So it's also not re-instantiated on composable destruction's
 @KoinViewModel
 class AchievementsViewModel(
-    private val application: Application,
-    private val network: NetworkObserver,
-    private val notificationManager: NotificationManager,
+    application: Application,
+    private val network: NetworkObserver
 ) : AndroidViewModel(application) {
 
-    private val achievementsDao by lazy { getApplication<MyApplication>().appDb.achievements() }
+    private val achievementsDao by lazy {
+        getApplication<MyApplication>().appDb.achievements()
+    }
 
     private val _userAchievements= MutableStateFlow<UserAchievements?>(null)
     val userAchievements = _userAchievements.asStateFlow()
@@ -36,6 +36,10 @@ class AchievementsViewModel(
         }
     }
 
-    fun sendAchievementNotification(title: String, description: String) =
-        notificationManager.sendAchievementNotification(title, description)
+    fun deleteAchievements() {
+        launch {
+            achievementsDao.resetAll()
+            _userAchievements.value?.reset()
+        }
+    }
 }

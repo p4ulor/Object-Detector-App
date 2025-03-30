@@ -17,10 +17,6 @@ fun Context.doesAssetExist(name: String) = runCatching {
     assets.open(name).close()
 }.isSuccess
 
-// endregion
-
-// region resources
-
 /** Returns the lines of the file */
 fun Context.readFromRaw(@RawRes resId: Int): List<String> {
     val inputStream = resources.openRawResource(resId)

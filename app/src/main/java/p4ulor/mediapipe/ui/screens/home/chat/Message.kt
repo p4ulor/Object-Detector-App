@@ -3,7 +3,11 @@ package p4ulor.mediapipe.ui.screens.home.chat
 import p4ulor.mediapipe.data.domains.gemini.GeminiResponse
 import java.util.UUID
 
-/** Is used with [GeminiChat]. Messages with isPending, should show a circular loading animation */
+/** Is used with [GeminiChat] and [ChatMessage].
+ * Messages with isPending, should show a circular loading animation
+ * @param isPending is true if the app is waiting for the HTTP response
+ * @param isLoaded is true once the entire generated text has been loaded (with some typing animation)
+ */
 data class Message(
     val text: String = "",
     val authorIsUser: Boolean = true,

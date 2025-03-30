@@ -76,6 +76,7 @@ one or monitor the use of your API key
 
 %% Nodes
     %% Normal Nodes
+        Root([RootScreen])
         HS(HomeScreen 🏠)
         AS(AchievementsScreen 🏅)
         SC(SettingsScreen 🔧)
@@ -90,8 +91,9 @@ one or monitor the use of your API key
         KTOR("<img style="max-height: 50px; object-fit: contain" src="https://resources.jetbrains.com/storage/products/company/brand/logos/Ktor_icon.png"> Ktor </>")
 
 %% Connections
-    HS === AS
-    HS === SC
+    Root <==> AS
+    Root <==> HS
+    Root <==> SC
     HS --- FAB 
 
     FAB -.- MP
@@ -99,7 +101,7 @@ one or monitor the use of your API key
 
     subgraph GeminiApiService
         direction LR
-        KTOR --> GEM
+        KTOR <-- HTTP --> GEM
     end
     
     AS <-- Your Achievements --> DB
@@ -126,6 +128,8 @@ one or monitor the use of your API key
   - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
   - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
   - https://github.com/marketplace/actions/github-pages-overwriter
+  - https://github.com/rayluo/github-pages-overwriter/blob/dev/action.yml
+- https://gist.github.com/cobyism/4730490#gistcomment-1374989
   - https://github.com/skydoves/Balloon/blob/main/.github/workflows/release-docs.yaml
 ### Fixes To-do 🕒
 

@@ -13,7 +13,8 @@ import androidx.navigation.NavHostController
 
 /**
  * Gets the height of the system's navigation bar (recent items, home, back). Useful to setting
- * the height of the app's bottomBar when using [enableEdgeToEdge]. And this method seems kinda blocking
+ * the height of the app's bottomBar when using [enableEdgeToEdge]. And this method seems to be
+ * kinda blocking
  */
 val SystemNavigationBarHeight
     @Composable

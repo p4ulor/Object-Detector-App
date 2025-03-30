@@ -1,9 +1,14 @@
 package p4ulor.mediapipe.ui.screens.home.chat
 
+import androidx.compose.material3.Text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 
+/**
+ * Creates an [AnnotatedString] which is like a string with effects and decorations. This type
+ * is directly supported by [Text]. This only adds bold to characters surrounded by asterisk.
+ */
 fun parseMarkdownBold(text: String): AnnotatedString {
     /**
      * 1. \\*\\* -> matches **. The \\ is used to escape the *

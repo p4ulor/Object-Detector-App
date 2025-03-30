@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.data.utils.trimToDecimals
+import p4ulor.mediapipe.ui.components.utils.ColorSchemeGradient
 import p4ulor.mediapipe.ui.theme.AppTheme
-import p4ulor.mediapipe.ui.theme.ColorSchemeGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

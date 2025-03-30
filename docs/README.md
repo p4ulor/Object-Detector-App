@@ -34,56 +34,60 @@ base64 --wrap=0 app_certificate.jks > app_certificate.base64
 ```mermaid
 graph TD
 %% Root packages and files
-    Koin("<img style="max-height: 20px; object-fit: contain" src="https://insert-koin.io/img/koin_new_logo.png"> DependencyInjection </>")
-    Log("<img style="max-height: 20px; object-fit: contain" src="./imgs/logs.png"> Logging </>")
-    A(android)
-    D(data)
-    U(ui)
+    DI("<img style="max-height: 20px; object-fit: contain" src="https://insert-koin.io/img/koin_new_logo.png"> DependencyInjection.kt </>")
+    Log("<img style="max-height: 20px; object-fit: contain" src="./imgs/logs.png"> Logging.kt </>")
+    A("<img style="max-height: 20px; object-fit: contain" src="https://developer.android.com/static/images/brand/android-head_flat.png"> Android </>")
+    D("<img style="max-height: 20px; object-fit: contain" src="./imgs/tools.png"> data </>")
+    U("<img style="max-height: 20px; object-fit: contain" src="./imgs/user_interface.png"> ui </>")
 
 %% Sub packages
-    A --> B1(activities)
-    A --> B2(utils)
-    A --> B3(viewmodels)
-    A --> B4(MyApplication)
+    A --> A1(activities)
+    A --> A2(utils)
+    A --> A3(viewmodels)
+    A --> A4(MyApplication.kt)
 
-    B1 --> B11(utils)
-    B2 --> B21(camera)
-    B3 --> B31(utils)
+    A1 --> A1_1(utils)
+    A2 --> A2_1(camera)
+    A3 --> A3_1(utils)
 
     D --> D1(domains)
     D --> D2(sources)
-    D --> D3(storage)
     D --> D4(utils)
 
-    D1 --> D11(firebase)
-    D1 --> D12(gemini)
-    D1 --> D13(mediapipe)
+    D1 --> D1_1(firebase)
+    D1 --> D1_2(gemini)
+    D1 --> D1_3(mediapipe)
+    D2 --> D2_1(client)
+    D2 --> D2_2(cloud)
+    D2 --> D2_3(local)
 
-    D2 --> D21(gemini)
-    D2 --> D22(utils)
+    D2_2 --> D2_2_1(gemini)
+    D2_2 --> D2_2_2(firebase)
 
-    D3 --> D31(preferences)
+    D2_3 --> D2_3_1(database)
+    D2_3 --> D2_3_2(preferences)
 
     U --> U1(animations)
     U --> U2(components)
     U --> U3(screens)
     U --> U4(theme)
 
-    U2 --> U21(chat)
-    U2 --> U22(utils)
+    U2 --> U2_2(utils)
 
-    U3 --> U31(achievements)
-    U3 --> U32(home)
-    U3 --> U33(root)
-    U3 --> U34(settings)
+    U3 --> U3_1(achievements)
+    U3 --> U3_2(home)
+    U3 --> U3_3(root)
+    U3 --> U3_4(settings)
 
-    U32 --> D321(outline)
+    U3_2 --> D3_2_1(outline)
+    U3_2 --> D3_2_2(chat)
+
 %% Styles
     classDef screenStyle color:#FFFFFF, stroke:#00C853
     classDef noBackgroundStyle color:#FFFFFF, fill:#0d1117
 
     class HS,SC,AS screenStyle
-    class DB,FB,PD,MP,GEM,KTOR,GeminiApiService noBackgroundStyle
+    class DI,Log,A,D,U noBackgroundStyle
 ```
 
 ## Main challenges
@@ -91,10 +95,10 @@ graph TD
 - GeminiChat feature, state management and persistence (could be improved)
 
 ## Things that were not done for the sake of moving on to other things
-- Animated detection outlines only support detection 1 type of object, since an identifier is required for the animation to track, but MediaPipe doesn't provide identifiers.
-- Not worrying about still using ImageDetectionUseCase when toggling Gemini mode
-- Displaying only the latest Gemini message when toggling off and on Gemini, instead of storing the list of messages
-- The notification intent explicitly opening the Achivements screen instead of just pointing to the MainActivity
+- Not supporting the animated detection outlines for more than 1 object when detection animation is enabled, since an identifier is required for the animation to track something, that being 1 object, but MediaPipe doesn't provide identifiers (and it wouldn't make sense that it did). Guessing could be done with the positioning and size of the outline, but it would be overkill
+- Not worrying about still using ImageDetectionUseCase when toggling Gemini mode. Only the emission of results is stopped.
+- Not displaying the whole list of Gemini messages in the chat, but only displaying the latest one
+- Not opening the Achievements screen when clicking on a new achievement notification, but only navigating to the MainActivity
 
 ### Resources
 - https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android

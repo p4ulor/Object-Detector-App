@@ -22,9 +22,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.ui.components.utils.GeminiLikeGradient
+import p4ulor.mediapipe.ui.components.utils.MediaPipeLikeGradient
 import p4ulor.mediapipe.ui.theme.AppTheme
-import p4ulor.mediapipe.ui.theme.GeminiLikeGradient
-import p4ulor.mediapipe.ui.theme.MediaPipeLikeGradient
 import androidx.compose.material3.Text as ComposeText
 
 /** Because it's tiring to have to write [stringResource] */

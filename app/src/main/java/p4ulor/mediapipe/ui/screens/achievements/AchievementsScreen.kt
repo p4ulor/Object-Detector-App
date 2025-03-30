@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.mediapipe.android.viewmodels.AchievementsViewModel
 import p4ulor.mediapipe.data.domains.mediapipe.Achievement
-import p4ulor.mediapipe.data.domains.mediapipe.UserAchievements
 import p4ulor.mediapipe.data.utils.getTodaysDate
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.QuickText
@@ -42,15 +41,18 @@ fun AchievementsScreen(){
         visible = userAchievements != null,
         enter = fadeIn(smooth()) + scaleIn()
     ) {
-        AchievementsScreenUi(
-            userAchievements = userAchievements ?: UserAchievements()
-        )
+        userAchievements?.let {
+            AchievementsScreenUi(
+                achievements = it.achievements,
+                onDeleteAchievements = { vm.deleteAchievements() }
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AchievementsScreenUi(userAchievements: UserAchievements) {
+fun AchievementsScreenUi(achievements: List<Achievement>, onDeleteAchievements: () -> Unit) {
     var selectedTab by remember { mutableStateOf(Tab.YourAchievements) }
 
     Column(
@@ -59,7 +61,7 @@ fun AchievementsScreenUi(userAchievements: UserAchievements) {
     ) {
         PrimaryTabRow(
             selectedTabIndex = selectedTab.ordinal,
-            containerColor = Color.Transparent,
+            containerColor = Color.Transparent, // So the tabs rectangles don't use the default material theme, and just show the background
         ) {
             Tab.entries.forEachIndexed { index, tab ->
                 Tab(
@@ -70,35 +72,31 @@ fun AchievementsScreenUi(userAchievements: UserAchievements) {
             }
         }
 
-        if(selectedTab == Tab.YourAchievements) {
-            YourAchievementsTab(userAchievements)
-        } else {
-            LeaderboardTab()
+        when(selectedTab){
+            Tab.YourAchievements -> {
+                TabYourAchievements(achievements, onDeleteAchievements)
+            }
+            else -> TabLeaderboard()
         }
     }
 }
 
 @Preview
 @Composable
-private fun AchievementsScreenUiPreview() = PreviewComposable {
-    val list = remember {
-        buildList {
-            add(Achievement("START"))
-            repeat(20) {
-                addAll(
-                    listOf(
-                        Achievement("car$it", getTodaysDate()),
-                        Achievement("cat$it", getTodaysDate()),
-                        Achievement("bench$it")
-                    )
+private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = true) {
+    val achievements = buildList {
+        add(Achievement("START"))
+        repeat(20) {
+            addAll(
+                listOf(
+                    Achievement("car$it", getTodaysDate()),
+                    Achievement("cat$it", getTodaysDate()),
+                    Achievement("bench$it")
                 )
-            }
-            add(Achievement("END"))
+            )
         }
+        add(Achievement("END"))
     }
-    AchievementsScreenUi(
-        UserAchievements(
-            achievements = list
-        )
-    )
+
+    AchievementsScreenUi(achievements, onDeleteAchievements = {})
 }

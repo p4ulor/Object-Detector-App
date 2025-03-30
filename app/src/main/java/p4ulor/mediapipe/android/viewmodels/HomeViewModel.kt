@@ -5,6 +5,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,11 +13,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.android.MyApplication
 import p4ulor.mediapipe.android.utils.NetworkObserver
+import p4ulor.mediapipe.android.utils.NotificationManager
 import p4ulor.mediapipe.android.utils.camera.CameraConstants
 import p4ulor.mediapipe.android.utils.camera.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.camera.Picture
@@ -29,7 +34,9 @@ import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
+import p4ulor.mediapipe.data.domains.mediapipe.objectName
 import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiService
+import p4ulor.mediapipe.data.sources.local.database.achievements.AchievementsTuple
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.dataStore
@@ -40,13 +47,16 @@ import p4ulor.mediapipe.e
 import p4ulor.mediapipe.ui.screens.home.chat.GeminiChatContainer
 import p4ulor.mediapipe.ui.screens.home.chat.Message
 import p4ulor.mediapipe.ui.screens.home.outline.AnimatedDetectionOutline
+import java.time.Instant
+import java.util.Date
 
 /**
- * KoinComponent is used to inject [network] so it doesn't brake [create] at ViewModelFactory. And
- * to keep this AndroidViewModel, just for demo/historical purposes.
+ * KoinComponent is used to inject [network] and [notificationManager] so it doesn't brake [create]
+ * at ViewModelFactory.
+ * AndroidViewModel is not managed by Koin just for demo/historical purposes.
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
- * This class has some data that should survive recompositions. The most imported for UX are:
- * - [cameraPreviewRatio], [pictureTaken], [isGeminiEnabled]
+ * This class has some data that should survive recompositions for a good UX. These are:
+ * - [cameraPreviewRatio], [pictureTaken], [isGeminiEnabled], [geminiStatus], [geminiMessage] etc
  *
  * It also handles some logic to lift it out of the UI, like handling connection losses, performing
  * async calls, loading user preferences and launching coroutines.
@@ -55,8 +65,15 @@ import p4ulor.mediapipe.ui.screens.home.outline.AnimatedDetectionOutline
  */
 class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     private val network: NetworkObserver by inject()
+    private val notificationManager: NotificationManager by inject()
 
-    // Values that should survive recomposition and be remembered
+    private val achievementsDao by lazy {
+        getApplication<MyApplication>().appDb.achievements()
+    }
+
+    private val newObjectsAchieved = mutableListOf<String>()
+    private val allUnreachedAchievements = mutableListOf<AchievementsTuple>()
+
     private val _cameraPreviewRatio = MutableStateFlow(CameraConstants.RATIO_16_9)
     val cameraPreviewRatio = _cameraPreviewRatio.asStateFlow()
 
@@ -71,9 +88,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     private val _geminiMessage = MutableStateFlow(Message.getBlank)
     val geminiMessage = _geminiMessage.asStateFlow()
 
-    /** These are [MutableStateFlow]s to make use of the thread safety feature of [.value] access */
-    private val prefs = MutableStateFlow(UserPreferences())
-    private val secretPrefs = MutableStateFlow(UserSecretPreferences())
+    private var prefs = UserPreferences()
+    private var secretPrefs = UserSecretPreferences()
 
     /**
      * For [objDetectionResults], [toStateFlow] is used instead of [asStateFlow] because [sample]
@@ -84,18 +100,35 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
     @OptIn(FlowPreview::class)
     val objDetectionResults: StateFlow<ResultBundle?> get() = _objDetectionResults.let {
-        if (prefs.value.enableAnimations) it.sample(500L) else it
+        if (prefs.enableAnimations) it.sample(500L) else it
     }.toStateFlow(_objDetectionResults.value)
 
     init { // Since geminiStatus needs to be persisted, it is managed like this, contrary to the use of hasConnection in SettingsScreen
         launch {
             network.hasConnection.collect {
-                if (!it){
-                    if(_geminiStatus.value.isEnabled){
-                        _geminiStatus.value = GeminiStatus.DISCONNECTED
-                        delay(300) // Give some time for event to be transmitted and valid
+                handleGeminiOnNetworkChange(it)
+            }
+        }
+
+        // A job that contains scheduled notifications to send, this can be cancelled for a new scheduling
+        var sendNotificationJob = Job().apply { complete() }.job
+
+        launch {
+            objDetectionResults.collect { results ->
+                results?.detectedObjects?.detections()?.let { detections ->
+                    if(detections.isNotEmpty()){
+                        checkForNewAchievements(detections.map { it.objectName })
+                        if(newObjectsAchieved.isNotEmpty()){
+                            if(sendNotificationJob.isActive){
+                                sendNotificationJob.cancel()
+                            }
+                            sendNotificationJob = launch {
+                                delay(5000)
+                                notificationManager.sendAchievementNotification(newObjects = newObjectsAchieved)
+                                newObjectsAchieved.clear()
+                            }
+                        }
                     }
-                    _geminiStatus.value = GeminiStatus.OFF // This helps in showing the "Connection lost" toast only in HomeScreenGranted, since it will capture the DISCONNECTED value (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
                 }
             }
         }
@@ -110,18 +143,28 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         return _cameraPreviewRatio.value
     }
 
-    fun loadUserPrefs() = flow {
-        prefs.value = UserPreferences.getFrom(application.applicationContext.dataStore)
-        emit(prefs.value)
+    fun loadAndGetUserPrefs() = flow {
+        prefs = UserPreferences.getFrom(application.applicationContext.dataStore)
+        emit(prefs)
     }
 
-    fun loadUserSecretPrefs() = flow {
-        val obtainedPrefs = UserSecretPreferences.getFrom(application.applicationContext.secretDataStore)
-        secretPrefs.value = obtainedPrefs
-        if(obtainedPrefs.geminiApiKey.isNotBlank()){
-            geminiApi = GeminiApiService(obtainedPrefs.geminiApiKey)
+    fun loadUserSecretPrefs() {
+        launch {
+            val obtainedPrefs = UserSecretPreferences.getFrom(application.applicationContext.secretDataStore)
+            secretPrefs = obtainedPrefs
+            geminiApi = if(obtainedPrefs.geminiApiKey.isNotBlank()){
+                GeminiApiService(obtainedPrefs.geminiApiKey)
+            } else {
+                null
+            }
         }
-        emit(secretPrefs.value)
+    }
+
+    fun loadAchievements() {
+        launch {
+            allUnreachedAchievements.clear()
+            allUnreachedAchievements.addAll(achievementsDao.getAllUnreachedAchievements())
+        }
     }
 
     /**
@@ -155,6 +198,16 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         return cameraImageAnalyser
     }
 
+    private suspend fun handleGeminiOnNetworkChange(hasConnection: Boolean) {
+        if (!hasConnection){
+            if(_geminiStatus.value.isEnabled){
+                _geminiStatus.value = GeminiStatus.DISCONNECTED
+                delay(300) // Give some time for event to be transmitted and valid. This helps in showing the "Connection lost" toast only in HomeScreenGranted, since it will capture the DISCONNECTED value (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
+            }
+            _geminiStatus.value = GeminiStatus.OFF
+        }
+    }
+
     /**
      * @param onFail is called if there are no conditions to turn on
      * Gemini (no connection or the loaded [loadUserSecretPrefs] were not performed or are not valid)
@@ -166,7 +219,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                     network.hasConnection.first()
                 }
             }.getOrNull() ?: false
-            if (hasConnection && secretPrefs.value.isValid && geminiApi != null) {
+            if (hasConnection && secretPrefs.isValid && geminiApi != null) {
                 _geminiStatus.value = _geminiStatus.value.toggle()
             } else {
                 onFail()
@@ -193,7 +246,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                 }
                 if (geminiPrompt != null) {
                     _geminiMessage.value = Message.getPending
-                    val response = Message.from(geminiApi?.promptWithImage(geminiPrompt))
+                    val response = Message.from(resp = geminiApi?.promptWithImage(geminiPrompt))
                     if (response != null) {
                         _geminiMessage.value = response
                     } else {
@@ -207,15 +260,31 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         }
     }
 
+    override fun onCleared() {
+        geminiApi?.close()
+    }
+
+    private suspend fun checkForNewAchievements(objectsDetected: List<String>) {
+        objectsDetected.forEach { objectName ->
+            val iterator = allUnreachedAchievements.iterator() // The iterator is used to avoid ConcurrentModificationException. An iterator can't be reset so it must be created here everytime
+            while (iterator.hasNext()) {
+                val unreached = iterator.next()
+                if (objectName.equals(unreached.objectName, ignoreCase = true)) {
+                    newObjectsAchieved.add(unreached.objectName)
+                    achievementsDao.insert(
+                        AchievementsTuple(objectName, Date.from(Instant.now()))
+                    )
+                    iterator.remove() // Removes the latest value returned by next() from the collection of the iterator.
+                }
+            }
+        }
+    }
+
     private fun sendGeminiError(){
         _geminiMessage.value = Message.createGeminiMessage(
             application.applicationContext.getString(
                 R.string.internal_gemini_api_error
             )
         )
-    }
-
-    override fun onCleared() {
-        geminiApi?.close()
     }
 }

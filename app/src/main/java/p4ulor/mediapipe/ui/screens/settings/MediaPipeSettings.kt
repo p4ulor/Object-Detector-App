@@ -134,7 +134,7 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
         QuickText(R.string.detection_animations)
 
         TooltipBox(
-            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
             tooltip = {
                 RichTooltip(
                     Modifier.padding(horizontal = GeneralPadding),

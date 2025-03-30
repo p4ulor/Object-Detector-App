@@ -1,18 +1,9 @@
-package p4ulor.mediapipe
+package p4ulor.mediapipe.ui
 
 import android.Manifest
-import android.content.Context
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.filterToOne
-import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.hasParent
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -21,6 +12,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import org.junit.Rule
 import org.junit.Test
+import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.activities.MainActivity
 import p4ulor.mediapipe.ui.components.utils.UiTestTag
 import p4ulor.mediapipe.ui.screens.root.RootScreen

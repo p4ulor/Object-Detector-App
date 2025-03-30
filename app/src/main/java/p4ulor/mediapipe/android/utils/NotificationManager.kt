@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import org.koin.core.annotation.Single
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.activities.MainActivity
+import p4ulor.mediapipe.data.utils.capitalized
 
 @Single
 class NotificationManager(private val ctx: Context) {
@@ -29,8 +30,12 @@ class NotificationManager(private val ctx: Context) {
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
-    @SuppressLint("MissingPermission") // Because IDE isn't recognizing the hasPermission check
-    fun sendAchievementNotification(title: String, description: String){
+    @SuppressLint("MissingPermission") // Because IDE & compiler aren't recognizing the hasPermission check
+    fun sendAchievementNotification(newObjects: List<String>){
+        val title = ctx.getString(R.string.new_achievement)
+        val objects = newObjects.joinToString(", ") { it.capitalized() }.removeSuffix(", ")
+        val description = "${ctx.getString(R.string.objects)}: $objects"
+
         // Explicit intent for MainActivity
         val pendingIntent = PendingIntent.getActivity(
             /* context = */ ctx,
@@ -45,7 +50,8 @@ class NotificationManager(private val ctx: Context) {
             .setSmallIcon(R.mipmap.app_icon_round)
             .setLargeIcon(ctx.getBitmapFor(R.mipmap.app_icon_round))
             .setContentTitle(title)
-            .setContentText(description)
+            .setContentText(description) // for collapsed view
+            .setStyle(NotificationCompat.BigTextStyle().bigText(description)) // for expanded notification text (if the platform supports it, read docs)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)

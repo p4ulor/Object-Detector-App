@@ -70,7 +70,7 @@ import p4ulor.mediapipe.ui.components.utils.roundMessageBox
 import p4ulor.mediapipe.ui.screens.achievements.Tab
 
 /**
- * Run in interactive mode to see the animations.
+ * Run the previews in interactive mode to see the animations.
  * I don't put the colors in variables, so it becomes easier to edit and understand
  * Containers are: boxes, columns, rows, scaffold, cards and others
  */
@@ -87,26 +87,26 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary = Color(0xFFFFEFEF), // For text/circle widget (in switch)/checkmark displayed on top of the primary color
     primaryContainer = Color(0xFF005BBB), // A tonal variation of the primary color for containers
     onPrimaryContainer = Color(0xFFFFEFEF), // For text/icons on primary containers
-    inversePrimary = unset, // Inverse of the primary color for contrasting UI elements
+    inversePrimary = unset2, // Inverse of the primary color for contrasting UI elements
 
     secondary = Color(0xAA6797C6), // Secondary color used for less prominent components
     onSecondary = Color(0xFFB1B1B1), // Color for text/icons displayed on top of the secondary color
     secondaryContainer = Color(0x77004490), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
 
-    tertiary = unset, // Used for accents or highlights
-    onTertiary = unset, // For text/icons displayed on top of the tertiary color
+    tertiary = unset2, // Used for accents or highlights
+    onTertiary = unset2, // For text/icons displayed on top of the tertiary color
     tertiaryContainer = Color(0xC21A3C60), // A tonal variation of the tertiary color for containers
     onTertiaryContainer = Color(0xFFFFFFFF), // Color for text/icons on tertiary containers
 
     background = Color(0xFA5A5E24), // Background color for screens and larger components
-    onBackground = unset, // Color for text/icons displayed on top of the background color
+    onBackground = unset2, // Color for text/icons displayed on top of the background color
 
     surface = Color(0xFF151313), // For surfaces, cards, menus and tabs
     onSurface = Color(0xFFFFFFFF), // For text/icons displayed on top of the surface color
-    surfaceVariant = unset, // Another surface color variant for differentiation
+    surfaceVariant = unset2, // Another surface color variant for differentiation
     onSurfaceVariant = Color(0xFFFFFFFF), // For "Label" in labelled boxes, icons and surface variants
-    surfaceTint = unset, // Overlay color for elevated surfaces to create a tint effect
+    surfaceTint = unset2, // Overlay color for elevated surfaces to create a tint effect
 
     inverseSurface = Color(0xFFE1E1E1), // Inverse of the surface color for contrasting UI elements. Used in ToolTip
     inverseOnSurface = Color.Black, // For text/icons on inverse surfaces. Used in ToolTip text
@@ -121,9 +121,9 @@ private val DarkColorScheme = darkColorScheme(
 
     scrim = Color(0xFF737373), // Applied on the background of unfocused content, when some popup/dialog is shown
 
-    surfaceBright = unset,
+    surfaceBright = unset2,
     surfaceContainer = Color(0xFF262E37), // Used in dropdown menus
-    surfaceContainerHigh = unset,
+    surfaceContainerHigh = Color(0xC21A3C60), // Used for AlertDialogs
     surfaceContainerHighest = Color(0xFF007CD7), //for card
     surfaceContainerLow = unset,
     surfaceContainerLowest = unset,

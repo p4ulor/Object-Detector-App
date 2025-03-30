@@ -67,14 +67,18 @@ import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 /**
  * This function has a lot of nested calls, but in the way it's now, it's more readable because it's
- * more direct. Breaking it down into more util functions would make it cluttered with the amount
- * of common variables each component uses
+ * more direct. Breaking it down into more util functions would make it cluttered even more, give
+ * the amount of common variables each component uses
  *
  * We are using CameraProvider and not CameraController for more customization
  * https://developer.android.com/media/camera/camerax/architecture#cameraprovider
  *
  * Unfortunately, I haven't found a way to fix the lag or provide a loading animation when toggling
  * camera ratios
+ *
+ * @param prefs is required so that the [AndroidView] wouldn't have needed to re-created with a new camera
+ * just because it's waiting for the [prefs] to be loaded and emitted. Unlike other data like the
+ * UserSecretPrefs and the Achievements, which are loaded upon the first creation of the composable
  */
 @Composable
 fun HomeScreenGranted(
@@ -97,6 +101,7 @@ fun HomeScreenGranted(
     val geminiStatus by vm.geminiStatus.collectAsState()
     val geminiMessage by vm.geminiMessage.collectAsState()
 
+    // MediaPipe
     val resultsBundle by vm.objDetectionResults.collectAsState()
 
     CameraUseBinder(
@@ -113,6 +118,11 @@ fun HomeScreenGranted(
             isFlashEnabled = false
         }
     )
+
+    LaunchedEffect(Unit) {
+        vm.loadUserSecretPrefs()
+        vm.loadAchievements()
+    }
 
     LaunchedEffect(geminiStatus) {
         if (geminiStatus.isDisconnected) {
@@ -170,7 +180,7 @@ fun HomeScreenGranted(
 
                     // Show the detected objects outlines
                     resultsBundle?.let {
-                        if(!geminiStatus.isEnabled){ // Easy implementation to not have to rebind the camera (there are other things to do), and only do it when ratio changes, which is the most important to be able to take pics after doing so
+                        if(!geminiStatus.isEnabled){ // Easy implementation instead of rebinding the camera just for toggling off ImageAnalysis (there are other things to do in the project). We only re-bind the camera during app use only when the ratio changes, which is the most important to be able to have a valid ImageCapture to take pics after the fact
                             ObjectBoundsBoxOutlines(
                                 detections = it.detectedObjects.detections(),
                                 frameWidth = it.inputImageWidth,
@@ -229,7 +239,7 @@ fun HomeScreenGranted(
                     }
                 )
 
-                add( // Lazy solution because there are other things to do... Adds flash button regardless of flash support, so the button doesn't flash from re-appearing on ratio change due to creating a new camera
+                add( // Lazy solution because there are other things to do... Adds flash button regardless of flash support, so the button doesn't "flash-appear" due to camera ratio changes due to creating a new camera
                     FloatingActionButton(Icon.App(
                         if (isFlashEnabled) ResourcesIcon.FlashlightOff else ResourcesIcon.FlashlightOn
                     )) {
@@ -297,13 +307,15 @@ private fun BoxWithConstraintsScope.EdgeBars(cameraPreviewSize: Size, aligntment
 }
 
 /**
- * Specifies the right modifier and alignment for 4_3 and 16_9
+ * Specifies the right modifier and alignment for 4_3 and 16_9 camera preview ratios
  * - 4_3 -> Top with height equal to half of the available height
- * - 16_9 -> Placed on bottom with max size
+ * - 16_9 -> Bottom with max size
  */
 @Composable
-private fun modifierAndAlignmentFor(cameraPreviewRatio: ResolutionSelector) = Pair(
-    if(cameraPreviewRatio.is4by3) {
+private fun modifierAndAlignmentFor(
+    cameraPreviewRatio: ResolutionSelector
+): Pair<Modifier, Alignment> = Pair(
+    first = if (cameraPreviewRatio.is4by3) {
         val maxAvailableHeightDp = DisplayHeight - BottomNavigationBarHeight
         Modifier
             .height(maxAvailableHeightDp / 2)
@@ -311,7 +323,7 @@ private fun modifierAndAlignmentFor(cameraPreviewRatio: ResolutionSelector) = Pa
     } else {
         Modifier.fillMaxSize()
     },
-    if(cameraPreviewRatio.is4by3) {
+    second = if (cameraPreviewRatio.is4by3) {
         Alignment.TopCenter
     } else {
         Alignment.BottomCenter

@@ -37,7 +37,7 @@ import p4ulor.mediapipe.data.domains.mediapipe.certaintyScore
 import p4ulor.mediapipe.data.domains.mediapipe.objectName
 import p4ulor.mediapipe.ui.animations.HueShiftLooper
 import p4ulor.mediapipe.ui.components.utils.RoundRectangleShape
-import p4ulor.mediapipe.ui.theme.rainbowWith
+import p4ulor.mediapipe.ui.components.utils.rainbowWith
 import kotlin.random.Random
 
 @Composable
