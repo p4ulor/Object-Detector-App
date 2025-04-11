@@ -55,13 +55,16 @@ import java.util.Date
  * at ViewModelFactory.
  * AndroidViewModel is not managed by Koin just for demo/historical purposes.
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
+ * I'm using AndroidViewModel here in order to have the [application] which is used for
+ * [achievementsDao], [initObjectDetector], [loadAndGetUserPrefs], [promptGemini] and [sendGeminiError]
+ *
  * This class has some data that should survive recompositions for a good UX. These are:
  * - [cameraPreviewRatio], [pictureTaken], [isGeminiEnabled], [geminiStatus], [geminiMessage] etc
  *
  * It also handles some logic to lift it out of the UI, like handling connection losses, performing
  * async calls, loading user preferences and launching coroutines.
- * Note: [isGeminiEnabled] is also used to toggle on/off the ImageAnalyser used for MediaPipe (and
- * thus the detection outlines)
+ * Note: [isGeminiEnabled] is also used to toggle on/off emissions of [_objDetectionResults] used
+ * for MediaPipe (and thus the detection outlines)
  */
 class HomeViewModel(private val application: Application) : AndroidViewModel(application), KoinComponent {
     private val network: NetworkObserver by inject()
@@ -110,7 +113,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
             }
         }
 
-        // A job that contains scheduled notifications to send, this can be cancelled for a new scheduling
+        // A job that contains scheduled notifications to send, this can be cancelled when a new scheduling comes in
         var sendNotificationJob = Job().apply { complete() }.job
 
         launch {

@@ -171,7 +171,7 @@ private val LightColorScheme = lightColorScheme(
 
     surfaceBright = unset,
     surfaceContainer = Color(0xFFC3C3C3), // Used in dropdown menus
-    surfaceContainerHigh = unset,
+    surfaceContainerHigh = Color(0xB9B6D1FF), // Used for AlertDialogs
     surfaceContainerHighest = Color(0xFF007CD7), //for card and normal switch
     surfaceContainerLow = unset,
     surfaceContainerLowest = unset,

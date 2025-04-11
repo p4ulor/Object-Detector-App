@@ -2,13 +2,12 @@
 
 ## Main features ✨
 - Detect very simple objects with MediaPipe
-- Ask Gemini to talk about the object or describe a picture taken
-- Showcases the user's achievements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) for those achievements
-
-### Side features
-- Change camera settings: Ratio and flashlight
-- Change model settings: sensitivity, max detection count, model, etc
-- Notification of a new object detection that wasn't in the achievements (TODO)
+- Ask Gemini anything about a picture taken
+- Tracks the user's achievements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) towards those achievements
+- It supports various customizations and other features: 
+    - Camera settings: ratio, flashlight and saving pictures taken
+    - Model settings: detection sensitivity, max detection count, detection animations and the model itself
+    - Notifications for achievements
 
 ## Primary Technologies 🛠️
 | MediaPipe | Gemini API | Ktor | Firebase |
@@ -17,9 +16,8 @@
 
 ### 1. [MediaPipe](https://github.com/google/mediapipe)
 - An open-source project from Google. It's a framework that facilitates the integration of AI & ML into your applications. Here is a showcase of the [tasks MediaPipe supports](https://mediapipe-studio.webapps.google.com/home)
-- I'm using [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android)
-    - I used the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models), which can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
-    - I used [mediapipe-samples - object_detection](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android-jetpack-compose) as a reference (warning: insane spaghetti code...)
+- I'm using the [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android) dependency and the  the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models), which can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
+
 
 ### 2. [Gemini API](https://aistudio.google.com/app/apikey)
 - A RESTful API that allows you to perform HTTP requests to a Gemini model,
@@ -57,15 +55,16 @@ one or monitor the use of your API key
 - [androidx.room](https://developer.android.com/jetpack/androidx/releases/room) -> For storage of more complex data-structures, like the achievements
 
 ## Setup Guide 🙌
-1. [Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
-2. Getting API Keys 🔑
+[Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
+
+1. Getting API Keys 🔑
     - Gemini API -> https://aistudio.google.com/app/apikey
     - There's a link to this in the app too
-3. Installing ⬇️
+2. Installing ⬇️
     - a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
-    - b) With source code: 
+    - b) From source code: 
         - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
-        - Or `./gradlew assembleDebug` to build a debug version, which will output to `app/build/outputs/apk/debug`
+        - Or `./gradlew assembleDebug` to build a debug version, which will output an .apk file to `app/build/outputs/apk/debug`
 
 ## Tech use throughout the app (simplified)
 - More details in [docs](./docs)
@@ -109,7 +108,7 @@ one or monitor the use of your API key
 
     SC <--> PD
 
-%% Styling. #0d1117 == github dark color
+%% Styling. #0d1117 = github dark color
     classDef screenStyle color:#FFFFFF, stroke:#00C853
     classDef noBackgroundStyle color:#FFFFFF, fill:#0d1117
 
@@ -121,7 +120,6 @@ one or monitor the use of your API key
 
 ## Todo 
 - installing through .apk not working "app not installed as package appears to be invalid"
-- when scale is 4:3 gemini chat container should occupy half of the screen
 - Add sfx
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
 - CI & CD:

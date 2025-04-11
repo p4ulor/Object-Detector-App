@@ -1,5 +1,5 @@
 ## Notes 📝
-- The ML models used with MediaPipe need to be a compatible with it, the compatibility depends on the feature used
+- The ML models used with MediaPipe need to be a compatible with it, the compatibility depends on the feature used. In the case of this app, it's a model made for Image Detection
 - MediaPipe uses/is based on the TensorFlow Lite, and provides an easier way to add some basic ML capabilities to your apps. Checkout the [ML on Android with MediaPipe](https://www.youtube.com/playlist?list=PLOU2XLYxmsILZnKn6Erxdyhxmc3fxyitP) YT playlist.
 - Apps that use MediaPipe will generally not run in phone emulators, you will need a physical Android device to run this app
 - MediaPipe's runs the model on your phone's CPU or GPU (I set GPU by default).
@@ -9,17 +9,17 @@
 This text details things about conditions, state handling, decisions made, reminders, errors, user experience, etc. The actual details are in the code of course.
 
 ### HomeScreen 🏠
-- Everytime the user navigates to this screen the preferences are loaded
+- Everytime the user navigates to this screen the preferences, secret preferences (gemini api key) and the unreached achievements are loaded
 - When existing the screen or minimizing the app, the camera is unbinded
 - Toggling on Gemini doesn't stop the image analysis from MediaPipe from running in the background because I didn't want to have to rebind the camera just to do so, but it stops the flow emissions of results
 - For simplicity sake, only the latest message of Gemini is saved when the user leaves the screen or toggled off/on Gemini
 
 ### SettingsScreen 🔧
-- Everytime the user navigates to this screen the preferences are loaded
-- When the app that's installed doesn't have the MediaPipe models: The preferences are still step, but MediaPipe won't be running in the ImageAnalysis use case
+- Everytime the user navigates to this screen the preferences and secret preferences are loaded
+- When the app that's installed doesn't have the MediaPipe models: The preferences are still set, but MediaPipe won't be running in the ImageAnalysis use case
 
 ### AchievementsScreen 🏅
-
+- Everytime the user navigates to this screen, the list of achievements are loaded
 
 ## Authentication 🛂
 - [App signing](https://developer.android.com/studio/publish/app-signing#generate-key) is used to authenticate the clients (android phones) doing requests to the Firebase project. So the SHA-1 that's used in production should be the one that's printed form the "release" signingConfig, which is shown when running `./gradlew signingReport`. 
@@ -36,7 +36,7 @@ graph TD
 %% Root packages and files
     DI("<img style="max-height: 20px; object-fit: contain" src="https://insert-koin.io/img/koin_new_logo.png"> DependencyInjection.kt </>")
     Log("<img style="max-height: 20px; object-fit: contain" src="./imgs/logs.png"> Logging.kt </>")
-    A("<img style="max-height: 20px; object-fit: contain" src="https://developer.android.com/static/images/brand/android-head_flat.png"> Android </>")
+    A("<img style="max-height: 20px; object-fit: contain" src="https://developer.android.com/static/images/brand/android-head_flat.png"> android </>")
     D("<img style="max-height: 20px; object-fit: contain" src="./imgs/tools.png"> data </>")
     U("<img style="max-height: 20px; object-fit: contain" src="./imgs/user_interface.png"> ui </>")
 

@@ -3,7 +3,6 @@ package p4ulor.mediapipe.ui.screens.home.chat
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,9 +39,10 @@ import p4ulor.mediapipe.ui.theme.PreviewComposable
  */
 @Composable
 fun GeminiChat(
+    modifier: Modifier,
     newMsg: Message,
     chatInputHeight: Dp,
-    isPendingOrAnimationInProgress: (Boolean) -> Unit = {}
+    isPendingOrAnimationInProgress: (Boolean) -> Unit = {},
 ){
 
     val messages = remember { mutableStateListOf<Message>() }
@@ -71,8 +71,7 @@ fun GeminiChat(
             .any { it.index + 1 == messages.size }.not()
     }
 
-    Column(Modifier
-        .fillMaxSize()
+    Column(modifier
         .padding(bottom = chatInputHeight)
         .then(
             if (isFirstNotMessageVisible && messages.isNotEmpty()) {
@@ -142,6 +141,7 @@ private fun GeminiChatPreview() = PreviewComposable(enableDarkTheme = false) {
 
     Box {
         GeminiChat(
+            Modifier,
             newMsg = newMessage,
             chatInputHeight = chatInputHeight,
             isPendingOrAnimationInProgress = { isPendingOrAnimationInProgress = it }

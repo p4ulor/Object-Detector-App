@@ -100,7 +100,7 @@ fun ExpandableFAB(
             var fabsYoffset by remember { mutableIntStateOf((iconContainerSizePx + paddingBetweenButtonsPx).toInt()) }
             var hasOpenedUpwards by remember { mutableStateOf(false) }
 
-            // Used to place the fabs either bellow or above the openerFab. Using columns causes the openerFab to move
+            // Used to place the fabs either bellow or above the openerFab. Using columns causes the openerFab to change abruptly change position
             fabsYoffset = if (isExpanded) { // Logic to make the opening/closing of the fabs be done correctly when moving it through the screen through various states
                 run {
                     if (canOpenUpwards && !hasOpenedUpwards) {
@@ -119,7 +119,7 @@ fun ExpandableFAB(
 
             openerFAB()
 
-            // The fabs
+            // The FABs
             Box(Modifier
                 .offset { IntOffset(0, fabsYoffset) }
                 .zIndex(-1f) // So the fabs are placed under the openerFAB

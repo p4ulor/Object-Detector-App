@@ -59,11 +59,10 @@ import p4ulor.mediapipe.ui.components.FloatingActionButton
 import p4ulor.mediapipe.ui.components.Icon
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.ResourcesIcon
-import p4ulor.mediapipe.ui.components.utils.DisplayHeight
+import p4ulor.mediapipe.ui.components.utils.ScreenHeight
 import p4ulor.mediapipe.ui.components.utils.toast
 import p4ulor.mediapipe.ui.screens.home.chat.GeminiChatContainer
 import p4ulor.mediapipe.ui.screens.home.outline.ObjectBoundsBoxOutlines
-import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 /**
  * This function has a lot of nested calls, but in the way it's now, it's more readable because it's
@@ -132,8 +131,9 @@ fun HomeScreenGranted(
 
     if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera uses a lot of resources. And this is also used to terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to cancel the render of the AndroidView in the compose tree)
         Box(Modifier.fillMaxSize()) {
-            val (modifier, aligntment) = modifierAndAlignmentFor(cameraPreviewRatio)
-            BoxWithConstraints(modifier, aligntment) {
+            val (modifier, alignment) = modifierAndAlignmentFor(cameraPreviewRatio)
+
+            BoxWithConstraints(modifier, alignment) {
                 val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer(
                     container = with(this@BoxWithConstraints) {
                         Size(width = maxWidth.value, height = maxHeight.value)
@@ -143,7 +143,7 @@ fun HomeScreenGranted(
                     }
                 )
 
-                EdgeBars(cameraPreviewSize, aligntment)
+                EdgeBars(cameraPreviewSize, alignment)
 
                 Box(
                     Modifier
@@ -192,13 +192,9 @@ fun HomeScreenGranted(
                 }
             }
 
-            AnimatedVisibility(
-                visible = geminiStatus.isEnabled,
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-            ) {
+            AnimatedVisibility(visible = geminiStatus.isEnabled, Modifier.fillMaxSize()) {
                 GeminiChatContainer(
+                    modifierSizeFor(cameraPreviewRatio),
                     newGeminiMessage = geminiMessage,
                     pictureTaken = pictureTaken,
                     onValidUserSubmit = { text ->
@@ -291,10 +287,7 @@ private fun startCameraAndPreviewView(
     )
 }
 
-/**
- * Add bars in the sides so the background doesn't show, per example, when camera ratio == 4:3
- * if(isAppMinimized) is used to avoid displaying this background when changing screens
- */
+/** Add bars in the sides so the background doesn't show, per example, when camera ratio == 4:3 */
 @Composable
 private fun BoxWithConstraintsScope.EdgeBars(cameraPreviewSize: Size, aligntment: Alignment) {
     Box(
@@ -315,17 +308,21 @@ private fun BoxWithConstraintsScope.EdgeBars(cameraPreviewSize: Size, aligntment
 private fun modifierAndAlignmentFor(
     cameraPreviewRatio: ResolutionSelector
 ): Pair<Modifier, Alignment> = Pair(
-    first = if (cameraPreviewRatio.is4by3) {
-        val maxAvailableHeightDp = DisplayHeight - BottomNavigationBarHeight
-        Modifier
-            .height(maxAvailableHeightDp / 2)
-            .fillMaxWidth()
-    } else {
-        Modifier.fillMaxSize()
-    },
+    first = modifierSizeFor(cameraPreviewRatio),
     second = if (cameraPreviewRatio.is4by3) {
         Alignment.TopCenter
     } else {
         Alignment.BottomCenter
     }
 )
+
+/** Note: this is used for both the box with the camera and detection overlays and [GeminiChatContainer] */
+@Composable
+private fun modifierSizeFor(cameraPreviewRatio: ResolutionSelector) =
+    if (cameraPreviewRatio.is4by3) {
+        Modifier
+            .height(ScreenHeight / 2)
+            .fillMaxWidth()
+    } else {
+        Modifier.fillMaxSize()
+    }

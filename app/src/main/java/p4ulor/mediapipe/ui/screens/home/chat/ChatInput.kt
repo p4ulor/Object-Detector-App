@@ -1,15 +1,10 @@
 package p4ulor.mediapipe.ui.screens.home.chat
 
 import android.content.Intent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,15 +23,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import p4ulor.mediapipe.R
@@ -62,13 +54,13 @@ fun ChatInput(
     modifier: Modifier,
     pictureTaken: Picture?,
     disableSubmit: Boolean,
-    onValidUserSubmit: (String) -> Unit
+    onValidUserSubmit: (String) -> Unit,
+    onShowBase64ImagePreview: (ImageRequest) -> Unit = {}
 ) {
     val ctx = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var input by rememberSaveable { mutableStateOf("") }
-    var base64ImagePreview by remember { mutableStateOf<ImageRequest?>(null) }
     var image by remember { mutableStateOf<ImageRequest?>(null) }
     var isImageFile by remember { mutableStateOf(false) }
 
@@ -106,30 +98,22 @@ fun ChatInput(
         placeholder = { QuickText(R.string.ask_gemini) },
         trailingIcon = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if(pictureTaken == null){
+                if(pictureTaken == null) {
                     QuickIcon(MaterialIcons.NoPhotography, IconSmallSize) {}
                 } else {
-                    AsyncImage(
-                        model = image,
-                        contentDescription = "picture taken preview",
-                        Modifier
-                            .size(IconMediumSize)
-                            .clip(RoundRectangleShape)
-                            .clickable {
-                                if (isImageFile) {
-                                    ctx.startActivity(Intent().apply {
-                                        action = Intent.ACTION_VIEW
-                                        setDataAndType(
-                                            pictureTaken.asFile?.path,
-                                            pictureTaken.mimeType.value
-                                        )
-                                    })
-                                } else {
-                                    base64ImagePreview = image
-                                }
-                            },
-                        contentScale = ContentScale.Crop
-                    )
+                    SmallImagePreview(image, onClick = {
+                        if (isImageFile) {
+                            ctx.startActivity(Intent().apply {
+                                action = Intent.ACTION_VIEW
+                                setDataAndType(
+                                    pictureTaken.asFile?.path,
+                                    pictureTaken.mimeType.value
+                                )
+                            })
+                        } else {
+                            image?.run { onShowBase64ImagePreview(this) }
+                        }
+                    })
                 }
                 val sendIcon = if(disableSubmit) MaterialIcons.Block else MaterialIconsExt.Send
                 QuickIcon(sendIcon, IconSmallSize) {
@@ -148,29 +132,19 @@ fun ChatInput(
         singleLine = true,
         shape = RoundRectangleShape
     )
+}
 
-    AnimatedVisibility(
-        visible = base64ImagePreview != null,
-        Modifier.fillMaxSize()
-    ) {
-        Box(Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.7f)))
-        {
-            Popup(
-                alignment = Alignment.Center,
-                onDismissRequest = { base64ImagePreview = null },
-                properties = PopupProperties(focusable = true)
-            ) {
-                AsyncImage(
-                    model = base64ImagePreview,
-                    contentDescription = "picture taken large preview",
-                    Modifier.height(400.dp)
-                )
-            }
-        }
-
-    }
+@Composable
+private fun SmallImagePreview(image: ImageRequest?, onClick: () -> Unit) {
+    AsyncImage(
+        model = image,
+        contentDescription = "picture taken preview",
+        Modifier
+            .size(IconMediumSize)
+            .clip(RoundRectangleShape)
+            .clickable { onClick() },
+        contentScale = ContentScale.Crop
+    )
 }
 
 @Preview

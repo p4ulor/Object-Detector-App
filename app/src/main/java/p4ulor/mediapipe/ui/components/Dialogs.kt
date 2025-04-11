@@ -34,7 +34,7 @@ fun QuickAlertDialog(
 
 @Preview
 @Composable
-private fun QuickAlertDialogPreview() = PreviewComposable {
+private fun QuickAlertDialogPreview() = PreviewComposable(enableDarkTheme = true) {
     QuickAlertDialog(
         R.string.warning,
         R.string.all_achievements_will_be_deleted,
