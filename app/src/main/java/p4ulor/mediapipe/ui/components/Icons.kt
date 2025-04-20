@@ -2,14 +2,18 @@ package p4ulor.mediapipe.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -20,6 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import p4ulor.mediapipe.R
+import p4ulor.mediapipe.ui.components.utils.ColorSchemeGradient
+import p4ulor.mediapipe.ui.components.utils.LightFadeOut45Deg
+import p4ulor.mediapipe.ui.components.utils.RoundRectangleShape
+import p4ulor.mediapipe.ui.components.utils.addIfNotNull
+import p4ulor.mediapipe.ui.components.utils.addIfTrue
+import p4ulor.mediapipe.ui.components.utils.fadingEdge
+import p4ulor.mediapipe.ui.components.utils.withGradientBehind
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 import androidx.compose.material.icons.Icons as ComposeMaterialIcons
 
@@ -59,19 +70,6 @@ val IconDefaultSize = 44.dp
 val IconMediumSize = 30.dp
 val IconSmallSize = 25.dp
 
-@Composable
-fun QuickIcon(icon: ResourcesIcon, onClick: () -> Unit) = Icon(
-    painter = painterResource(icon.resourceId),
-    contentDescription = icon.name,
-    Modifier
-        .size(IconDefaultSize)
-        .padding(PaddingAroundIcon)
-        .clickable {
-            onClick()
-        },
-    tint = Color.White // MaterialTheme.colorScheme.onBackground
-)
-
 /** Useful when using [MaterialIcons], which are [ImageVector]s. An alternative to [IconButton] */
 @Composable
 fun QuickIcon(icon: ImageVector, size: Dp? = null, onClick: () -> Unit) = Icon(
@@ -93,33 +91,44 @@ val IconContainerDefaultSize = 55.dp
 fun QuickIconWithBorder(
     icon: Icon,
     onClick: () -> Unit,
-    onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
+    onDrag: ((change: PointerInputChange, dragAmount: Offset) -> Unit)? = null
 ){
     icon.asAppIcon?.let {
         QuickIconWithBorder(it.resourcesIcon, onClick, onDrag)
     } ?: icon.asMaterialIcon?.let {
         QuickIconWithBorder(it.materialIcon, onClick, onDrag)
-    }
+    } ?: error("Something went wrong here")
 }
 
 @Composable
 private fun QuickIconWithBorder(
     icon: ResourcesIcon,
     onClick: () -> Unit,
-    onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
+    onDrag: ((change: PointerInputChange, dragAmount: Offset) -> Unit)? = null
 ){
     FloatingActionButton(
         onClick = onClick,
         Modifier
             .size(IconContainerDefaultSize)
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
+            .addIfNotNull(onDrag){
+                pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount -> it(change, dragAmount) }
+                }
             }
+            .clip(RoundRectangleShape)
+            .withGradientBehind(ColorSchemeGradient()),
+        containerColor = Color.Transparent, // replacing primaryContainer color
+        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
     ) {
         Icon(
             painter = painterResource(icon.resourceId),
             icon.name,
-            Modifier.size(IconInContainerDefaultSize),
+            Modifier
+                .size(IconInContainerDefaultSize)
+                .addIfTrue(icon.useOriginalColors){
+                    Modifier.fadingEdge(LightFadeOut45Deg(IconInContainerDefaultSize))
+                }
+                .fadingEdge(LightFadeOut45Deg(IconInContainerDefaultSize)),
             tint = if (icon.useOriginalColors) {
                 Color.Unspecified
             } else {
@@ -133,21 +142,29 @@ private fun QuickIconWithBorder(
 private fun QuickIconWithBorder(
     icon: ImageVector,
     onClick: () -> Unit,
-    onDrag: (change: PointerInputChange, dragAmount: Offset) -> Unit = {_, _ -> }
+    onDrag: ((change: PointerInputChange, dragAmount: Offset) -> Unit)? = null
 ){
     FloatingActionButton(
         onClick = onClick,
         Modifier
             .size(IconContainerDefaultSize)
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount -> onDrag(change, dragAmount) }
+            .addIfNotNull(onDrag){
+                pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount -> it(change, dragAmount) }
+                }
             }
+            .clip(RoundRectangleShape)
+            .withGradientBehind(ColorSchemeGradient()),
+        containerColor = Color.Transparent, // replacing primaryContainer color
+        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
     ) {
         Icon(
             imageVector = icon,
             icon.name,
-            Modifier.size(IconInContainerDefaultSize),
-            tint = Color.White // MaterialTheme.colorScheme.onBackground
+            Modifier
+                .size(IconInContainerDefaultSize)
+                .fadingEdge(LightFadeOut45Deg(IconInContainerDefaultSize)),
+            tint = Color.White
         )
     }
 }
@@ -155,5 +172,10 @@ private fun QuickIconWithBorder(
 @Preview
 @Composable
 private fun QuickIconWithBorderPreview() = PreviewComposable {
-    QuickIconWithBorder(ResourcesIcon.Gemini, {})
+    Column {
+        QuickIconWithBorder(ResourcesIcon.Gemini, {})
+        QuickIconWithBorder(ResourcesIcon.Camera, {})
+        QuickIconWithBorder(MaterialIcons.Add, {})
+        QuickIconWithBorder(ResourcesIcon.Scale, {})
+    }
 }

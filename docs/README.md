@@ -25,70 +25,13 @@ This text details things about conditions, state handling, decisions made, remin
 - [App signing](https://developer.android.com/studio/publish/app-signing#generate-key) is used to authenticate the clients (android phones) doing requests to the Firebase project. So the SHA-1 that's used in production should be the one that's printed form the "release" signingConfig, which is shown when running `./gradlew signingReport`. 
 - When setting up the "Add Firebase to your Android App" it asks for the "Debug signing certificate SHA-1", which I provide, so this should be changed when releases are provided or we need to see if we have another signature for releases so we can support both debug and release app instalations performing Firebase requests
 
-The Java KeyStore file is converted to Build64 so it's easily set in the pipeline and `build.gradle.kts` converts it back to a temp JKS file.
+The Java KeyStore file is converted to Build64 so it's easily set as a string environment variable in the pipeline and `build.gradle.kts` converts it back to a temp JKS file.
 ```
 base64 --wrap=0 app_certificate.jks > app_certificate.base64
 ```
 ## Source Code Structure
 
-```mermaid
-graph TD
-%% Root packages and files
-    DI("<img style="max-height: 20px; object-fit: contain" src="https://insert-koin.io/img/koin_new_logo.png"> DependencyInjection.kt </>")
-    Log("<img style="max-height: 20px; object-fit: contain" src="./imgs/logs.png"> Logging.kt </>")
-    A("<img style="max-height: 20px; object-fit: contain" src="https://developer.android.com/static/images/brand/android-head_flat.png"> android </>")
-    D("<img style="max-height: 20px; object-fit: contain" src="./imgs/tools.png"> data </>")
-    U("<img style="max-height: 20px; object-fit: contain" src="./imgs/user_interface.png"> ui </>")
-
-%% Sub packages
-    A --> A1(activities)
-    A --> A2(utils)
-    A --> A3(viewmodels)
-    A --> A4(MyApplication.kt)
-
-    A1 --> A1_1(utils)
-    A2 --> A2_1(camera)
-    A3 --> A3_1(utils)
-
-    D --> D1(domains)
-    D --> D2(sources)
-    D --> D4(utils)
-
-    D1 --> D1_1(firebase)
-    D1 --> D1_2(gemini)
-    D1 --> D1_3(mediapipe)
-    D2 --> D2_1(client)
-    D2 --> D2_2(cloud)
-    D2 --> D2_3(local)
-
-    D2_2 --> D2_2_1(gemini)
-    D2_2 --> D2_2_2(firebase)
-
-    D2_3 --> D2_3_1(database)
-    D2_3 --> D2_3_2(preferences)
-
-    U --> U1(animations)
-    U --> U2(components)
-    U --> U3(screens)
-    U --> U4(theme)
-
-    U2 --> U2_2(utils)
-
-    U3 --> U3_1(achievements)
-    U3 --> U3_2(home)
-    U3 --> U3_3(root)
-    U3 --> U3_4(settings)
-
-    U3_2 --> D3_2_1(outline)
-    U3_2 --> D3_2_2(chat)
-
-%% Styles
-    classDef screenStyle color:#FFFFFF, stroke:#00C853
-    classDef noBackgroundStyle color:#FFFFFF, fill:#0d1117
-
-    class HS,SC,AS screenStyle
-    class DI,Log,A,D,U noBackgroundStyle
-```
+![](./imgs/mermaid-digram_src_code_structure.png)
 
 ## Main challenges
 - Custom and made from the ground up floating action button and it's bounds and state handling

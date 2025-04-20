@@ -2,6 +2,7 @@ package p4ulor.mediapipe.android.viewmodels
 
 import android.app.Application
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.FlowPreview
@@ -25,6 +26,7 @@ import p4ulor.mediapipe.android.utils.NotificationManager
 import p4ulor.mediapipe.android.utils.camera.CameraConstants
 import p4ulor.mediapipe.android.utils.camera.CameraConstants.toggle
 import p4ulor.mediapipe.android.utils.camera.Picture
+import p4ulor.mediapipe.android.utils.camera.takePic
 import p4ulor.mediapipe.android.viewmodels.utils.create
 import p4ulor.mediapipe.android.viewmodels.utils.launch
 import p4ulor.mediapipe.android.viewmodels.utils.toStateFlow
@@ -42,7 +44,6 @@ import p4ulor.mediapipe.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.mediapipe.data.sources.local.preferences.dataStore
 import p4ulor.mediapipe.data.sources.local.preferences.secretDataStore
 import p4ulor.mediapipe.data.utils.executorForImgAnalysis
-import p4ulor.mediapipe.data.utils.fileToBase64
 import p4ulor.mediapipe.e
 import p4ulor.mediapipe.ui.screens.home.chat.GeminiChatContainer
 import p4ulor.mediapipe.ui.screens.home.chat.Message
@@ -56,7 +57,7 @@ import java.util.Date
  * AndroidViewModel is not managed by Koin just for demo/historical purposes.
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
  * I'm using AndroidViewModel here in order to have the [application] which is used for
- * [achievementsDao], [initObjectDetector], [loadAndGetUserPrefs], [promptGemini] and [sendGeminiError]
+ * [achievementsDao], [initObjectDetector], [loadAndGetUserPrefs] and [promptGemini]
  *
  * This class has some data that should survive recompositions for a good UX. These are:
  * - [cameraPreviewRatio], [pictureTaken], [isGeminiEnabled], [geminiStatus], [geminiMessage] etc
@@ -98,7 +99,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
      * For [objDetectionResults], [toStateFlow] is used instead of [asStateFlow] because [sample]
      * returns a flow. When animations are enabled, the emissions are cut down to 1 every half a
      * second so that [AnimatedDetectionOutline] doesn't have a ton of work to do, otherwise
-     * no animation is visible since there's too much lag.
+     * no animation would be visible since there would be too much lag when performing the animation
+     * calculations each 30fps.
      */
     private val _objDetectionResults = MutableStateFlow<ResultBundle?>(null)
     @OptIn(FlowPreview::class)
@@ -137,8 +139,10 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         }
     }
 
-    fun savePicture(picture: Picture) {
-        _pictureTaken.value = picture
+    fun takePicture(imageCaptureUseCase: ImageCapture) {
+        imageCaptureUseCase.takePic(application, saveInStorage = prefs.savePictures) { picture ->
+            _pictureTaken.value = picture
+        }
     }
 
     fun toggleCameraPreviewRatio(): ResolutionSelector {
@@ -205,7 +209,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         if (!hasConnection){
             if(_geminiStatus.value.isEnabled){
                 _geminiStatus.value = GeminiStatus.DISCONNECTED
-                delay(300) // Give some time for event to be transmitted and valid. This helps in showing the "Connection lost" toast only in HomeScreenGranted, since it will capture the DISCONNECTED value (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
+                delay(300) // Give some time for the disconnection event to be transmitted and valid. This helps in showing the "Connection lost" toast only in HomeScreenGranted, since it will capture the DISCONNECTED value (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
             }
             _geminiStatus.value = GeminiStatus.OFF
         }
@@ -218,7 +222,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     fun toggleGemini(onFail: () -> Unit) {
         launch {
             val hasConnection = runCatching {
-                withTimeout(500L){ // In case there were no emissions to hasConnection yet
+                withTimeout(100L){ // In case there were no emissions to hasConnection yet
                     network.hasConnection.first()
                 }
             }.getOrNull() ?: false
@@ -232,34 +236,30 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
 
     /**
      * Prompts Gemini with a [GeminiPrompt] if the [geminiApi] is initialized and [pictureTaken]
-     * is not null. Even thought [GeminiChatContainer] would disable the prompt submission, but
+     * is not null. Even thought [GeminiChatContainer] should disable the prompt submission, but
      * we check here to avoid any problems
      */
-    fun promptGemini(prompt: String){
-        if (geminiApi != null && pictureTaken.value != null) {
+    fun promptGemini(prompt: String): Unit = with(application.applicationContext){
+        if (geminiApi != null) {
             launch {
-                val geminiPrompt = pictureTaken.value?.run {
-                    val imageBase64 = this.asFile?.path?.let {
-                        application.applicationContext.fileToBase64(it)
-                    } ?: this.asBase64?.base64
-
-                    imageBase64?.run {
-                        GeminiPrompt(prompt, this)
-                    }
-                }
+                val geminiPrompt = pictureTaken.value?.imageAsBase64()?.let { GeminiPrompt(prompt, it) }
                 if (geminiPrompt != null) {
                     _geminiMessage.value = Message.getPending
                     val response = Message.from(resp = geminiApi?.promptWithImage(geminiPrompt))
                     if (response != null) {
                         _geminiMessage.value = response
                     } else {
-                        sendGeminiError()
+                        _geminiMessage.value = Message.createGeminiMessage(
+                            getString(R.string.internal_gemini_api_error)
+                        )
                     }
                     _pictureTaken.value = null
                 } else {
                     e("geminiPrompt is null")
                 }
             }
+        } else {
+            e("geminiApi is null")
         }
     }
 
@@ -268,8 +268,8 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     }
 
     private suspend fun checkForNewAchievements(objectsDetected: List<String>) {
-        objectsDetected.forEach { objectName ->
-            val iterator = allUnreachedAchievements.iterator() // The iterator is used to avoid ConcurrentModificationException. An iterator can't be reset so it must be created here everytime
+        objectsDetected.forEach { objectName -> // Go through the (definitely) smaller list
+            val iterator = allUnreachedAchievements.iterator() // Go through the unreached achievements and see if the detected object is in this list. The iterator is used to avoid ConcurrentModificationException. An iterator can't be reset so it must be created here everytime
             while (iterator.hasNext()) {
                 val unreached = iterator.next()
                 if (objectName.equals(unreached.objectName, ignoreCase = true)) {
@@ -277,17 +277,9 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                     achievementsDao.insert(
                         AchievementsTuple(objectName, Date.from(Instant.now()))
                     )
-                    iterator.remove() // Removes the latest value returned by next() from the collection of the iterator.
+                    iterator.remove() // Removes the latest value returned by next() from the collection of the iterator (allUnreachedAchievements).
                 }
             }
         }
-    }
-
-    private fun sendGeminiError(){
-        _geminiMessage.value = Message.createGeminiMessage(
-            application.applicationContext.getString(
-                R.string.internal_gemini_api_error
-            )
-        )
     }
 }

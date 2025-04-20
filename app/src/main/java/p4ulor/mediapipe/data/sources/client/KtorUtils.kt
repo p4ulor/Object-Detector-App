@@ -5,10 +5,14 @@ import io.ktor.http.Headers
 import io.ktor.http.HeadersBuilder
 import io.ktor.http.isSuccess
 
-suspend fun <T: HttpResponse, R> T.handle(
-    onSuccess: suspend (HttpResponse) -> R,
-    onFailure: suspend  (HttpResponse) -> R
-) : R {
+/**
+ * [R] a type of a [HttpResponse]
+ * [D] a type of a Domain
+ */
+suspend fun <R: HttpResponse, D> R.handle(
+    onSuccess: suspend (HttpResponse) -> D,
+    onFailure: suspend (HttpResponse) -> D
+) : D {
     return if (status.isSuccess()) {
         onSuccess(this)
     } else {

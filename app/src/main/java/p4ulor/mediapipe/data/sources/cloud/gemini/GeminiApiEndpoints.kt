@@ -26,9 +26,11 @@ import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiEndpoints.Endpoint
  * - https://ai.google.dev/api/files
  * - https://ai.google.dev/api/generate-content
  * - https://ai.google.dev/gemini-api/docs/api-versions#rest
+ *
+ * Get your API key [here](https://aistudio.google.com/app/apikey)
  */
 class GeminiApiEndpoints(private val apiKey: String) {
-
+    /** Represents the root path ("/") of the RESTful API resources */
     sealed interface Resources {
         /** https://ai.google.dev/api/all-methods#rest-resource:-v1beta.models */
         sealed interface Models {
@@ -36,7 +38,7 @@ class GeminiApiEndpoints(private val apiKey: String) {
             object GenerateContent : Endpoint("/models/$defaultModel:generateContent", HttpMethod.Post)
 
             companion object {
-                const val defaultModel: String = "gemini-1.5-flash"
+                const val defaultModel: String = "gemini-2.0-flash"
             }
         }
     }
@@ -46,7 +48,7 @@ class GeminiApiEndpoints(private val apiKey: String) {
     }
 
     /**
-     * Util method to extract the HTTP URI path and queryParams (which will have the [apiKey])
+     * Util method to extract the HTTP URI path and queryParams (which will have the [apiKey]).
      * @return a [Pair] where [Pair.first] = path and [Pair.second] = [QueryParams]. Read [KtorClient]
      */
     fun postTo(endpoint: Endpoint) = run {

@@ -6,8 +6,10 @@ import p4ulor.mediapipe.e
 import java.util.Base64
 
 /**
- * Given an [Uri] that should be a file, it is converted to a Base64 string or null on error
- * Fun fact: this doesn't require permission `android.permission.READ_EXTERNAL_STORAGE`
+ * Given an [Uri] that should be a file, it is converted to a Base64 string or null on error.
+ * Note: this doesn't require permission `android.permission.READ_EXTERNAL_STORAGE` because the [Uri]
+ * has the format of `content://` which came from the SAF, [Storage Access Framework](https://developer.android.com/guide/topics/providers/document-provider),
+ * contrary to getting the file through `file://` protocol.
  */
 fun Context.fileToBase64(file: Uri): String? {
     return try {

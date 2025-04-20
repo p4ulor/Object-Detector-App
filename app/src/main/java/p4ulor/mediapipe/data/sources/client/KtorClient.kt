@@ -116,6 +116,7 @@ class KtorClient(private val hostName: String) : Closeable {
 
     override fun close() = httpClient.close()
 
+    /** Util function that should be common to all HTTP-method functions */
     private fun HttpRequestBuilder.withUrl(
         path: String,
         queryParams: QueryParams = emptyList(),

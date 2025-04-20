@@ -15,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,11 +46,11 @@ import p4ulor.mediapipe.android.utils.camera.getSizeOfBoxKeepingRatioGivenContai
 import p4ulor.mediapipe.android.utils.camera.hasFlash
 import p4ulor.mediapipe.android.utils.camera.is4by3
 import p4ulor.mediapipe.android.utils.camera.isHdrSupported
-import p4ulor.mediapipe.android.utils.camera.takePic
 import p4ulor.mediapipe.android.utils.camera.toInt
 import p4ulor.mediapipe.android.utils.camera.toSize
 import p4ulor.mediapipe.android.utils.camera.toggleFlash
 import p4ulor.mediapipe.android.viewmodels.HomeViewModel
+import p4ulor.mediapipe.data.domains.gemini.GeminiStatus
 import p4ulor.mediapipe.data.domains.mediapipe.Model
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
@@ -131,7 +132,7 @@ fun HomeScreenGranted(
 
     if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera uses a lot of resources. And this is also used to terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to cancel the render of the AndroidView in the compose tree)
         Box(Modifier.fillMaxSize()) {
-            val (modifier, alignment) = modifierAndAlignmentFor(cameraPreviewRatio)
+            val (modifier, alignment) = modifierAndAlignmentFor(cameraPreviewRatio, geminiStatus)
 
             BoxWithConstraints(modifier, alignment) {
                 val cameraPreviewSize = getSizeOfBoxKeepingRatioGivenContainer(
@@ -194,7 +195,7 @@ fun HomeScreenGranted(
 
             AnimatedVisibility(visible = geminiStatus.isEnabled, Modifier.fillMaxSize()) {
                 GeminiChatContainer(
-                    modifierSizeFor(cameraPreviewRatio),
+                    modifierSizeFor(cameraPreviewRatio, geminiStatus),
                     newGeminiMessage = geminiMessage,
                     pictureTaken = pictureTaken,
                     onValidUserSubmit = { text ->
@@ -210,15 +211,13 @@ fun HomeScreenGranted(
             fabs = buildList {
                 add(
                     FloatingActionButton(Icon.App(ResourcesIcon.Camera)) {
-                        imageCaptureUseCase.takePic(ctx, saveInStorage = prefs.savePictures) { picture ->
-                            vm.savePicture(picture)
-                        }
+                        vm.takePicture(imageCaptureUseCase)
                     }
                 )
                 add(
                     if(geminiStatus.isEnabled){
                         FloatingActionButton(Icon.App(ResourcesIcon.MediaPipe)){
-                            vm.toggleGemini({}) // No need to handle, geminiStatus will do it
+                            vm.toggleGemini(onFail = {})
                         }
                     } else {
                         FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) {
@@ -235,7 +234,7 @@ fun HomeScreenGranted(
                     }
                 )
 
-                add( // Lazy solution because there are other things to do... Adds flash button regardless of flash support, so the button doesn't "flash-appear" due to camera ratio changes due to creating a new camera
+                add(
                     FloatingActionButton(Icon.App(
                         if (isFlashEnabled) ResourcesIcon.FlashlightOff else ResourcesIcon.FlashlightOn
                     )) {
@@ -306,9 +305,10 @@ private fun BoxWithConstraintsScope.EdgeBars(cameraPreviewSize: Size, aligntment
  */
 @Composable
 private fun modifierAndAlignmentFor(
-    cameraPreviewRatio: ResolutionSelector
+    cameraPreviewRatio: ResolutionSelector,
+    geminiStatus: GeminiStatus
 ): Pair<Modifier, Alignment> = Pair(
-    first = modifierSizeFor(cameraPreviewRatio),
+    first = modifierSizeFor(cameraPreviewRatio, geminiStatus),
     second = if (cameraPreviewRatio.is4by3) {
         Alignment.TopCenter
     } else {
@@ -316,13 +316,19 @@ private fun modifierAndAlignmentFor(
     }
 )
 
-/** Note: this is used for both the box with the camera and detection overlays and [GeminiChatContainer] */
+/** Note: this is used for both the box with the camera & detection overlays and [GeminiChatContainer] */
 @Composable
-private fun modifierSizeFor(cameraPreviewRatio: ResolutionSelector) =
+private fun modifierSizeFor(cameraPreviewRatio: ResolutionSelector, geminiStatus: GeminiStatus) =
     if (cameraPreviewRatio.is4by3) {
         Modifier
-            .height(ScreenHeight / 2)
             .fillMaxWidth()
+            .then(
+                if(geminiStatus.isEnabled){
+                    Modifier.height(ScreenHeight / 2)
+                } else {
+                    Modifier.fillMaxHeight()
+                }
+            )
     } else {
         Modifier.fillMaxSize()
     }

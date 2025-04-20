@@ -56,10 +56,9 @@ fun BoxWithBackground(
             contentDescription = "Background",
             Modifier
                 .fillMaxSize()
-                .then(
-                    if (invert) Modifier.graphicsLayer { scaleX = -1f } // Scale Horizontally
-                    else Modifier
-                ),
+                .addIfTrue(invert){
+                    Modifier.graphicsLayer { scaleX = -1f } // Scale Horizontally
+                },
             contentScale = contentScale
         )
         content()

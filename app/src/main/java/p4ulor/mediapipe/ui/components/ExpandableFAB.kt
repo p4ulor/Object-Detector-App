@@ -60,7 +60,7 @@ fun ExpandableFAB(
     val maxAvailableWidthPx = display.widthPixels - iconContainerSizePx
     val maxAvailableHeightPx = display.heightPixels - bottomBarHeight - iconContainerSizePx
 
-    val initialOffset = if(initialPosition.isTopRight){
+    val initialOffsetPx = if(initialPosition.isTopRight){
         IntOffset(x = (maxAvailableWidthPx - extraPaddingPx).toInt(), y = extraPaddingPx.toInt())
     } else {
         IntOffset(x = (maxAvailableWidthPx - extraPaddingPx).toInt(), y = maxAvailableHeightPx.toInt())
@@ -69,8 +69,8 @@ fun ExpandableFAB(
     // Cover the max area available
     Box(Modifier.fillMaxSize()) {
         var isExpanded by remember { mutableStateOf(false) }
-        var openerFabOffsetX by remember { mutableFloatStateOf(initialOffset.x.toFloat()) } //px
-        var openerFabOffsetY by remember { mutableFloatStateOf(initialOffset.y.toFloat()) } //px
+        var openerFabOffsetX by remember { mutableFloatStateOf(initialOffsetPx.x.toFloat()) }
+        var openerFabOffsetY by remember { mutableFloatStateOf(initialOffsetPx.y.toFloat()) }
         var canOpenUpwards by remember { mutableStateOf(initialPosition.isBottomRight) }
 
         canOpenUpwards = run {
@@ -134,7 +134,7 @@ fun ExpandableFAB(
 private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolean, isVisible: Boolean) {
     AnimatedVisibility(
         visible = isVisible,
-        Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under and above the openerFAB when there are many FABs, due to the initial position of the slideIn animation
+        Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under and beyond the openerFAB's area when there are many FABs, due to the initial position of the slideIn animation
         enter = fadeIn(smooth()) + slideInVertSmooth(openUpwards),
         exit = fadeOut(smooth()) + slideOutVertSmooth(!openUpwards)
     ) {

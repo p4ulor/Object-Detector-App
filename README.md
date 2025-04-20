@@ -1,6 +1,9 @@
+<img style="display: block; margin: auto; margin-bottom: 0px" width=100 src="./app/src/main/res/mipmap-xxxhdpi/app_icon_foreground.webp"></img>
+<p style="text-align: center">Object Detector</p>
+
 ## Demo 🎥
 
-## Main features ✨
+## Main Features ✨
 - Detect very simple objects with MediaPipe
 - Ask Gemini anything about a picture taken
 - Tracks the user's achievements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) towards those achievements
@@ -15,12 +18,11 @@
 | <img width="50" src='https://ai.google.dev/edge/mediapipe/images/mediapipe_icon.svg'> | <img width="50" src='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png'> | <img width="50" src='https://resources.jetbrains.com/storage/products/company/brand/logos/Ktor_icon.png'> | <img width="50" src='https://firebase.google.com/static/images/brand-guidelines/logo-logomark.png'> |
 
 ### 1. [MediaPipe](https://github.com/google/mediapipe)
-- An open-source project from Google. It's a framework that facilitates the integration of AI & ML into your applications. Here is a showcase of the [tasks MediaPipe supports](https://mediapipe-studio.webapps.google.com/home)
-- I'm using the [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android) dependency and the  the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models), which can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
-
+- An open-source framework from Google. It facilitates the integration of AI & ML into your applications. Here's a showcase of the [tasks MediaPipe supports](https://mediapipe-studio.webapps.google.com/home)
+- I'm using the [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android) dependency and the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models), which can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
 
 ### 2. [Gemini API](https://aistudio.google.com/app/apikey)
-- A RESTful API that allows you to perform HTTP requests to a Gemini model,
+- A RESTful API for performing HTTP requests to a Gemini model,
 running in Google Cloud Platform. Doesn't require a GCP project, although you can associate it to
 one or monitor the use of your API key
 - Pricing: It has a reasonable free tier of [1.5k requests per day and other limits](https://ai.google.dev/gemini-api/docs/billing#about-billing) for Gemini 1.5 Flash. [See it's capabilities and various details](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash)
@@ -39,7 +41,7 @@ one or monitor the use of your API key
 | [Koin](https://insert-koin.io/docs/quickstart/android-annotations/) |       [Lottie](https://airbnb.io/lottie/#/android-compose)       |                            [Mockk](https://mockk.io/)                             |                      [Coil](https://coil-kt.github.io/coil/)                      |                             [Jetpack Compose UI Test](https://developer.android.com/develop/ui/compose/testing)                              | 
 |:-------------------------------------------------------------------:|:----------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------:|
 | <img width="50" src='https://insert-koin.io/img/koin_new_logo.png'> | <img width="50" src='https://airbnb.io/lottie/images/logo.webp'> | <img width="50" src='https://avatars.githubusercontent.com/u/34787540?s=200&v=4'> | <img width="50" src='https://avatars.githubusercontent.com/u/52722434?s=200&v=4'> | <img width="50" src='https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/jetpackcompose/jetpackcompose-original.svg'> |
-|                      For dependency injection                       |                      For animated graphics                       |                            For object mocking in tests                            |                            For efficient image loading                            |                                                                 For UI tests                                                                 |
+|                      For dependency injection                       |                      For animated graphics                       |                            For object mocking in tests                            |                            For efficient & flexible image loading                            |                                                                 For UI tests                                                                 |
 
 ### Plugins Used & Other Dependencies 🔌
 #### Gradle Plugins 🐘
@@ -66,57 +68,17 @@ one or monitor the use of your API key
         - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
         - Or `./gradlew assembleDebug` to build a debug version, which will output an .apk file to `app/build/outputs/apk/debug`
 
-## Tech use throughout the app (simplified)
-- More details in [docs](./docs)
+## Core Tech Use Throughout The App (simplified)
 
-```mermaid
-%% TD -> Top-Down
-    flowchart TD
+![](./docs/imgs/mermaid-digram_tech-use.png)
 
-%% Nodes
-    %% Normal Nodes
-        Root([RootScreen])
-        HS(HomeScreen 🏠)
-        AS(AchievementsScreen 🏅)
-        SC(SettingsScreen 🔧)
-        FAB{"<p style="font-size: 10px;"> Floating </br> Action </br> Button </>"}
+<details closed>
+<summary>More details</summary>
 
-    %% Icon Nodes
-        DB("<img style="max-height: 50px; object-fit: contain" src='./docs/imgs/db.png'> Room DB </>")
-        FB("<img style="max-height: 50px; object-fit: contain" src="https://firebase.google.com/static/images/brand-guidelines/logo-logomark.png"> Firebase </>")
-        PD("<img style="max-height: 50px; object-fit: contain" src='./docs/imgs/encrypted-db.png'> Preferences </br> DataStore </>")
-        MP("<img style="max-height: 50px; object-fit: contain" src='./app/src/main/res/drawable/mediapipe.png'> MediaPipe </>")
-        GEM("<img style="max-height: 50px; object-fit: contain" src='./app/src/main/res/drawable/gemini.png'> Gemini </>")
-        KTOR("<img style="max-height: 50px; object-fit: contain" src="https://resources.jetbrains.com/storage/products/company/brand/logos/Ktor_icon.png"> Ktor </>")
-
-%% Connections
-    Root <==> AS
-    Root <==> HS
-    Root <==> SC
-    HS --- FAB 
-
-    FAB -.- MP
-    FAB -.- GeminiApiService
-
-    subgraph GeminiApiService
-        direction LR
-        KTOR <-- HTTP --> GEM
-    end
-    
-    AS <-- Your Achievements --> DB
-    AS <-- Leaderboard--> FB
-
-    SC <--> PD
-
-%% Styling. #0d1117 = github dark color
-    classDef screenStyle color:#FFFFFF, stroke:#00C853
-    classDef noBackgroundStyle color:#FFFFFF, fill:#0d1117
-
-    class HS,SC,AS screenStyle
-    class DB,FB,PD,MP,GEM,KTOR,GeminiApiService noBackgroundStyle
-
-    style FAB color:#FFFFFF, fill:#163a9e 
-```
+- [docs](./docs)
+![](./docs/imgs/diagram.png)
+- [GH rendered Mermaid diagrams](./docs/mermaid-diagrams.md)
+</details>
 
 ## Todo 
 - installing through .apk not working "app not installed as package appears to be invalid"

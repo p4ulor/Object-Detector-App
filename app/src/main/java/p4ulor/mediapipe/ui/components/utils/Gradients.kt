@@ -2,9 +2,11 @@ package p4ulor.mediapipe.ui.components.utils
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
 
 /**
@@ -12,7 +14,7 @@ import p4ulor.mediapipe.ui.screens.root.BottomNavigationBarHeight
  * of a composable
  */
 @Composable
-fun TransparencyGradient(position: TransparentGradientPosition) = run {
+fun TransparencyGradient(position: TransparentGradientPosition = TransparentGradientPosition.Top) = run {
     Brush.verticalGradient(
         colorStops = position.colorStops,
         startY = 0f,
@@ -50,3 +52,10 @@ val MediaPipeLikeGradient = listOf(Color(0xFF5FFFB2), Color(0xFF00FF91))
 fun ColorSchemeGradient() = Brush.horizontalGradient(listOf(
     MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.primaryContainer
 ))
+
+@Composable
+fun LightFadeOut45Deg(canvasSize: Dp) = Brush.linearGradient(
+    colors = listOf(Color.Black, Color.Transparent),
+    start = Offset(0f, Float.POSITIVE_INFINITY),
+    end = with(LocalDensity.current) { Offset(canvasSize.toPx()*3.5f, 0f) }
+)

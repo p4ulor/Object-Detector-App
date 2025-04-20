@@ -2,7 +2,6 @@ package p4ulor.mediapipe.android.utils.camera
 
 import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
 import android.provider.MediaStore
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -77,15 +76,4 @@ fun ImageCapture.takePic(ctx: Context, saveInStorage: Boolean, onImageSaved: (pi
             }
         )
     }
-}
-
-sealed class Picture private constructor(val mimeType: MimeType = ImageCaptureDefault.mimeType) {
-    /**
-     * @property path should be something like `content://media/external/images/media/1000069851`
-     */
-    data class File(val path: Uri) : Picture()
-    data class Base64(val base64: String) : Picture()
-
-    val asFile get() = this as? File
-    val asBase64 get() = this as? Base64
 }

@@ -13,7 +13,7 @@ class MyApplication : Application() {
     /**
      * The Room Database for the whole application.
      * Could be initialized with Koin, but I want to do it the old way for historical/demo purposes
-     *  just like I do with [HomeViewModel]
+     * just like I do with [HomeViewModel]
      */
     val appDb by lazy {
         Room.databaseBuilder(

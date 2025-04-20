@@ -27,13 +27,18 @@ class GeminiApiService(apiKey: String) : Closeable {
     private val http = KtorClient(GeminiApiEndpoints.hostName)
     private val endpoints = GeminiApiEndpoints(apiKey)
 
+    /** A higher level operation that handles a general chat input and translates it to a prompt */
+    suspend fun sendChat(){
+        // todo to abstract promptGemini in home vm
+    }
+
     suspend fun promptWithImage(prompt: GeminiPrompt): GeminiResponse? {
         val (path, queryParams) = endpoints.postTo(GeminiApiEndpoints.Resources.Models.GenerateContent)
         val body = prompt.toHttpRequest()
 
         return runCatching {
             http.post(path, queryParams, body, defaultHeaders)?.let { response ->
-                response.handle(
+                response.handle<HttpResponse, GeminiResponse>(
                     onSuccess = {
                         it.body<GenerateContentResponse>().toDomain()
                     },
