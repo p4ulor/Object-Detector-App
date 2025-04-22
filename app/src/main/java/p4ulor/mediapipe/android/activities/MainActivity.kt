@@ -8,12 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import p4ulor.mediapipe.R
 import p4ulor.mediapipe.android.MyApplication
-import p4ulor.mediapipe.android.utils.readFromRaw
-import p4ulor.mediapipe.data.domains.mediapipe.Achievement
-import p4ulor.mediapipe.data.sources.local.database.AppDatabase
-import p4ulor.mediapipe.data.sources.local.database.achievements.AchievementsTuple
+import p4ulor.mediapipe.data.sources.local.database.initializeDb
 import p4ulor.mediapipe.i
 import p4ulor.mediapipe.ui.screens.root.RootScreen
 import p4ulor.mediapipe.ui.theme.AppTheme
@@ -50,20 +46,5 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         i("Destroyed")
-    }
-
-    /** Initialize the DB tables */
-    private suspend fun initializeDb(db: AppDatabase) {
-        val achievements = db.achievements()
-        if (achievements.getAll().isEmpty()) {
-            val allAchievements = readFromRaw(R.raw.mediapipe_detectable_objects).mapNotNull { objectName ->
-                if (objectName != Achievement.invalidName) {
-                    AchievementsTuple(objectName)
-                } else {
-                    null
-                }
-            }
-            achievements.insertAll(allAchievements)
-        }
     }
 }

@@ -84,7 +84,7 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                 BackHandler { // Should be placed after NavHost, so it's BackHandler is overridden by this
                     with(navController.currentRoute) {
                         if (this == Screen.Home.name) {
-                            ctx.getActivity()?.moveTaskToBack(true) // minimize app
+                            ctx.getActivity()?.moveTaskToBack(true) // minimize app, instead of the default of destroying activity
                         } else {
                             navigateTo(Screen.from(navController.previousRoute))
                         }

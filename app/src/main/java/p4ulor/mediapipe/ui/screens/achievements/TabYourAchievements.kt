@@ -1,5 +1,6 @@
 package p4ulor.mediapipe.ui.screens.achievements
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +18,12 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
@@ -35,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,9 +49,12 @@ import p4ulor.mediapipe.R
 import p4ulor.mediapipe.data.domains.mediapipe.Achievement
 import p4ulor.mediapipe.data.utils.capitalized
 import p4ulor.mediapipe.data.utils.getTodaysDate
+import p4ulor.mediapipe.data.utils.toPercentage
 import p4ulor.mediapipe.ui.animations.smooth
 import p4ulor.mediapipe.ui.components.MaterialIcons
 import p4ulor.mediapipe.ui.components.QuickAlertDialog
+import p4ulor.mediapipe.ui.components.QuickText
+import p4ulor.mediapipe.ui.components.utils.CenteredRow
 import p4ulor.mediapipe.ui.components.utils.HorizontalPaddingBigExtra
 import p4ulor.mediapipe.ui.components.utils.LightContainer
 import p4ulor.mediapipe.ui.components.utils.TransparencyGradient
@@ -55,8 +64,14 @@ import p4ulor.mediapipe.ui.components.utils.rememberToggleableState
 import p4ulor.mediapipe.ui.theme.PreviewComposable
 
 @Composable
-fun TabYourAchievements(achievements: List<Achievement>, onDeleteAchievements: () -> Unit) {
+fun TabYourAchievements(
+    achievements: List<Achievement>,
+    selectedOrderOption: OrderOptions,
+    onDeleteAchievements: () -> Unit,
+    onChangeOrderOption: (OrderOptions) -> Unit
+) {
     var showDeletionConfirmation = rememberToggleableState(false)
+
     val blurRadius: Dp by animateDpAsState(
         targetValue = if (showDeletionConfirmation.value) 20.dp else 0.dp,
         animationSpec = smooth(),
@@ -64,7 +79,29 @@ fun TabYourAchievements(achievements: List<Achievement>, onDeleteAchievements: (
     )
 
     Scaffold(
-        Modifier.fillMaxSize().blur(blurRadius),
+        Modifier
+            .fillMaxSize()
+            .blur(blurRadius),
+        topBar = {
+            CenteredRow {
+                QuickText(R.string.order_by, fontWeight = FontWeight.Bold)
+                SingleChoiceSegmentedButtonRow {
+                    OrderOptions.entries.forEachIndexed { index, option ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.itemShape(index, OrderOptions.entries.size),
+                            onClick = { onChangeOrderOption(OrderOptions.entries[index]) },
+                            selected = index == selectedOrderOption.ordinal,
+                            colors = SegmentedButtonDefaults.colors().copy(
+                                activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                inactiveContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+                            )
+                        ) {
+                            QuickText(option.strId)
+                        }
+                    }
+                }
+            }
+        },
         containerColor = Color.Transparent,
         floatingActionButton = {
             SmallFloatingActionButton(
@@ -77,7 +114,7 @@ fun TabYourAchievements(achievements: List<Achievement>, onDeleteAchievements: (
         },
         floatingActionButtonPosition = FabPosition.End,
         contentWindowInsets = WindowInsets(0)
-    ) {
+    ) { paddingValues ->
         if (showDeletionConfirmation.value) {
             DeletionConfirmationDialog(
                 confirmClick = {
@@ -89,7 +126,8 @@ fun TabYourAchievements(achievements: List<Achievement>, onDeleteAchievements: (
                 }
             )
         }
-        AchievementsList(it, achievements)
+
+        AchievementsList(paddingValues, achievements, selectedOrderOption)
     }
 }
 
@@ -107,19 +145,30 @@ private fun DeletionConfirmationDialog(confirmClick: () -> Unit, dismissClick: (
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AchievementsList(padding: PaddingValues, achievements: List<Achievement>) {
+private fun AchievementsList(
+    padding: PaddingValues,
+    achivements: List<Achievement>,
+    selectedOrderOption: OrderOptions
+) {
     val listState = rememberLazyListState()
 
     var isFirstItemNotVisible by remember { mutableStateOf(false) }
     var isLastItemNotVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(listState.isScrollInProgress) {
+    LaunchedEffect(listState.isScrollInProgress, selectedOrderOption) {
         isFirstItemNotVisible = listState.layoutInfo
             .visibleItemsInfo
             .any { it.index == 0 }.not()
         isLastItemNotVisible = listState.layoutInfo
             .visibleItemsInfo
-            .any { it.index + 1 == achievements.size }.not()
+            .any { it.index + 1 == achivements.size }.not()
+    }
+
+    LaunchedEffect(selectedOrderOption) {
+        if(selectedOrderOption == OrderOptions.Done) {
+            isFirstItemNotVisible = false
+            listState.scrollToItem(0)
+        }
     }
 
     LazyColumn(
@@ -129,7 +178,7 @@ private fun AchievementsList(padding: PaddingValues, achievements: List<Achievem
             .fadingEdge(
                 TransparencyGradient(
                     position = when {
-                        isFirstItemNotVisible && isLastItemNotVisible -> TransparentGradientPosition.Vertical
+                        isFirstItemNotVisible && isLastItemNotVisible -> TransparentGradientPosition.TopAndBottom
                         isFirstItemNotVisible -> TransparentGradientPosition.Top
                         isLastItemNotVisible -> TransparentGradientPosition.Bottom
                         else -> TransparentGradientPosition.None
@@ -139,7 +188,7 @@ private fun AchievementsList(padding: PaddingValues, achievements: List<Achievem
         horizontalAlignment = Alignment.CenterHorizontally,
         state = listState,
     ) {
-        items(achievements, key = { it.objectName }) { achievement ->
+        items(achivements, key = { it.objectName }) { achievement ->
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -149,10 +198,16 @@ private fun AchievementsList(padding: PaddingValues, achievements: List<Achievem
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val toolTipState = rememberTooltipState(isPersistent = false)
-                val scope = rememberCoroutineScope()
+                val scope = rememberCoroutineScope() // Needed for TooltipBox...
+
                 LightContainer {
-                    Text(achievement.objectName.capitalized())
+                    val rowEntry = StringBuilder(achievement.objectName.capitalized())
+                    if (achievement.detectionDate != null){
+                        rowEntry.append(" (${achievement.certaintyScore.toPercentage()})")
+                    }
+                    Text(rowEntry.toString())
                 }
+
                 TooltipBox(
                     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
                     tooltip = {
@@ -176,26 +231,33 @@ private fun AchievementsList(padding: PaddingValues, achievements: List<Achievem
     }
 }
 
+enum class OrderOptions(@StringRes val strId: Int) {
+    Name(R.string.name),
+    Done(R.string.done)
+}
+
 @Preview
 @Composable
 private fun TabYourAchievementsPreview() = PreviewComposable(enableDarkTheme = true) {
     val list = remember {
         buildList {
-            add(Achievement("START"))
+            add(Achievement("START", 0f))
             repeat(20) {
                 addAll(
                     listOf(
-                        Achievement("car$it", getTodaysDate()),
-                        Achievement("big word big word$it", getTodaysDate()),
-                        Achievement("bench$it")
+                        Achievement("car$it", 1f, getTodaysDate()),
+                        Achievement("big word big word$it", 0.5f, getTodaysDate()),
+                        Achievement("bench$it", 0f)
                     )
                 )
             }
-            add(Achievement("END"))
+            add(Achievement("END", 0f))
         }
     }
     TabYourAchievements(
         achievements = list,
+        selectedOrderOption = OrderOptions.Name,
+        onChangeOrderOption = {},
         onDeleteAchievements = {}
     )
 }

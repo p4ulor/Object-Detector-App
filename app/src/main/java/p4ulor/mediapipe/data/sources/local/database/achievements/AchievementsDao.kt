@@ -25,6 +25,7 @@ interface AchievementsDao {
     @Query("SELECT * FROM $tableAchivements WHERE detectionDate IS NULL LIMIT :limit")
     suspend fun getAllUnreachedAchievements(limit: Short = Short.MAX_VALUE) : List<AchievementsTuple>
 
+    /** Gets all [AchievementsTuple] ordered by [AchievementsTuple.objectName] */
     @Query("SELECT * FROM $tableAchivements ORDER BY objectName ASC LIMIT :limit")
     suspend fun getAll(limit: Short = Short.MAX_VALUE) : List<AchievementsTuple>
 

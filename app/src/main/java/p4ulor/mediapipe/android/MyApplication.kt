@@ -7,6 +7,7 @@ import org.koin.core.context.startKoin
 import org.koin.ksp.generated.module
 import p4ulor.mediapipe.DependencyInjectionScanner
 import p4ulor.mediapipe.data.sources.local.database.AppDatabase
+import p4ulor.mediapipe.data.sources.local.database.MIGRATION_V1_V2
 
 class MyApplication : Application() {
 
@@ -20,7 +21,8 @@ class MyApplication : Application() {
             applicationContext,
             AppDatabase::class.java,
             "AppDatabase"
-        ).build()
+        ).addMigrations(MIGRATION_V1_V2)
+            .build()
     }
 
     override fun onCreate() {

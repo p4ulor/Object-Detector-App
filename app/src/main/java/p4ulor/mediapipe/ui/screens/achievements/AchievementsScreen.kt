@@ -32,7 +32,8 @@ fun AchievementsScreen(){
     val vm = koinViewModel<AchievementsViewModel>()
 
     val userAchievements by vm.userAchievements.collectAsState()
-    
+    val orderOption by vm.orderOptions.collectAsState()
+
     LaunchedEffect(Unit) {
         vm.loadAchievements()
     }
@@ -43,7 +44,9 @@ fun AchievementsScreen(){
     ) {
         userAchievements?.let {
             AchievementsScreenUi(
-                achievements = it.achievements,
+                achievements = it,
+                orderOptions = orderOption,
+                onChangeOrderOption = { vm.setOrderOption(it) },
                 onDeleteAchievements = { vm.deleteAchievements() }
             )
         }
@@ -52,7 +55,12 @@ fun AchievementsScreen(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AchievementsScreenUi(achievements: List<Achievement>, onDeleteAchievements: () -> Unit) {
+fun AchievementsScreenUi(
+    achievements: List<Achievement>,
+    orderOptions: OrderOptions,
+    onChangeOrderOption: (OrderOptions) -> Unit,
+    onDeleteAchievements: () -> Unit
+) {
     var selectedTab by remember { mutableStateOf(Tab.YourAchievements) }
 
     Column(
@@ -74,7 +82,12 @@ fun AchievementsScreenUi(achievements: List<Achievement>, onDeleteAchievements: 
 
         when(selectedTab){
             Tab.YourAchievements -> {
-                TabYourAchievements(achievements, onDeleteAchievements)
+                TabYourAchievements(
+                    achievements,
+                    orderOptions,
+                    onDeleteAchievements,
+                    onChangeOrderOption
+                )
             }
             else -> TabLeaderboard()
         }
@@ -85,18 +98,23 @@ fun AchievementsScreenUi(achievements: List<Achievement>, onDeleteAchievements: 
 @Composable
 private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = true) {
     val achievements = buildList {
-        add(Achievement("START"))
+        add(Achievement("START", 0f))
         repeat(20) {
             addAll(
                 listOf(
-                    Achievement("car$it", getTodaysDate()),
-                    Achievement("cat$it", getTodaysDate()),
-                    Achievement("bench$it")
+                    Achievement("car$it", 1f, getTodaysDate()),
+                    Achievement("cat$it", 0.5f, getTodaysDate()),
+                    Achievement("bench$it", 0f)
                 )
             )
         }
-        add(Achievement("END"))
+        add(Achievement("END", 0f))
     }
 
-    AchievementsScreenUi(achievements, onDeleteAchievements = {})
+    AchievementsScreenUi(
+        achievements,
+        OrderOptions.Name,
+        onChangeOrderOption = {},
+        onDeleteAchievements = {}
+    )
 }

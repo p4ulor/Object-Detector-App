@@ -12,3 +12,5 @@ fun Float.trimToDecimals(decimals: Int): Float {
     val multiplier = 10.0.pow(decimals).toFloat()
     return (this * multiplier).toInt() / multiplier
 }
+
+fun Float.toPercentage() = "${(this*100).toInt()}%"

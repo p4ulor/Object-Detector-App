@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Set's Material's night mode coloring (grey). Useful for applying dark mode for splash screen.
+    <!-- Set's Material's night mode coloring (grey-brown). Useful for applying dark mode for splash screen.
          My app theme is applied later, supposedly.
          See /home/username/Android/Sdk/platforms/android-34/data/res/values/themes_material.xml
     -->
-    <style name="Theme.MLonAndroidwMediaPipe" parent="android:Theme.Material.NoActionBar" />
+    <style name="Theme.ObjectDetector" parent="android:Theme.Material.NoActionBar" />
 
     <!-- Uses 100% black or white background on splash screen depending on phones theme mode -->
     <!--<style name="Theme.MLonAndroidwMediaPipe" parent="android:Theme.DeviceDefault.NoActionBar" />-->

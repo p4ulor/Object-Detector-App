@@ -5,6 +5,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.lifecycle.AndroidViewModel
+import com.google.mediapipe.tasks.components.containers.Detection
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,6 +37,7 @@ import p4ulor.mediapipe.data.domains.mediapipe.MyImageAnalyser
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorCallbacks
 import p4ulor.mediapipe.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.mediapipe.data.domains.mediapipe.ResultBundle
+import p4ulor.mediapipe.data.domains.mediapipe.certaintyScore
 import p4ulor.mediapipe.data.domains.mediapipe.objectName
 import p4ulor.mediapipe.data.sources.cloud.gemini.GeminiApiService
 import p4ulor.mediapipe.data.sources.local.database.achievements.AchievementsTuple
@@ -62,8 +64,9 @@ import java.util.Date
  * This class has some data that should survive recompositions for a good UX. These are:
  * - [cameraPreviewRatio], [pictureTaken], [isGeminiEnabled], [geminiStatus], [geminiMessage] etc
  *
- * It also handles some logic to lift it out of the UI, like handling connection losses, performing
- * async calls, loading user preferences and launching coroutines.
+ * It also handles some logic that should not be delegated to the UI and logic that uses both data
+ * and UI components. These operations are: handling connection losses, performing
+ * async calls, loading user preferences, launching coroutines and accessing other data components.
  * Note: [isGeminiEnabled] is also used to toggle on/off emissions of [_objDetectionResults] used
  * for MediaPipe (and thus the detection outlines)
  */
@@ -122,7 +125,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
             objDetectionResults.collect { results ->
                 results?.detectedObjects?.detections()?.let { detections ->
                     if(detections.isNotEmpty()){
-                        checkForNewAchievements(detections.map { it.objectName })
+                        checkForNewAchievements(detections)
                         if(newObjectsAchieved.isNotEmpty()){
                             if(sendNotificationJob.isActive){
                                 sendNotificationJob.cancel()
@@ -255,6 +258,9 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
                     }
                     _pictureTaken.value = null
                 } else {
+                    _geminiMessage.value = Message.createGeminiMessage(
+                        getString(R.string.error_creating_gemini_prompt)
+                    )
                     e("geminiPrompt is null")
                 }
             }
@@ -267,15 +273,19 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         geminiApi?.close()
     }
 
-    private suspend fun checkForNewAchievements(objectsDetected: List<String>) {
-        objectsDetected.forEach { objectName -> // Go through the (definitely) smaller list
+    private suspend fun checkForNewAchievements(objectsDetected: MutableList<Detection>) {
+        objectsDetected.forEach { obj -> // Go through the (definitely) smaller list
             val iterator = allUnreachedAchievements.iterator() // Go through the unreached achievements and see if the detected object is in this list. The iterator is used to avoid ConcurrentModificationException. An iterator can't be reset so it must be created here everytime
             while (iterator.hasNext()) {
                 val unreached = iterator.next()
-                if (objectName.equals(unreached.objectName, ignoreCase = true)) {
+                if (obj.objectName.equals(unreached.objectName, ignoreCase = true)) {
                     newObjectsAchieved.add(unreached.objectName)
                     achievementsDao.insert(
-                        AchievementsTuple(objectName, Date.from(Instant.now()))
+                        AchievementsTuple(
+                            obj.objectName,
+                            obj.certaintyScore.toFloatOrNull() ?: 0f,
+                            Date.from(Instant.now())
+                        )
                     )
                     iterator.remove() // Removes the latest value returned by next() from the collection of the iterator (allUnreachedAchievements).
                 }

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import p4ulor.mediapipe.R
 import p4ulor.mediapipe.data.sources.local.preferences.UserPreferences
+import p4ulor.mediapipe.data.utils.toPercentage
 import p4ulor.mediapipe.data.utils.trimToDecimals
 import p4ulor.mediapipe.ui.components.CircleThumbCustom
 import p4ulor.mediapipe.ui.components.DropdownOptions
@@ -68,7 +69,7 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
     Row {
         QuickText(R.string.minimum_detection_certainty)
         Text(
-            "${(minDetectCertainty*100).toInt()}%",
+            minDetectCertainty.toPercentage(),
             Modifier.width(textWidthOf("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
             fontWeight = FontWeight.Bold,
             maxLines = 1

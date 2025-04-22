@@ -33,7 +33,7 @@ enum class TransparentGradientPosition(vararg val colorStops: Pair<Float, Color>
         0.8f to Color.Black,
         1f to Color.Transparent
     ),
-    Vertical(
+    TopAndBottom(
         0f to Color.Transparent,
         0.2f to Color.Black,
         0.8f to Color.Black,
@@ -57,5 +57,5 @@ fun ColorSchemeGradient() = Brush.horizontalGradient(listOf(
 fun LightFadeOut45Deg(canvasSize: Dp) = Brush.linearGradient(
     colors = listOf(Color.Black, Color.Transparent),
     start = Offset(0f, Float.POSITIVE_INFINITY),
-    end = with(LocalDensity.current) { Offset(canvasSize.toPx()*3.5f, 0f) }
+    end = with(LocalDensity.current) { Offset(canvasSize.toPx()*2f, 0f) }
 )
