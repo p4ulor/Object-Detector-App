@@ -21,14 +21,27 @@ This text details things about conditions, state handling, decisions made, remin
 ### AchievementsScreen 🏅
 - Everytime the user navigates to this screen, the list of achievements are loaded
 
+## Firebase
+- `google-services.json` should be placed in `app/`
+
 ## Authentication 🛂
-- [App signing](https://developer.android.com/studio/publish/app-signing#generate-key) is used to authenticate the clients (android phones) doing requests to the Firebase project. So the SHA-1 that's used in production should be the one that's printed form the "release" signingConfig, which is shown when running `./gradlew signingReport`. 
+- After setting up the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key). It can be used to authenticate the clients (android phones) doing requests to the Firebase project. So the SHA-1 that's used in production should be the one that's printed from the "release" signingConfig, which is shown when running `./gradlew signingReport`. 
 - When setting up the "Add Firebase to your Android App" it asks for the "Debug signing certificate SHA-1", which I provide, so this should be changed when releases are provided or we need to see if we have another signature for releases so we can support both debug and release app instalations performing Firebase requests
 
-The Java KeyStore file is converted to Build64 so it's easily set as a string environment variable in the pipeline and `build.gradle.kts` converts it back to a temp JKS file.
+The Java KeyStore (JKS) file is converted to Build64 so it's easily set as a string environment variable in the pipeline and `build.gradle.kts` converts it back to a temp JKS file.
 ```
 base64 --wrap=0 app_certificate.jks > app_certificate.base64
 ```
+- The following can then be setuo in local.properties file:
+```
+# Should be also set in Github Actions
+RELEASE_JKS_FILE_BASE64=...
+RELEASE_STORE_PASSWORD=...
+RELEASE_KEY_ALIAS=...
+RELEASE_KEY_PASSWORD=...
+```
+And also in the root dir, there should be a `app_certificate.base64` and `app_certificate.jks`. The code inside the `signingConfigs` block in build.gradle.kts (:app) should do the job.
+
 ## Source Code Structure
 
 ![](./imgs/mermaid-digram_src_code_structure.png)

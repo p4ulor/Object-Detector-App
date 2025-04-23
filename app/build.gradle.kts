@@ -13,15 +13,15 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
-    alias(libs.plugins.firebase)
+    //alias(libs.plugins.firebase)
 }
 
 android {
-    namespace = "p4ulor.mediapipe"
+    namespace = "p4ulor.obj.detector"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "p4ulor.mediapipe"
+        applicationId = "p4ulor.obj.detector"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
@@ -92,7 +92,7 @@ android {
 
     buildTypes {
         // https://developer.android.com/build/shrink-code
-        release {
+        /*release {
             isDebuggable = false
             isMinifyEnabled = true // Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
             isShrinkResources = true // removes unused resources, performed by Android Gradle plugin
@@ -101,7 +101,7 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName(releaseSigning)
-        }
+        }*/
         debug {
             isDebuggable = true
             isMinifyEnabled = false
@@ -283,7 +283,7 @@ ksp {
 
 /**
  * Extra, is interesting and might be used for something
- * ./gradlew testDebugUnitTest --tests p4ulor.mediapipe.unit.misc.MathTests
+ * ./gradlew testDebugUnitTest --tests p4ulor.detector.unit.misc.MathTests
  */
 tasks.withType<Test>().configureEach {
     var startTime: Long = 0
