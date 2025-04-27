@@ -43,9 +43,9 @@ fun Modifier.withGradientBehind(gradient: Brush) = this
     }
 
 /** Util to only add changes to a [Modifier] is [value] is not null to avoid unused processing */
-fun<T> Modifier.addIfNotNull(value: T?, modifierOp: Modifier.(value: T) -> Modifier) =
+fun <T> Modifier.addIfNotNull(value: T?, modifierOp: Modifier.(value: T) -> Modifier) =
     then(
-        if(value != null){
+        if (value != null) {
             this.modifierOp(value)
         } else {
             Modifier
@@ -56,7 +56,7 @@ fun<T> Modifier.addIfNotNull(value: T?, modifierOp: Modifier.(value: T) -> Modif
 @Composable
 fun Modifier.addIfTrue(condition: Boolean, modifierOp: @Composable Modifier.() -> Modifier) =
     then(
-        if(condition){
+        if (condition) {
             this.modifierOp()
         } else {
             Modifier

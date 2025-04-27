@@ -2,9 +2,7 @@ package p4ulor.obj.detector.ui.components
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,10 +37,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import p4ulor.obj.detector.R
+import p4ulor.obj.detector.ui.components.utils.HorizontalPadding
 import p4ulor.obj.detector.ui.components.utils.SmoothHorizontalDividerCustom
 import p4ulor.obj.detector.ui.theme.AppTheme
 
 /**
+ * @param onNewOption a callback that contains the index of in the range of [options] the option
+ * that's selected
+ * @param preSelectedOption the index of an option from [options]
+ * @param optionLabels a map where the keys are an [options] and the value is a custom label (could
+ * be a description) of the option instead of using the [options]
+ *
  * I did this because:
  * 1. The [ExposedDropdownMenuBox] is an [ExperimentalMaterial3Api]
  * 2. The interactive mode preview of the composable isn't working (at least occasionally)
@@ -53,13 +59,14 @@ import p4ulor.obj.detector.ui.theme.AppTheme
 @Composable
 fun DropdownOptions(
     @StringRes label: Int,
-    preSelectedOption: String,
+    preSelectedOption: Int,
     options: List<String>,
-    horizontalPadding: Dp,
-    onNewOption: (String) -> Unit
+    onNewOption: (Int) -> Unit,
+    optionLabels: Map<String, String> = emptyMap(),
+    horizontalPadding: Dp = HorizontalPadding,
 ){
     var isExpanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(preSelectedOption) }
+    var selectedOption by remember { mutableIntStateOf(preSelectedOption) }
 
     val icon = if (isExpanded) MaterialIcons.ArrowDropUp else MaterialIcons.ArrowDropDown
 
@@ -69,7 +76,7 @@ fun DropdownOptions(
     ) {
         BoxWithConstraints {
             OutlinedTextField(
-                value = selectedOption,
+                value = options[selectedOption],
                 onValueChange = {  },
                 label = { QuickText(label) },
                 readOnly = true,
@@ -86,16 +93,13 @@ fun DropdownOptions(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("$selectedOption")
+                            Text("${options[selectedOption]}")
                             Icon(icon, null)
                         }
                     }
                 },
                 maxLines = 1
             )
-
-            // This dropdown has a white background that I didn't find a way to change the color
-            // when the border is curved. The API is experimental after all
 
             DropdownMenu(
                 expanded = isExpanded,
@@ -105,23 +109,26 @@ fun DropdownOptions(
                 shape = RoundedCornerShape(1.dp),
             ) {
                 options.forEachIndexed { index, option ->
-                    Box(Modifier.fillMaxSize().background(Color.Black))
                     DropdownMenuItem(
-                        { Text(text = option, Modifier.padding(horizontal = horizontalPadding)) },
+                        text = {
+                            Text(
+                                text = optionLabels.get(option) ?: option,
+                                Modifier.padding(horizontal = horizontalPadding)
+                            )
+                       },
                         onClick = {
                             isExpanded = false
-                            selectedOption = option
-                            onNewOption(option)
+                            selectedOption = index
+                            onNewOption(index)
                         },
                         Modifier.width(this@BoxWithConstraints.maxWidth),
                     )
-                    if(index+1!=options.size){
+                    if (index+1 != options.size) {
                         SmoothHorizontalDividerCustom(
                             width = this@BoxWithConstraints.maxWidth / 2,
                             thickness = 0.5.dp
                         )
                     }
-                    Box(Modifier.fillMaxSize().background(Color.Black))
                 }
             }
         }
@@ -134,10 +141,10 @@ private fun DropdownOptionsPreview() = AppTheme(enableDarkTheme = true) {
     Surface(Modifier.fillMaxSize()) {
         DropdownOptions(
             label = R.string.model,
-            preSelectedOption = "Model1",
+            preSelectedOption = 0,
             options = listOf("Model1", "Model2"),
-            horizontalPadding = 8.dp,
-            onNewOption = {}
+            onNewOption = {},
+            optionLabels = mapOf("Model1" to "Model1 (is the default)")
         )
     }
 }

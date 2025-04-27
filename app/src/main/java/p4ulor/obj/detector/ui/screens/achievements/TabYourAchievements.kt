@@ -107,7 +107,7 @@ fun TabYourAchievements(
             SmallFloatingActionButton(
                 onClick = { showDeletionConfirmation.toggle() }
             ) {
-                with(MaterialIcons.DeleteForever){
+                with(MaterialIcons.DeleteForever) {
                     Icon(this, contentDescription = name)
                 }
             }
@@ -155,20 +155,20 @@ private fun AchievementsList(
     var isFirstItemNotVisible by remember { mutableStateOf(false) }
     var isLastItemNotVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(listState.isScrollInProgress, selectedOrderOption) {
-        isFirstItemNotVisible = listState.layoutInfo
-            .visibleItemsInfo
-            .any { it.index == 0 }.not()
-        isLastItemNotVisible = listState.layoutInfo
-            .visibleItemsInfo
-            .any { it.index + 1 == achivements.size }.not()
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (listState.layoutInfo.totalItemsCount != 0) { // if list has been populated
+            isFirstItemNotVisible = listState.layoutInfo
+                .visibleItemsInfo
+                .any { it.index == 0 }.not()
+            isLastItemNotVisible = listState.layoutInfo
+                .visibleItemsInfo
+                .any { it.index + 1 == achivements.size }.not()
+        }
     }
 
     LaunchedEffect(selectedOrderOption) {
-        if(selectedOrderOption == OrderOptions.Done) {
-            isFirstItemNotVisible = false
-            listState.scrollToItem(0)
-        }
+        isFirstItemNotVisible = false
+        listState.scrollToItem(0)
     }
 
     LazyColumn(

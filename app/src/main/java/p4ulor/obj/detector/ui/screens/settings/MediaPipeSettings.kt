@@ -32,10 +32,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import p4ulor.obj.detector.R
+import p4ulor.obj.detector.data.domains.mediapipe.Model
 import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
 import p4ulor.obj.detector.data.utils.toPercentage
 import p4ulor.obj.detector.data.utils.trimToDecimals
@@ -48,13 +50,13 @@ import p4ulor.obj.detector.ui.components.QuickText
 import p4ulor.obj.detector.ui.components.SliderTrackCustom
 import p4ulor.obj.detector.ui.components.mediaPipeLikeText
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
-import p4ulor.obj.detector.ui.components.utils.HorizontalPadding
 import p4ulor.obj.detector.ui.components.utils.textWidthOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserPreferences) -> Unit) {
     val SliderTrackHeight = 10.dp
+    val ctx = LocalContext.current
 
     var minDetectCertainty by remember { mutableFloatStateOf(currPrefs.minDetectCertainty) }
     var maxObjectsDetections by remember { mutableIntStateOf(currPrefs.maxObjectDetections) }
@@ -62,14 +64,15 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
 
     val detectionCertaintyRange = UserPreferences.Companion.Ranges.detectionCertainty
     val objectDetectionsRange = UserPreferences.Companion.Ranges.objectDetections
-    val models = UserPreferences.Companion.Ranges.model
+    val models = UserPreferences.Companion.Ranges.modelNames
+    val modelsDescriptions = remember { UserPreferences.Companion.Ranges.getModelsDescriptions(ctx) }
 
     SettingsHeader(mediaPipeLikeText(R.string.mediapipe))
 
     Row {
         QuickText(R.string.minimum_detection_certainty)
         Text(
-            minDetectCertainty.toPercentage(),
+            text = minDetectCertainty.toPercentage(),
             Modifier.width(textWidthOf("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
             fontWeight = FontWeight.Bold,
             maxLines = 1
@@ -173,12 +176,12 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
 
     DropdownOptions(
         label = R.string.model,
-        preSelectedOption = currPrefs.selectedModel,
+        preSelectedOption = Model.indexOf(currPrefs.selectedModel),
         options = models,
-        horizontalPadding = HorizontalPadding,
-        onNewOption = {
+        optionLabels = modelsDescriptions,
+        onNewOption = { optionIndex ->
             onNewPrefs(currPrefs.apply {
-                this.selectedModel = it
+                this.selectedModel = models[optionIndex]
             })
         }
     )

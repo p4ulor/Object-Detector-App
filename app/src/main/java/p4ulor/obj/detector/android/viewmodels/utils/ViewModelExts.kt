@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import p4ulor.obj.detector.i
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -20,9 +23,18 @@ fun <T> Flow<T>.toStateFlow(
     started: SharingStarted = SharingStarted.Lazily,
 ): StateFlow<T> = stateIn(viewModelScope, started, initialValue)
 
-/** Launches a coroutine using the [viewModelScope] in the context of a ViewModel */
+/**
+ * - Launches a coroutine using the [viewModelScope] in the context of a ViewModel.
+ * - Uses [Dispatchers.Default] by default.
+ * - Note: using [EmptyCoroutineContext] (the default context param of [CoroutineScope.launch]) will
+ * fallback to using [Dispatchers.Main.immediate] in Android. See [viewModelScope] for more info
+ */
 fun ViewModel.launch(
-    context: CoroutineContext = EmptyCoroutineContext,
+    useMainDispatcher: Boolean = false,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
-): Job = viewModelScope.launch(context, start, block)
+): Job = viewModelScope.launch(
+    context = if(useMainDispatcher) Dispatchers.Main.immediate else Dispatchers.Default,
+    start = start,
+    block = block
+)

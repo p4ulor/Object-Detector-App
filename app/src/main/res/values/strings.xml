@@ -41,4 +41,6 @@
     <string name="name">Name</string>
     <string name="done">Done</string>
     <string name="order_by">"Order by: "</string>
+    <string name="model0_description"><![CDATA[accurate & lightweight]]></string>
+    <string name="model2_description">more accurate but slower</string>
 </resources>

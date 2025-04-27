@@ -5,7 +5,7 @@ import p4ulor.obj.detector.BuildConfig
 
 val TAG = "p4ulor"
 private val versionName = BuildConfig.VERSION_NAME
-val VERSION = "objdetect($versionName)"
+val VERSION = "obj.detector($versionName)"
 
 fun i(s: String) = runIfInDebug { Log.i(TAG, s) }
 inline fun <reified T> T.i(s: String) = runIfInDebug {

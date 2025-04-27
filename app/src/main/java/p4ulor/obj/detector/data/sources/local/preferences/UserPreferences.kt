@@ -1,5 +1,6 @@
 package p4ulor.obj.detector.data.sources.local.preferences
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -41,7 +42,8 @@ data class UserPreferences(
         object Ranges {
             val detectionCertainty = ObjectDetectorSettings.detectionCertaintyRange
             val objectDetections = 1..ObjectDetectorSettings.maxObjectDetections
-            val model = Model.entries.map { it.name }
+            val modelNames = Model.modelNames
+            fun getModelsDescriptions(context: Context) = Model.getModelsDescriptions(context)
         }
 
         suspend fun getFrom(storage: DataStore<Preferences>) = withContext(Dispatchers.IO) {

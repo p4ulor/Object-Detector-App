@@ -298,7 +298,7 @@ private fun SampleComposable(){
 
             DropdownOptions(
                 label = R.string.model,
-                preSelectedOption = "Model1",
+                preSelectedOption = 0,
                 options = listOf("Model1", "Model2"),
                 horizontalPadding = 8.dp,
                 onNewOption = {}

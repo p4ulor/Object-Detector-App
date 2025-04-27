@@ -46,6 +46,7 @@ import p4ulor.obj.detector.data.sources.local.preferences.dataStore
 import p4ulor.obj.detector.data.sources.local.preferences.secretDataStore
 import p4ulor.obj.detector.data.utils.executorForImgAnalysis
 import p4ulor.obj.detector.e
+import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.screens.home.chat.GeminiChatContainer
 import p4ulor.obj.detector.ui.screens.home.chat.Message
 import p4ulor.obj.detector.ui.screens.home.outline.AnimatedDetectionOutline
@@ -183,6 +184,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         cameraImageAnalyser: ImageAnalysis,
         objectDetectorSettings: ObjectDetectorSettings = ObjectDetectorSettings()
     ): ImageAnalysis {
+        i("initObjectDetector with: $objectDetectorSettings")
         val myImageAnalyser = MyImageAnalyser(
             application.applicationContext,
             objectDetectorSettings,
