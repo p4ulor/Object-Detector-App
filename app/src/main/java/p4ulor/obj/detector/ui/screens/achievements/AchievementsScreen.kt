@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,13 +34,15 @@ fun AchievementsScreen(){
 
     val userAchievements by vm.userAchievements.collectAsState()
     val orderOption by vm.orderOptions.collectAsState()
+    var isLoaded by rememberSaveable { mutableStateOf(false) } // ensures there's always an animation
 
     LaunchedEffect(Unit) {
         vm.loadAchievements()
+        isLoaded = true
     }
 
     AnimatedVisibility(
-        visible = userAchievements != null,
+        visible = isLoaded && userAchievements.isNotEmpty(),
         enter = fadeIn(smooth()) + scaleIn()
     ) {
         userAchievements?.let {

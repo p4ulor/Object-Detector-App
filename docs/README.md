@@ -22,25 +22,29 @@ This text details things about conditions, state handling, decisions made, remin
 - Everytime the user navigates to this screen, the list of achievements are loaded
 
 ## Firebase
+1.
 - `google-services.json` should be placed in `app/`
 
-## Authentication 🛂
-- After setting up the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key). It can be used to authenticate the clients (android phones) doing requests to the Firebase project. So the SHA-1 that's used in production should be the one that's printed from the "release" signingConfig, which is shown when running `./gradlew signingReport`. 
-- When setting up the "Add Firebase to your Android App" it asks for the "Debug signing certificate SHA-1", which I provide, so this should be changed when releases are provided or we need to see if we have another signature for releases so we can support both debug and release app instalations performing Firebase requests
-
-The Java KeyStore (JKS) file is converted to Build64 so it's easily set as a string environment variable in the pipeline and `build.gradle.kts` converts it back to a temp JKS file.
-```
-base64 --wrap=0 app_certificate.jks > app_certificate.base64
-```
-- The following can then be setuo in local.properties file:
-```
+## Firebase & Authentication 🛂
+## Setup
+For properly setting up the Firebase project with authentication, a set of things must be done regarding the app signing and providing the SHA codes to the Firebase SDK setup for Android (the google-services.json). This will be used to authenticate the clients (android phones) doing requests to the Firebase project. You can change these SHA codes anytime, so you can leave it blank when creating the project's SDK.
+1. Set up the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key). This will be used when generating the SHA certificate fingerprints
+2. Save the values and place them in `local.properties` like so
+```cmake
 # Should be also set in Github Actions
-RELEASE_JKS_FILE_BASE64=...
-RELEASE_STORE_PASSWORD=...
+RELEASE_JKS_FILE_BASE64= ... (see step 3)
+RELEASE_JSK_PASSWORD=...
 RELEASE_KEY_ALIAS=...
 RELEASE_KEY_PASSWORD=...
 ```
-And also in the root dir, there should be a `app_certificate.base64` and `app_certificate.jks`. The code inside the `signingConfigs` block in build.gradle.kts (:app) should do the job.
+3. The previous step should create an `app_certificate.jks` (Java KeyStore (JKS)) file. Then run `base64 --wrap=0 app_certificate.jks > app_certificate.base64` and copy it's contents to the `RELEASE_JKS_FILE_BASE64` variable. The JKS file is converted to a Base64 string so it's easily set as a string environment variable in the Github Actions pipeline. The `build.gradle.kts` converts it back to a temp JKS file in order to work.
+4. The previous operations and variable names should match the code inside the `signingConfigs` block in build.gradle.kts (:app) which setups up a release signing.
+5. With the `app_certificate.base64` and the `signingConfigs` setup, the SHA-1 and SHA-256 can now be generated when running `./gradlew signingReport` (in Gradle task tree `app/Tasks/android`). It will print 2 pairs of these hashes: one for debug and one for release. So when setting up a release, a `google-services.json` that was created with the app's release hashes (both SHA-1 and SHA-256) should be used.
+6. To setup the `google-services.json` with these hashes, go to `https://console.firebase.google.com/project/«firebase project id»/settings/general`. Click on `Add fingerprint`. When on debug, use the debug SHA's. When you're ready for a release, replace the current SHA's with the release SHA's and create a new `google-services.json`
+7. Finally, the `google-services.json` file should be set as an Base64 string environment variable in Github Actions and be converted to a file that's placed in `app/` directory during the job execution (and before the gradle build step)
+8. More info
+   - https://developers.google.com/android/guides/client-auth
+   - https://developer.android.com/studio/publish/app-signing
 
 ## Source Code Structure
 
@@ -48,11 +52,11 @@ And also in the root dir, there should be a `app_certificate.base64` and `app_ce
 
 ## Main challenges
 - Custom and made from the ground up floating action button and it's bounds and state handling
-- GeminiChat feature, state management and persistence (could be improved)
+- GeminiChat feature, state management and persistence (could be improved, per example saving the whole conversation instead of the latest message when toggling on/off Gemini)
 
 ## Things that were not done for the sake of moving on to other things
 - Not supporting the animated detection outlines for more than 1 object when detection animation is enabled, since an identifier is required for the animation to track something, that being 1 object, but MediaPipe doesn't provide identifiers (and it wouldn't make sense that it did). Guessing could be done with the positioning and size of the outline, but it would be overkill
-- Not worrying about still using ImageDetectionUseCase when toggling Gemini mode. Only the emission of results is stopped.
+- Not worrying about still using ImageDetectionUseCase when toggling Gemini mode. Only the emission of results is stopped. This was done like this in order to not restart (and interrupt) the camera preview, it's also faster this way.
 - Not displaying the whole list of Gemini messages in the chat, but only displaying the latest one
 - Not opening the Achievements screen when clicking on a new achievement notification, but only navigating to the MainActivity
 

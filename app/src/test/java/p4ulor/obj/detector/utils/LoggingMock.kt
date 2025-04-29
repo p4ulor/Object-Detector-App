@@ -1,4 +1,4 @@
-package p4ulor.detector.utils
+package p4ulor.obj.detector.utils
 
 import android.util.Log
 import io.mockk.every

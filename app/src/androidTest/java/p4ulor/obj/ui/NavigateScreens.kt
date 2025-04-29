@@ -1,4 +1,4 @@
-package p4ulor.detector.ui
+package p4ulor.obj.ui
 
 import android.Manifest
 import androidx.compose.ui.test.assertIsDisplayed

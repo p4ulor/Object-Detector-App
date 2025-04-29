@@ -1,4 +1,4 @@
-package p4ulor.detector.unit.ktor
+package p4ulor.obj.detector.unit.ktor
 
 import kotlinx.serialization.Serializable
 

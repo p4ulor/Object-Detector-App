@@ -2,8 +2,10 @@ package p4ulor.obj.detector.ui.screens.achievements
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -32,9 +35,11 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,12 +76,23 @@ fun TabYourAchievements(
     onChangeOrderOption: (OrderOptions) -> Unit
 ) {
     var showDeletionConfirmation = rememberToggleableState(false)
+    var donePercentageValue by rememberSaveable { mutableFloatStateOf(0f) }
 
     val blurRadius: Dp by animateDpAsState(
         targetValue = if (showDeletionConfirmation.value) 20.dp else 0.dp,
         animationSpec = smooth(),
-        label = "blur"
+        label = "blurRadius"
     )
+
+    val donePercentage: Float by animateFloatAsState(
+        targetValue = donePercentageValue,
+        animationSpec = smooth(delayMillis = 500),
+        label = "donePercentage"
+    )
+
+    LaunchedEffect(achievements.hashCode()) {
+        donePercentageValue = Achievement.getDonePercentage(achievements)
+    }
 
     Scaffold(
         Modifier
@@ -85,6 +101,7 @@ fun TabYourAchievements(
         topBar = {
             CenteredRow {
                 QuickText(R.string.order_by, fontWeight = FontWeight.Bold)
+
                 SingleChoiceSegmentedButtonRow {
                     OrderOptions.entries.forEachIndexed { index, option ->
                         SegmentedButton(
@@ -99,6 +116,17 @@ fun TabYourAchievements(
                             QuickText(option.strId)
                         }
                     }
+                }
+
+                Box {
+                    CircularProgressIndicator(
+                        progress = { donePercentage },
+                    )
+                    Text(
+                        donePercentage.toPercentage(),
+                        Modifier.align(Alignment.Center),
+                        style = MaterialTheme.typography.titleSmall
+                    )
                 }
             }
         },

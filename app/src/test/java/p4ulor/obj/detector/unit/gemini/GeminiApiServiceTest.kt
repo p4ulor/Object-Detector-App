@@ -1,4 +1,4 @@
-package p4ulor.detector.unit.gemini
+package p4ulor.obj.detector.unit.gemini
 
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -7,7 +7,7 @@ import p4ulor.obj.detector.data.utils.encodeToBase64
 import p4ulor.obj.detector.data.domains.gemini.GeminiPrompt
 import p4ulor.obj.detector.data.sources.cloud.gemini.GeminiApiService
 import p4ulor.obj.detector.data.sources.cloud.gemini.MimeType
-import p4ulor.detector.utils.LoggingMock
+import p4ulor.obj.detector.utils.LoggingMock
 import kotlin.test.assertTrue
 
 @ExtendWith(LoggingMock::class)

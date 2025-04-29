@@ -1,13 +1,13 @@
-package p4ulor.detector.unit.ktor
+package p4ulor.obj.detector.unit.ktor
 
 import io.ktor.client.call.body
 import io.ktor.http.ContentType
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.extension.ExtendWith
 import p4ulor.obj.detector.data.sources.client.KtorClient
-import p4ulor.detector.unit.ktor.DummyJsonPostCommentsResp.Comment
-import p4ulor.detector.unit.ktor.DummyJsonPostCommentsResp.User
-import p4ulor.detector.utils.LoggingMock
+import p4ulor.obj.detector.unit.ktor.DummyJsonPostCommentsResp.Comment
+import p4ulor.obj.detector.unit.ktor.DummyJsonPostCommentsResp.User
+import p4ulor.obj.detector.utils.LoggingMock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

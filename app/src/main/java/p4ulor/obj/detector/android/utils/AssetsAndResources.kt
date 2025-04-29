@@ -8,10 +8,9 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
+import p4ulor.obj.detector.i
 import java.io.BufferedReader
 import java.io.InputStreamReader
-
-// region asserts
 
 fun Context.doesAssetExist(name: String) = runCatching {
     assets.open(name).close()
@@ -35,7 +34,11 @@ fun Context.getBitmapFor(@DrawableRes resource: Int): Bitmap? = runCatching {
     }
 }.getOrNull()
 
-private fun Resources.toUri(@DrawableRes resource: Int): Uri {
+/**
+ * Returns an Uri like `android.resource://p4ulor.obj.detector/mipmap/app_icon_round`
+ * (meant for drawables)
+ */
+fun Resources.toUri(@DrawableRes resource: Int): Uri {
     return Uri.Builder()
         .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
         .authority(this.getResourcePackageName(resource))
@@ -44,4 +47,4 @@ private fun Resources.toUri(@DrawableRes resource: Int): Uri {
         .build()
 }
 
-// endregion
+fun Context.getResourcePath(@RawRes resource: Int) = "android.resource://${packageName}/$resource"

@@ -1,4 +1,4 @@
-package p4ulor.detector.unit.misc
+package p4ulor.obj.detector.unit.misc
 
 import p4ulor.obj.detector.data.utils.trimToDecimals
 import kotlin.test.Test

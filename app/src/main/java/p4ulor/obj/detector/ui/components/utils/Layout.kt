@@ -34,9 +34,9 @@ fun CenteredContent(content: @Composable () -> Unit){
 }
 
 @Composable
-fun CenteredRow(content: @Composable () -> Unit){
+fun CenteredRow(modifier: Modifier = Modifier.fillMaxWidth(), content: @Composable () -> Unit){
     Row(
-        Modifier.fillMaxWidth(),
+        modifier,
         horizontalArrangement = Arrangement.spacedBy(
             space = HorizontalPadding,
             alignment = Alignment.CenterHorizontally

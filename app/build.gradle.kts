@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
-    //alias(libs.plugins.firebase)
+    alias(libs.plugins.firebase)
 }
 
 android {
@@ -68,15 +68,12 @@ android {
     }
 
     /**
-     * Android Studio automatically generates a debug keystore when the project is created
-     * but not for release. Run ./gradlew signingReport
-     * - https://developers.google.com/android/guides/client-auth
-     * - https://developer.android.com/studio/publish/app-signing
+     * Read docs/README.md for more information for proper setup
+     * TLDR - In order for this to work, first setup the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key)
      */
     signingConfigs {
         create(releaseSigning) {
             // set these RELEASE_ constants in local.properties in root dir. And for Github Actions
-            // global variables can be used. Base64 is used for JKS so it's easily set in GA
 
             val encodedJSKFile = properties.getProperty("RELEASE_JKS_FILE_BASE64")
             val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
@@ -84,7 +81,7 @@ android {
             FileOutputStream(tempKeystore).use { it.write(decodedBytes) }
 
             storeFile = tempKeystore
-            storePassword = properties.getProperty("RELEASE_STORE_PASSWORD")
+            storePassword = properties.getProperty("RELEASE_JSK_PASSWORD")
             keyAlias = properties.getProperty("RELEASE_KEY_ALIAS")
             keyPassword = properties.getProperty("RELEASE_KEY_PASSWORD")
         }
@@ -92,7 +89,7 @@ android {
 
     buildTypes {
         // https://developer.android.com/build/shrink-code
-        /*release {
+        release {
             isDebuggable = false
             isMinifyEnabled = true // Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
             isShrinkResources = true // removes unused resources, performed by Android Gradle plugin
@@ -101,7 +98,7 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName(releaseSigning)
-        }*/
+        }
         debug {
             isDebuggable = true
             isMinifyEnabled = false
@@ -172,15 +169,19 @@ dependencies {
     // Lottie, for animated icons/images
     implementation(libs.lottie.compose)
 
-    // Coil, for loading images outside of the app (not in resources)
+    // Coil, for loading images outside of the app (not in resources) and supporting Base64 and .svg
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.svg)
 
     // Firebase, using Bill of Materials (so for more FB dependencies, don't specify versions)
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.auth)
     implementation(libs.google.firebase.firestore)
+
+    // Google Play Services authentication
+    implementation(libs.play.services.auth)
 
     /** Test dependencies */
 

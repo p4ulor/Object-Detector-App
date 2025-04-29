@@ -26,10 +26,14 @@ data class Achievement(
 
         fun from(achivements: List<AchievementsTuple>) = achivements.map { from(it) }
 
-        fun reset(achivements: List<Achievement>) =achivements.toMutableList().map {
+        fun reset(achivements: List<Achievement>) = achivements.toMutableList().map {
             it.apply {
                 detectionDate = null
             }
         }
+
+        fun getDonePercentage(achivements: List<Achievement>) = achivements.count {
+            it.detectionDate != null
+        } / achivements.size.toFloat()
     }
 }

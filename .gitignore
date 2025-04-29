@@ -9,6 +9,7 @@
 .cxx
 local.properties
 
+# project specific
 app/src/main/assets/*
 docs/dokka-generated
 app_certificate.jks

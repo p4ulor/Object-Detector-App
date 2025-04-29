@@ -11,6 +11,7 @@ import p4ulor.obj.detector.android.MyApplication
 import p4ulor.obj.detector.android.utils.NetworkObserver
 import p4ulor.obj.detector.android.viewmodels.utils.launch
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
+import p4ulor.obj.detector.data.sources.cloud.firebase.FirebaseInstance
 import p4ulor.obj.detector.ui.screens.achievements.OrderOptions
 
 @SuppressLint("StaticFieldLeak") // Property ctx will be injected
@@ -18,8 +19,13 @@ import p4ulor.obj.detector.ui.screens.achievements.OrderOptions
 @KoinViewModel
 class AchievementsViewModel(
     application: Application,
-    private val network: NetworkObserver
+    private val network: NetworkObserver,
+    private val firebase: FirebaseInstance
 ) : AndroidViewModel(application) {
+
+    init {
+        firebase.logCurrUser()
+    }
 
     private val achievementsDao by lazy {
         getApplication<MyApplication>().appDb.achievements()

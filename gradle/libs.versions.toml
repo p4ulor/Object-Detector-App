@@ -31,10 +31,11 @@ koinAnnotations = "1.4.0"
 koinKspCompiler = "1.4.0"
 koinAndroidxCompose = "4.0.2"
 lottieCompose = "6.6.2"
-coilCompose = "3.0.4"
+coil = "3.0.4"
 firebaseBom = "32.8.1" # must be compatible with Kotlin version (must have been compiled with a version bellow kotlin 2.0)
 androidxRules = "1.6.1"
 roomVersion = "2.6.1"
+playServicesAuth = "21.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -73,11 +74,13 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koinAnnotations" }
 koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koinKspCompiler" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieCompose" }
-coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilCompose" }
-coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coilCompose" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 google-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 ## For tests
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
