@@ -1,20 +1,20 @@
 package p4ulor.obj.detector.data.domains.gemini
 
 /**
- * Defines the states the user can set for the displaying the Gemini chat ([ON] or [OFF]) or
- * [DISCONNECTED], which should be set after the device lost connection
+ * Defines the states the user can set for the displaying the Gemini chat ([On] or [Off]) or
+ * [Disconnected], which should be set after the device lost connection
  */
 enum class GeminiStatus {
-    ON,
-    OFF,
-    DISCONNECTED;
+    On,
+    Off,
+    Disconnected;
 
     fun toggle() = when(this) {
-        ON -> OFF
-        OFF -> ON
-        else -> ON
+        On -> Off
+        Off -> On
+        else -> On
     }
 
-    val isEnabled get() = this == ON
-    val isDisconnected get() = this == DISCONNECTED
+    val isEnabled get() = this == On
+    val isDisconnected get() = this == Disconnected
 }

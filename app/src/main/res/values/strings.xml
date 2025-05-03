@@ -43,4 +43,5 @@
     <string name="order_by">"Order by: "</string>
     <string name="model0_description"><![CDATA[accurate & lightweight]]></string>
     <string name="model2_description">more accurate but slower</string>
+    <string name="logout">Logout</string>
 </resources>

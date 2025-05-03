@@ -8,12 +8,12 @@ import java.util.Base64
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    // Added (read readme):
+    // Added (read readme for more info):
     alias(libs.plugins.de.undercouch.gradle.download)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dokka)
-    alias(libs.plugins.firebase)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -41,7 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true // Enables the use of the generated BuildConfig.java, used in Logging.kt
+        buildConfig = true // Enables the use of the generated  p4ulor.obj.detector.BuildConfig.java, used in Logging.kt
     }
     composeOptions {
         // https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
@@ -174,14 +174,18 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.svg)
 
-    // Firebase, using Bill of Materials (so for more FB dependencies, don't specify versions)
+    // Firebase, using Bill of Materials. The version in this project is 32.8.1, so it comes with
+    // Kotlin Extensions (read this for context https://firebase.google.com/docs/android/kotlin-migration#ktx-apis-to-main-whats-changing)
+    // Note: for extra FB dependencies not part of BOM, don't specify versions
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.auth)
     implementation(libs.google.firebase.firestore)
 
-    // Google Play Services authentication
-    implementation(libs.play.services.auth)
+    // Credential Manager library and libs to sign-in with Google
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     /** Test dependencies */
 
@@ -196,7 +200,7 @@ dependencies {
     // Mockk
     testImplementation(libs.mockk)
 
-    // Defauts, for UI tests (AKA Instrumented tests)
+    // Defaults, for UI tests (AKA Instrumented tests)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)

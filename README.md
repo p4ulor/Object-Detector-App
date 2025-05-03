@@ -33,8 +33,8 @@ one or monitor the use of your API key
 - I use the built-in JSON serializer for sending and receiving objects
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
-- A cloud platform or BaaS (Backend As A Service) that provides a range of utilities for different environments (and programming languages) via SDK's (Software Development Kits)
-- I use it to store the achivement leaderboard of the users with [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0)
+- A cloud platform or BaaS (Backend As A Service) that provides a wide range of utilities for different environments (and programming languages) via SDK's (Software Development Kits) for each one
+- I use it to store the achievement leaderboard of the users using [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0), which is a NoSQL document database
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
 ## Secondary Technologies 🛠️
@@ -49,6 +49,7 @@ one or monitor the use of your API key
 - [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) -> Used to process Kotlin's @Serialization annotations
 - [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-quickstart.html#add-a-processor) -> Used to process Koin's and Room's annotations and build the dependencies
 - [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> API documentation engine for KDocs comments. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
+- [Google Services](https://firebase.google.com/docs/android/setup#add-config-file) -> Used to process the `google-services.json` file and build other resources for the Firebase SDK to work
 
 #### Other Dependencies
 - [androidx.camera.* dependencies](https://developer.android.com/jetpack/androidx/releases/camera)
@@ -65,6 +66,7 @@ one or monitor the use of your API key
 2. Installing ⬇️
     - a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
     - b) From source code: 
+        - Decide if you want to comment out all firebase code so you don't create a firebase project or create your own and add your `google-services.json` file. Then try building the project
         - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
         - Or `./gradlew assembleDebug` to build a debug version, which will output an .apk file to `app/build/outputs/apk/debug`
 

@@ -6,5 +6,5 @@ import p4ulor.obj.detector.data.sources.cloud.gemini.MimeType
 data class GeminiPrompt(
     val text: String,
     val imageBase64: String,
-    val format: MimeType = ImageCaptureDefault.mimeType
+    val imageFormat: MimeType = ImageCaptureDefault.mimeType
 )

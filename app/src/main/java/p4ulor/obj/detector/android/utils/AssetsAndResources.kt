@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
-import p4ulor.obj.detector.i
 import java.io.BufferedReader
 import java.io.InputStreamReader
 

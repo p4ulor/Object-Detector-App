@@ -88,7 +88,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
 
     private var geminiApi: GeminiApiService? = null
 
-    private val _geminiStatus = MutableStateFlow(GeminiStatus.OFF)
+    private val _geminiStatus = MutableStateFlow(GeminiStatus.Off)
     val geminiStatus = _geminiStatus.asStateFlow()
 
     private val _geminiMessage = MutableStateFlow(Message.getBlank)
@@ -211,10 +211,10 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
     private suspend fun handleGeminiOnNetworkChange(hasConnection: Boolean) {
         if (!hasConnection){
             if(_geminiStatus.value.isEnabled){
-                _geminiStatus.value = GeminiStatus.DISCONNECTED
+                _geminiStatus.value = GeminiStatus.Disconnected
                 delay(300) // Give some time for the disconnection event to be transmitted and valid. This helps in showing the "Connection lost" toast only in HomeScreenGranted, since it will capture the DISCONNECTED value (and to avoid showing the toast when per example going from Settings to Home). This way, there's no need to add logic in HomeScreenGranted to save the previous status and decide to show the "Connection lost" toast. It may seem I'm doing work for the UI but the truth is that after something is disconnected, it's turned off, so it's acceptable
             }
-            _geminiStatus.value = GeminiStatus.OFF
+            _geminiStatus.value = GeminiStatus.Off
         }
     }
 

@@ -14,9 +14,9 @@ material3 = "1.3.1"
 gradleDownload = "5.6.0"
 ksp = "1.9.20-1.0.14" # Make sure you use a version compatible with your kotlin version https://mvnrepository.com/artifact/com.google.devtools.ksp/symbol-processing-common-deps/1.9.20-1.0.14
 dokka = "1.9.20"
-firebase = "4.4.2"
+googleServicesGradlePlugin = "4.4.2"
 
-# Libraries
+# Libraries (be careful when upgrading, it can lead to requiring higher Android SDK versions)
 camerax_version = "1.4.1"
 navigationCompose = "2.8.2"
 accompanistPermissions = "0.36.0"
@@ -35,7 +35,8 @@ coil = "3.0.4"
 firebaseBom = "32.8.1" # must be compatible with Kotlin version (must have been compiled with a version bellow kotlin 2.0)
 androidxRules = "1.6.1"
 roomVersion = "2.6.1"
-playServicesAuth = "21.3.0"
+credentials = "1.3.0"
+googleid = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -80,7 +81,9 @@ coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil"
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 google-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 
 ## For tests
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
@@ -97,4 +100,4 @@ de-undercouch-gradle-download = { id = "de.undercouch.download", version.ref = "
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-firebase = { id = "com.google.gms.google-services", version.ref = "firebase" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesGradlePlugin" }

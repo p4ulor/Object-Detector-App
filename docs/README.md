@@ -26,8 +26,9 @@ This text details things about conditions, state handling, decisions made, remin
 - `google-services.json` should be placed in `app/`
 
 ## Firebase & Authentication 🛂
-## Setup
-For properly setting up the Firebase project with authentication, a set of things must be done regarding the app signing and providing the SHA codes to the Firebase SDK setup for Android (the google-services.json). This will be used to authenticate the clients (android phones) doing requests to the Firebase project. You can change these SHA codes anytime, so you can leave it blank when creating the project's SDK.
+### Setup
+- For properly setting up the Firebase project with authentication, a set of things must be done regarding the app signing and providing the SHA codes to the Firebase SDK setup for Android (the google-services.json). This will be used to authenticate the clients (android phones) doing requests to the Firebase project. You can change these SHA codes anytime, so you can leave it blank when creating the project's SDK.
+- These changes will make so that trying to decompile the .apk will make any attempts to make requests with any other built app not valid, along with the Firebase rules requiring user authentication.
 1. Set up the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key). This will be used when generating the SHA certificate fingerprints
 2. Save the values and place them in `local.properties` like so
 ```cmake
@@ -45,6 +46,9 @@ RELEASE_KEY_PASSWORD=...
 8. More info
    - https://developers.google.com/android/guides/client-auth
    - https://developer.android.com/studio/publish/app-signing
+
+### Sign in with Google
+- [Sign in with Google](https://developer.android.com/identity/sign-in/credential-manager-siwg) is done by using Credential Manager, a Jetpack API, not [using the outdated Google Sign-In for Android API](https://developer.android.com/identity/legacy/gsi). You can aos see the [firebase guide here](https://firebase.google.com/docs/auth/android/google-signin)
 
 ## Source Code Structure
 

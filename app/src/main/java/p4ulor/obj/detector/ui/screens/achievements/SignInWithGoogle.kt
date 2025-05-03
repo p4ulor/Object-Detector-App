@@ -32,7 +32,7 @@ fun SignInWithGoogle(modifier: Modifier = Modifier.fillMaxSize(), onClick: () ->
             .decoderFactory(SvgDecoder.Factory())
             .build(),
         contentDescription = "Google Logo",
-        modifier.clickable { onClick },
+        modifier.clickable { onClick() },
         error = painterResource(R.drawable.flashlight_off),
         onError = {
             i("Error loading SignInWithGoogle: $it")
@@ -41,7 +41,8 @@ fun SignInWithGoogle(modifier: Modifier = Modifier.fillMaxSize(), onClick: () ->
 
     /**
      * This causes HTTP 504. To fix it, it would require using `coil-network-okhttp` and setting
-     * up a `OkHttpClient` and set it up with the ImageLoader. So we use the local .svg ...
+     * up a `OkHttpClient` with a custom connection, read and write timeout and use it in the
+     * ImageLoader.Builder ... So I'm using the local .svg
      */
     /*AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)

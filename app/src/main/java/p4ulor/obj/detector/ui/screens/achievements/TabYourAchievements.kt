@@ -71,9 +71,9 @@ import p4ulor.obj.detector.ui.theme.PreviewComposable
 @Composable
 fun TabYourAchievements(
     achievements: List<Achievement>,
-    selectedOrderOption: OrderOptions,
+    selectedOrderOption: OrderOption,
     onDeleteAchievements: () -> Unit,
-    onChangeOrderOption: (OrderOptions) -> Unit
+    onChangeOrderOption: (OrderOption) -> Unit
 ) {
     var showDeletionConfirmation = rememberToggleableState(false)
     var donePercentageValue by rememberSaveable { mutableFloatStateOf(0f) }
@@ -103,10 +103,10 @@ fun TabYourAchievements(
                 QuickText(R.string.order_by, fontWeight = FontWeight.Bold)
 
                 SingleChoiceSegmentedButtonRow {
-                    OrderOptions.entries.forEachIndexed { index, option ->
+                    OrderOption.entries.forEachIndexed { index, option ->
                         SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index, OrderOptions.entries.size),
-                            onClick = { onChangeOrderOption(OrderOptions.entries[index]) },
+                            shape = SegmentedButtonDefaults.itemShape(index, OrderOption.entries.size),
+                            onClick = { onChangeOrderOption(OrderOption.entries[index]) },
                             selected = index == selectedOrderOption.ordinal,
                             colors = SegmentedButtonDefaults.colors().copy(
                                 activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -176,7 +176,7 @@ private fun DeletionConfirmationDialog(confirmClick: () -> Unit, dismissClick: (
 private fun AchievementsList(
     padding: PaddingValues,
     achivements: List<Achievement>,
-    selectedOrderOption: OrderOptions
+    selectedOrderOption: OrderOption
 ) {
     val listState = rememberLazyListState()
 
@@ -259,7 +259,7 @@ private fun AchievementsList(
     }
 }
 
-enum class OrderOptions(@StringRes val strId: Int) {
+enum class OrderOption(@StringRes val strId: Int) {
     Name(R.string.name),
     Done(R.string.done)
 }
@@ -284,7 +284,7 @@ private fun TabYourAchievementsPreview() = PreviewComposable(enableDarkTheme = t
     }
     TabYourAchievements(
         achievements = list,
-        selectedOrderOption = OrderOptions.Name,
+        selectedOrderOption = OrderOption.Name,
         onChangeOrderOption = {},
         onDeleteAchievements = {}
     )

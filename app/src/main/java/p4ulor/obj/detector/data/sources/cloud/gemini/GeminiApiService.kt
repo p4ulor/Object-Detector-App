@@ -55,7 +55,7 @@ class GeminiApiService(apiKey: String) : Closeable {
     private fun GeminiPrompt.toHttpRequest() = GenerateContentRequest(
         listOf(
             Content(
-                listOf(Part(text), Part(inline_data = Image(format.value, imageBase64)))
+                listOf(Part(text), Part(inline_data = Image(imageFormat.value, imageBase64)))
             )
         )
     )

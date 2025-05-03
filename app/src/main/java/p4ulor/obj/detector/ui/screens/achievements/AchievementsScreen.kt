@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.obj.detector.android.viewmodels.AchievementsViewModel
+import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.getTodaysDate
 import p4ulor.obj.detector.ui.animations.smooth
@@ -33,8 +34,10 @@ fun AchievementsScreen(){
     val vm = koinViewModel<AchievementsViewModel>()
 
     val userAchievements by vm.userAchievements.collectAsState()
-    val orderOption by vm.orderOptions.collectAsState()
+    val orderOption by vm.orderOption.collectAsState()
     var isLoaded by rememberSaveable { mutableStateOf(false) } // ensures there's always an animation
+
+    val currUser by vm.currUser.collectAsState()
 
     LaunchedEffect(Unit) {
         vm.loadAchievements()
@@ -50,7 +53,10 @@ fun AchievementsScreen(){
                 achievements = it,
                 orderOptions = orderOption,
                 onChangeOrderOption = { vm.setOrderOption(it) },
-                onDeleteAchievements = { vm.deleteAchievements() }
+                onDeleteAchievements = { vm.deleteAchievements() },
+                onSignInWithGoogle = { vm.signInWithGoogle() },
+                onLogOut = { vm.signOut() },
+                currUser = currUser
             )
         }
     }
@@ -58,11 +64,14 @@ fun AchievementsScreen(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AchievementsScreenUi(
+fun AchievementsScreenUi( // todo, find fix for these params...
     achievements: List<Achievement>,
-    orderOptions: OrderOptions,
-    onChangeOrderOption: (OrderOptions) -> Unit,
-    onDeleteAchievements: () -> Unit
+    orderOptions: OrderOption,
+    onChangeOrderOption: (OrderOption) -> Unit,
+    onDeleteAchievements: () -> Unit,
+    onSignInWithGoogle: () -> Unit,
+    onLogOut: () -> Unit,
+    currUser: User? = null
 ) {
     var selectedTab by remember { mutableStateOf(Tab.YourAchievements) }
 
@@ -92,7 +101,13 @@ fun AchievementsScreenUi(
                     onChangeOrderOption
                 )
             }
-            else -> TabLeaderboard()
+            Tab.Leaderboard -> {
+                TabLeaderboard(
+                    onSignInWithGoogle,
+                    onLogOut,
+                    currUser
+                )
+            }
         }
     }
 }
@@ -116,8 +131,10 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
 
     AchievementsScreenUi(
         achievements,
-        OrderOptions.Name,
+        OrderOption.Name,
         onChangeOrderOption = {},
-        onDeleteAchievements = {}
+        onDeleteAchievements = {},
+        onSignInWithGoogle = {},
+        onLogOut = {}
     )
 }

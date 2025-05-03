@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,7 +35,7 @@ fun CenteredContent(content: @Composable () -> Unit){
 }
 
 @Composable
-fun CenteredRow(modifier: Modifier = Modifier.fillMaxWidth(), content: @Composable () -> Unit){
+fun CenteredRow(modifier: Modifier = Modifier.fillMaxWidth(), content: @Composable RowScope.() -> Unit){
     Row(
         modifier,
         horizontalArrangement = Arrangement.spacedBy(
@@ -43,7 +44,7 @@ fun CenteredRow(modifier: Modifier = Modifier.fillMaxWidth(), content: @Composab
         ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        content()
+        this.content()
     }
 }
 
