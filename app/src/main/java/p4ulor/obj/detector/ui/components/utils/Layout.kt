@@ -21,10 +21,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CenteredContent(content: @Composable () -> Unit){
+fun CenteredColumn(content: @Composable () -> Unit) {
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -35,11 +36,15 @@ fun CenteredContent(content: @Composable () -> Unit){
 }
 
 @Composable
-fun CenteredRow(modifier: Modifier = Modifier.fillMaxWidth(), content: @Composable RowScope.() -> Unit){
+fun CenteredRow(
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    horizontalPadding: Dp = HorizontalPadding,
+    content: @Composable RowScope.() -> Unit
+) {
     Row(
         modifier,
         horizontalArrangement = Arrangement.spacedBy(
-            space = HorizontalPadding,
+            space = horizontalPadding,
             alignment = Alignment.CenterHorizontally
         ),
         verticalAlignment = Alignment.CenterVertically
@@ -71,7 +76,7 @@ fun BoxWithBackground(
     }
 }
 
-/** Involves [content] with a Box that has a light [outline] border and a light [secondaryContainer] */
+/** Involves [content] with a Box with a light [secondaryContainer] background with a light [outline] border */
 @Composable
 fun LightContainer(content: @Composable () -> Unit) = Box(
     Modifier
@@ -82,7 +87,7 @@ fun LightContainer(content: @Composable () -> Unit) = Box(
             color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
             shape = SuperRoundRectangleShape
         )
-        .padding(8.dp),
+        .padding(HorizontalPadding),
     contentAlignment = Alignment.Center
 ) {
     content()

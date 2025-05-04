@@ -13,7 +13,7 @@ import p4ulor.obj.detector.android.viewmodels.utils.launch
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.sources.cloud.firebase.FirebaseInstance
-import p4ulor.obj.detector.ui.screens.achievements.OrderOption
+import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
 
 @SuppressLint("StaticFieldLeak") // Property ctx will be injected
 @Single // So it's also not re-instantiated on composable destruction's
@@ -37,14 +37,21 @@ class AchievementsViewModel(
 
     private val _userAchievements= MutableStateFlow(emptyList<Achievement>())
     val userAchievements = _userAchievements.asStateFlow()
+    // Cached ordering
+    private var userAchievementsOrderedByName = emptyList<Achievement>()
+    private var userAchievementsOrderedByDone = emptyList<Achievement>()
 
     private val _orderOption = MutableStateFlow(OrderOption.Name)
     val orderOption =_orderOption.asStateFlow()
 
     fun loadAchievements() {
         launch {
-            _userAchievements.value = Achievement.from(achievementsDao.getAll())
-            orderAchievements()
+            userAchievementsOrderedByName = Achievement.from(achievementsDao.getAllOrderedByName())
+            userAchievementsOrderedByDone = Achievement.from(achievementsDao.getAllOrderedByCompletionAndName())
+            _userAchievements.value = when (_orderOption.value) {
+                OrderOption.Name -> userAchievementsOrderedByName
+                OrderOption.Done -> userAchievementsOrderedByDone
+            }
         }
     }
 
@@ -60,18 +67,32 @@ class AchievementsViewModel(
         orderAchievements()
     }
 
-    /** Orders achievements in a coroutine to avoid using UI thread */
     private fun orderAchievements() {
         launch {
             _userAchievements.value = when (_orderOption.value) {
-                OrderOption.Done -> userAchievements.value?.toMutableList()?.let {
+                OrderOption.Name -> userAchievementsOrderedByName
+                OrderOption.Done -> userAchievementsOrderedByDone
+            }
+        }
+    }
+
+    /**
+     * Orders achievements in a coroutine to avoid using UI thread (not doing through SQL even
+     * thought it's the most correct because I also want to train with Kotlin
+     */
+    private fun orderAchievementsDeprecated() {
+        launch {
+            _userAchievements.value = when (_orderOption.value) {
+                OrderOption.Name -> userAchievements.value?.toMutableList()?.apply {
+                    sortBy { it.objectName }
+                } ?: emptyList()
+
+                OrderOption.Done -> userAchievements.value?.toMutableList()?.apply {
+                    sortBy { it.objectName }
+                }?.let {
                     it.groupBy { if (it.detectionDate != null) 0 else 1 }
                         .toSortedMap()
                         .flatMap { it.value }
-                } ?: emptyList()
-
-                OrderOption.Name -> userAchievements.value?.toMutableList()?.apply {
-                    sortBy { it.objectName }
                 } ?: emptyList()
             }
         }

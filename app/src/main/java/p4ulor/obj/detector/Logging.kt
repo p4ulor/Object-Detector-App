@@ -1,7 +1,6 @@
 package p4ulor.obj.detector
 
 import android.util.Log
-import p4ulor.obj.detector.BuildConfig
 
 val TAG = "p4ulor"
 private val versionName = BuildConfig.VERSION_NAME

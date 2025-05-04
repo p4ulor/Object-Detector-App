@@ -9,6 +9,7 @@ import androidx.room.Query
  * Data Access Layer that defines the CRUD operations for [AchievementsTuple]
  * I want all reads and writes to be one-shot, so suspend functions are used
  * - https://developer.android.com/training/data-storage/room/async-queries#options
+ *
  * "Room uses its own dispatcher to run queries on a background thread. Your code should not use
  * withContext(Dispatchers.IO) to call suspending room queries. It will complicate the code and make
  * your queries run slower." says an Engineer from Google (even though it's not in the docs ...)
@@ -25,9 +26,21 @@ interface AchievementsDao {
     @Query("SELECT * FROM $tableAchivements WHERE detectionDate IS NULL LIMIT :limit")
     suspend fun getAllUnreachedAchievements(limit: Short = Short.MAX_VALUE) : List<AchievementsTuple>
 
-    /** Gets all [AchievementsTuple] ordered by [AchievementsTuple.objectName] */
+    /** Gets all [AchievementsTuple] ordered by name */
     @Query("SELECT * FROM $tableAchivements ORDER BY objectName ASC LIMIT :limit")
-    suspend fun getAll(limit: Short = Short.MAX_VALUE) : List<AchievementsTuple>
+    suspend fun getAllOrderedByName(limit: Short = Short.MAX_VALUE) : List<AchievementsTuple>
+
+    /** Gets all [AchievementsTuple] ordered by completion status and then by name */
+    @Query(
+        """
+    SELECT * FROM $tableAchivements
+    ORDER BY 
+            CASE WHEN detectionDate IS NOT NULL THEN 0 ELSE 1 END ASC,
+            objectName ASC
+    LIMIT :limit
+    """
+    )
+    suspend fun getAllOrderedByCompletionAndName(limit: Short = Short.MAX_VALUE): List<AchievementsTuple>
 
     @Query("SELECT * FROM $tableAchivements WHERE objectName=:objectName")
     suspend fun get(objectName: String): AchievementsTuple?

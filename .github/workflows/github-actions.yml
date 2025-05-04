@@ -20,25 +20,29 @@ jobs:
         uses: actions/checkout@v4
 
       - run: echo "The ${{ github.repository }} repo has been cloned to the runner."
+
       - name: List files in the repo
         run: |
           ls ${{ github.workspace }}
 
       # Setup java
+      - name: Set up JDK
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 17
 
       # Set up gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
 
       # Grants execute permission to gradle
       - name: Grant Permissions to gradlew
         run: chmod +x gradlew
 
-      # build also runs tests, To just run output release .apk:
+      # build also runs tests, so just run release .apk:
       # ./gradlew assembleRelease
       - name: Build app
         run: ./gradlew assembleRelease

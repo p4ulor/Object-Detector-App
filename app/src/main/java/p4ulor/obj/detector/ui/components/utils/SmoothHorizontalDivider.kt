@@ -65,7 +65,7 @@ fun SmoothHorizontalDividerCustom(
 @Composable
 private fun SmoothHorizontalDividerPreview(){
     Box(Modifier.size(100.dp, 100.dp)) {
-        CenteredContent {
+        CenteredColumn {
             SmoothHorizontalDivider(Color(0xFFFFFFFF))
         }
     }

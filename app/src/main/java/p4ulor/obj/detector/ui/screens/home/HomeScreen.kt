@@ -34,7 +34,7 @@ import p4ulor.obj.detector.android.utils.requestUserToManuallyAddThePermission
 import p4ulor.obj.detector.android.viewmodels.HomeViewModel
 import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
 import p4ulor.obj.detector.ui.components.QuickText
-import p4ulor.obj.detector.ui.components.utils.CenteredContent
+import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 
@@ -71,7 +71,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
         if (cameraProvider != null && prefs != null) {
             HomeScreenGranted(viewModel, cameraProvider!!, prefs!!)
         } else {
-            CenteredContent {
+            CenteredColumn {
                 CircularProgressIndicator(Modifier.size(100.dp))
             }
         }
@@ -89,7 +89,7 @@ private fun HomeScreenNotGranted() {
     val ctx = LocalContext.current
     var oneTimePermRequestWasUsed by rememberSaveable { mutableStateOf(false) }
 
-    CenteredContent {
+    CenteredColumn {
         QuickText(R.string.no_camera_permission)
         Spacer(Modifier.size(GeneralPadding))
         Button(onClick = {

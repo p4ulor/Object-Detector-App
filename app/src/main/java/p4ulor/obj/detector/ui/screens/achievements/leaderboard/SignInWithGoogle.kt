@@ -1,4 +1,4 @@
-package p4ulor.obj.detector.ui.screens.achievements
+package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme

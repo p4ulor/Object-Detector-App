@@ -17,7 +17,7 @@ import p4ulor.obj.detector.ui.screens.root.BottomNavigationBarHeight
 /**
  * Gets the height of the system's navigation bar (recent items, home, back). Useful to setting
  * the height of the app's bottomBar when using [enableEdgeToEdge]. And this method seems to be
- * kinda blocking
+ * kinda blocking. In my Samsung it's 48.dp
  */
 val SystemNavigationBarHeight
     @Composable

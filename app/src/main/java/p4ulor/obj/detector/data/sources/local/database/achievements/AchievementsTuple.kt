@@ -11,7 +11,7 @@ const val tableAchivements = "achievements"
 data class AchievementsTuple(
     @PrimaryKey
     val objectName: String,
-    @ColumnInfo(defaultValue = "0.0")
+    @ColumnInfo(defaultValue = "0.0") // added since database version 2
     val certaintyScore: Float,
     val detectionDate: Date? = null
 )

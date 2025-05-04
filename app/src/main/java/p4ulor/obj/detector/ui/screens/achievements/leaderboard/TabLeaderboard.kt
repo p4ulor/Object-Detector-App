@@ -1,9 +1,12 @@
-package p4ulor.obj.detector.ui.screens.achievements
+package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -23,7 +26,7 @@ import p4ulor.obj.detector.ui.components.IconSmallSize
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
 import p4ulor.obj.detector.ui.components.QuickIcon
 import p4ulor.obj.detector.ui.components.QuickText
-import p4ulor.obj.detector.ui.components.utils.CenteredContent
+import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.components.utils.GeneralPaddingSmall
@@ -41,22 +44,18 @@ fun TabLeaderboard(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
         ) {
             CenteredRow {
-                Row(Modifier.padding(GeneralPadding)) {
-                    Column {
-                        Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
-                        Text("${currUser?.points} points")
-                    }
+                Column(Modifier.padding(GeneralPadding)) {
+                    Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
+                    Text("${currUser?.points} points")
                 }
-
-                Row(
-                    modifier = Modifier.weight(1f),
+                Spacer(modifier = Modifier.weight(1f))
+                Row (
+                    Modifier.clickable { onLogOut() },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
                     QuickText(R.string.logout)
-                    QuickIcon(MaterialIconsExt.Logout, IconSmallSize) {
-                        onLogOut()
-                    }
+                    QuickIcon(MaterialIconsExt.Logout, IconSmallSize) { }
                 }
             }
         }
@@ -64,7 +63,7 @@ fun TabLeaderboard(
     }
 
     AnimatedVisibility(visible = currUser == null) {
-        CenteredContent {
+        CenteredColumn {
             SignInWithGoogle(Modifier.width(200.dp), onClick = {
                 i("SignInWithGoogle")
                 onSignInWithGoogle()

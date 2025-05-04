@@ -1,16 +1,11 @@
-package p4ulor.obj.detector.ui.screens.achievements
+package p4ulor.obj.detector.ui.screens.achievements.local
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -57,10 +52,8 @@ import p4ulor.obj.detector.data.utils.getTodaysDate
 import p4ulor.obj.detector.data.utils.toPercentage
 import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.MaterialIcons
-import p4ulor.obj.detector.ui.components.QuickAlertDialog
 import p4ulor.obj.detector.ui.components.QuickText
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
-import p4ulor.obj.detector.ui.components.utils.HorizontalPaddingBigExtra
 import p4ulor.obj.detector.ui.components.utils.LightContainer
 import p4ulor.obj.detector.ui.components.utils.TransparencyGradient
 import p4ulor.obj.detector.ui.components.utils.TransparentGradientPosition
@@ -159,22 +152,10 @@ fun TabYourAchievements(
     }
 }
 
-@Composable
-private fun DeletionConfirmationDialog(confirmClick: () -> Unit, dismissClick: () -> Unit){
-    QuickAlertDialog(
-        title = R.string.warning,
-        description = R.string.all_achievements_will_be_deleted,
-        confirmText = R.string.yes,
-        dismissText = R.string.cancel,
-        confirmClick = confirmClick,
-        dismissClick = dismissClick
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AchievementsList(
-    padding: PaddingValues,
+    padding: PaddingValues, // because of the topBar
     achivements: List<Achievement>,
     selectedOrderOption: OrderOption
 ) {
@@ -201,7 +182,7 @@ private fun AchievementsList(
 
     LazyColumn(
         Modifier
-            .padding(padding)
+            .padding(padding) // because of this, the amount of fade out that's visible is not the same as top because the list itself is pushed down (because of the topBar), so we need to provide this padding to the TransparencyGradient
             .fillMaxSize()
             .fadingEdge(
                 TransparencyGradient(
@@ -210,21 +191,15 @@ private fun AchievementsList(
                         isFirstItemNotVisible -> TransparentGradientPosition.Top
                         isLastItemNotVisible -> TransparentGradientPosition.Bottom
                         else -> TransparentGradientPosition.None
-                    }
+                    },
+                    extraBottomPadding = padding.calculateTopPadding()
                 )
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
         state = listState,
     ) {
         items(achivements, key = { it.objectName }) { achievement ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = HorizontalPaddingBigExtra)
-                    .background(Color.Transparent),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            CenteredRow(horizontalPadding = 0.dp /* cuz Checkbox already has a good padding by default */) {
                 val toolTipState = rememberTooltipState(isPersistent = false)
                 val scope = rememberCoroutineScope() // Needed for TooltipBox...
 
@@ -251,17 +226,12 @@ private fun AchievementsList(
                             if(achievement.detectionDate != null){
                                 scope.launch { toolTipState.show() }
                             }
-                        }
+                        },
                     )
                 }
             }
         }
     }
-}
-
-enum class OrderOption(@StringRes val strId: Int) {
-    Name(R.string.name),
-    Done(R.string.done)
 }
 
 @Preview

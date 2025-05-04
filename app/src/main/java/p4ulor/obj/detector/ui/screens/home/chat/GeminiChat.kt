@@ -43,7 +43,7 @@ fun GeminiChat(
     newMsg: Message,
     chatInputHeight: Dp,
     isPendingOrAnimationInProgress: (Boolean) -> Unit = {},
-){
+) {
 
     val messages = remember { mutableStateListOf<Message>() }
     val listState = rememberLazyListState()

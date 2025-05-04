@@ -1,24 +1,43 @@
 package p4ulor.obj.detector.ui.components.utils
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import p4ulor.obj.detector.data.domains.mediapipe.Achievement
+import p4ulor.obj.detector.data.utils.capitalized
+import p4ulor.obj.detector.data.utils.getTodaysDate
+import p4ulor.obj.detector.data.utils.toPercentage
 import p4ulor.obj.detector.ui.screens.root.BottomNavigationBarHeight
+import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 /**
  * Util function to create a [Brush] that can be passed to [fadingEdge] to create a fade in/out
  * of a composable
  */
 @Composable
-fun TransparencyGradient(position: TransparentGradientPosition = TransparentGradientPosition.Top) = run {
+fun TransparencyGradient(
+    position: TransparentGradientPosition = TransparentGradientPosition.Top,
+    extraBottomPadding: Dp = 0.dp
+) = run {
     Brush.verticalGradient(
         colorStops = position.colorStops,
         startY = 0f,
-        endY = with(LocalDensity.current) { DisplayHeight.toPx() - SystemNavigationBarHeight.toPx() - BottomNavigationBarHeight.toPx() }
+        endY = with(LocalDensity.current) {
+            DisplayHeight.toPx() - SystemNavigationBarHeight.toPx()- BottomNavigationBarHeight.toPx() - extraBottomPadding.toPx()
+        }
     )
 }
 
@@ -57,5 +76,43 @@ fun ColorSchemeGradient() = Brush.horizontalGradient(listOf(
 fun LightFadeOut45Deg(canvasSize: Dp) = Brush.linearGradient(
     colors = listOf(Color.Black, Color.Transparent),
     start = Offset(0f, Float.POSITIVE_INFINITY),
-    end = with(LocalDensity.current) { Offset(canvasSize.toPx()*2f, 0f) }
+    end = with(LocalDensity.current) { Offset(canvasSize.toPx() * 2f, 0f) }
 )
+
+@Preview
+@Composable
+fun TransparentGradientPreview() = PreviewComposable(enableDarkTheme = false) {
+
+    val list = remember {
+        buildList {
+            add(Achievement("START", 0f))
+            repeat(20) {
+                addAll(
+                    listOf(
+                        Achievement("car$it", 1f, getTodaysDate()),
+                        Achievement("big word big word$it", 0.5f, getTodaysDate()),
+                        Achievement("bench$it", 0f)
+                    )
+                )
+            }
+            add(Achievement("END", 0f))
+        }
+    }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+    ) {
+        LazyColumn(Modifier.fadingEdge(TransparencyGradient(position = TransparentGradientPosition.TopAndBottom))){
+            items(list, key = { it.objectName }) { achievement ->
+                LightContainer {
+                    val rowEntry = StringBuilder(achievement.objectName.capitalized())
+                    if (achievement.detectionDate != null){
+                        rowEntry.append(" (${achievement.certaintyScore.toPercentage()})")
+                    }
+                    Text(rowEntry.toString())
+                }
+            }
+        }
+    }
+}

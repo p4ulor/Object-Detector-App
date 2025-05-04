@@ -16,7 +16,7 @@ fun Context.doesAssetExist(name: String) = runCatching {
 }.isSuccess
 
 /** Returns the lines of the file */
-fun Context.readFromRaw(@RawRes resId: Int): List<String> {
+fun Context.readLinesFromRaw(@RawRes resId: Int): List<String> {
     val inputStream = resources.openRawResource(resId)
     val reader = BufferedReader(InputStreamReader(inputStream))
 

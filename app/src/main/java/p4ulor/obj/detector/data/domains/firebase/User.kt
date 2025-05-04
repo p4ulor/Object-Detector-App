@@ -5,10 +5,15 @@ import p4ulor.obj.detector.data.sources.cloud.firebase.FbCollection
 
 /**
  * A type of a document in the [FbCollection.Users] collection
- * Note: there's no need to convert it to a a hashmap when adding it to a collection
- * (since Firestore SDK for Kotlin Extensions)
- * Note: default params are defined in order for deserialization to work with Firebase
- * (at doc.toObject<User>())
+ * Note: there's no need to convert it to a a Hashmap when adding it to a collection
+ * (since Firestore SDK for Kotlin Extensions update). This class just needs to be a data class
+ * and have default params in order for implicit deserialization to work at
+ * ```kotlin
+ * doc.toObject<User>()
+ * ```
+ * Instead of default params, another constructor with empty params could be defined, but it would
+ * require adding a rule in `proguard-rules.pro`in order for minify to not strip the no argument
+ * constructor
  * - https://firebase.google.com/docs/firestore/manage-data/add-data#custom_objects
  */
 data class User(

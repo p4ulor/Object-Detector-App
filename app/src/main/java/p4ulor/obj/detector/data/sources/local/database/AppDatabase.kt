@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import p4ulor.obj.detector.R
-import p4ulor.obj.detector.android.utils.readFromRaw
+import p4ulor.obj.detector.android.utils.readLinesFromRaw
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.sources.local.database.achievements.AchievementsDao
 import p4ulor.obj.detector.data.sources.local.database.achievements.AchievementsTuple
@@ -28,8 +28,8 @@ abstract class AppDatabase : RoomDatabase() {
 /** Initialize the DB tables */
 suspend fun Context.initializeDb(db: AppDatabase) {
     val achievements = db.achievements()
-    if (achievements.getAll().isEmpty()) {
-        val allAchievements = readFromRaw(R.raw.mediapipe_detectable_objects).mapNotNull { objectName ->
+    if (achievements.getAllOrderedByName().isEmpty()) {
+        val allAchievements = readLinesFromRaw(R.raw.mediapipe_detectable_objects).mapNotNull { objectName ->
             if (objectName != Achievement.invalidName) {
                 AchievementsTuple(objectName, 0f)
             } else {

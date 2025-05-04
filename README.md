@@ -1,5 +1,7 @@
-<img style="display: block; margin: auto; margin-bottom: 0px" width=100 src="./app/src/main/res/mipmap-xxxhdpi/app_icon_foreground.webp"></img>
-<p style="text-align: center">Object Detector</p>
+<div align=center>
+    <img width=100 src="./app/src/main/res/mipmap-xxxhdpi/app_icon_foreground.webp"/>
+    <p>Object Detector</p>
+</div>
 
 ## Demo 🎥
 
@@ -9,7 +11,7 @@
 - Tracks the user's achievements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) towards those achievements
 - It supports various customizations and other features: 
     - Camera settings: ratio, flashlight and saving pictures taken
-    - Model settings: detection sensitivity, max detection count, detection animations and the model itself
+    - Model settings: detection sensitivity, max detection count, detection animations and the model itself (2 choices)
     - Notifications for achievements
 
 ## Primary Technologies 🛠️
@@ -34,14 +36,14 @@ one or monitor the use of your API key
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
 - A cloud platform or BaaS (Backend As A Service) that provides a wide range of utilities for different environments (and programming languages) via SDK's (Software Development Kits) for each one
-- I use it to store the achievement leaderboard of the users using [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0), which is a NoSQL document database
+- I use it to store the achievement leaderboard of the users using [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0), which is a NoSQL document database. And also Firebase [Authentication](https://firebase.google.com/docs/auth) is used in order to sign-in users with Google
 - Pricing: [Free tier](https://firebase.google.com/pricing)
 
 ## Secondary Technologies 🛠️
 | [Koin](https://insert-koin.io/docs/quickstart/android-annotations/) |       [Lottie](https://airbnb.io/lottie/#/android-compose)       |                            [Mockk](https://mockk.io/)                             |                      [Coil](https://coil-kt.github.io/coil/)                      |                             [Jetpack Compose UI Test](https://developer.android.com/develop/ui/compose/testing)                              | 
 |:-------------------------------------------------------------------:|:----------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------:|
 | <img width="50" src='https://insert-koin.io/img/koin_new_logo.png'> | <img width="50" src='https://airbnb.io/lottie/images/logo.webp'> | <img width="50" src='https://avatars.githubusercontent.com/u/34787540?s=200&v=4'> | <img width="50" src='https://avatars.githubusercontent.com/u/52722434?s=200&v=4'> | <img width="50" src='https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/jetpackcompose/jetpackcompose-original.svg'> |
-|                      For dependency injection                       |                      For animated graphics                       |                            For object mocking in tests                            |                            For efficient & flexible image loading                            |                                                                 For UI tests                                                                 |
+|                      For dependency injection                       |                      For animated graphics                       |                            For object mocking in tests                            |                            For efficient & flexible image loading                            |                                                             For (some) UI tests                                                              |
 
 ### Plugins Used & Other Dependencies 🔌
 #### Gradle Plugins 🐘
@@ -57,19 +59,6 @@ one or monitor the use of your API key
 - [androix.datastore](https://developer.android.com/jetpack/androidx/releases/datastore) -> For the storage of user preferences
 - [androidx.room](https://developer.android.com/jetpack/androidx/releases/room) -> For storage of more complex data-structures, like the achievements
 
-## Setup Guide 🙌
-[Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
-
-1. Getting API Keys 🔑
-    - Gemini API -> https://aistudio.google.com/app/apikey
-    - There's a link to this in the app too
-2. Installing ⬇️
-    - a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
-    - b) From source code: 
-        - Decide if you want to comment out all firebase code so you don't create a firebase project or create your own and add your `google-services.json` file. Then try building the project
-        - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
-        - Or `./gradlew assembleDebug` to build a debug version, which will output an .apk file to `app/build/outputs/apk/debug`
-
 ## Core Tech Use Throughout The App (simplified)
 
 ![](./docs/imgs/mermaid-digram_tech-use.png)
@@ -82,8 +71,25 @@ one or monitor the use of your API key
 - [GH rendered Mermaid diagrams](./docs/mermaid-diagrams.md)
 </details>
 
+## Setup Guide 🙌
+[Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
+
+1. Get API Keys 🔑
+    - [Gemini API](https://aistudio.google.com/app/apikey). There's a link to this in the app too so you can better copy paste it from your phone's browser
+    - 
+2. Installing ⬇️
+    - a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
+    - b) From source code: 
+        - Decide if you want to comment out all firebase code so you don't create a firebase project or create your own and add your `google-services.json` file. Then try building the project
+        - Connect your phone to the PC and run in a terminal at the root directory `./gradlew app:installDebug`
+        - Or `./gradlew assembleDebug` to build a debug version, which will output an .apk file to `app/build/outputs/apk/debug`
+3. Clear your data from the Firebase project 🗑
+    - When you're done with the project/app, you can clear your data like so:
+    1. Manually delete your data (including your achievements),stored in Firebase's Firestore, through the app 
+    2. Go to `My Google Account` -> `Security` -> [Your connection to third-party apps & services](https://myaccount.google.com/connections)
+    3. And look for `Object Detector`. This will clear you account entry in Firebase's Authentication
+
 ## Todo 
-- installing through .apk not working "app not installed as package appears to be invalid"
 - Add sfx
 - Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
 - CI & CD:
