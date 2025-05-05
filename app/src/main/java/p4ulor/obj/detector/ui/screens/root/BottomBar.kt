@@ -30,6 +30,8 @@ import p4ulor.obj.detector.ui.components.utils.SystemNavigationBarHeight
 import p4ulor.obj.detector.ui.components.utils.UiTestTag
 import p4ulor.obj.detector.ui.theme.AppTheme
 
+val BottomNavigationBarHeight = 60.dp
+
 @Composable
 fun BottomBar(currentScreen: Screen, onNavigateTo: (Screen) -> Unit){
     SmoothHorizontalDivider()

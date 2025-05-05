@@ -27,7 +27,7 @@
 - A RESTful API for performing HTTP requests to a Gemini model,
 running in Google Cloud Platform. Doesn't require a GCP project, although you can associate it to
 one or monitor the use of your API key
-- Pricing: It has a reasonable free tier of [1.5k requests per day and other limits](https://ai.google.dev/gemini-api/docs/billing#about-billing) for Gemini 1.5 Flash. [See it's capabilities and various details](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash)
+- Pricing: It has a reasonable free tier of [1.5k requests per day and other limits](hhttps://ai.google.dev/gemini-api/docs/rate-limits#current-rate-limits) for Gemini 2.0 Flash. [See it's capabilities and various details](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-flash)
 
 ### 3. [Ktor (client)](https://ktor.io/docs/client-create-new-application.html)
 - An open-source framework developed by JetBrains to create HTTP servers or clients
@@ -35,15 +35,15 @@ one or monitor the use of your API key
 - I use the built-in JSON serializer for sending and receiving objects
 
 ### 4. [Firebase](https://firebase.google.com/docs/build)
-- A cloud platform or BaaS (Backend As A Service) that provides a wide range of utilities for different environments (and programming languages) via SDK's (Software Development Kits) for each one
+- A cloud platform or BaaS (Backend As A Service) that provides a wide range of utilities for different environments (and programming languages) via SDK's (Software Development Kits) for each one. Firebase runs on Google Cloud infrastructure, but it contains Firebase-specific configurations and services
 - I use it to store the achievement leaderboard of the users using [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0), which is a NoSQL document database. And also Firebase [Authentication](https://firebase.google.com/docs/auth) is used in order to sign-in users with Google
-- Pricing: [Free tier](https://firebase.google.com/pricing)
+- Pricing: [Free tier](https://firebase.google.com/pricing). [Cloud Functions](https://firebase.google.com/products/functions/?hl=en&authuser=0) could have been used to make use of [Firestore triggers](https://firebase.google.com/docs/functions/firestore-events?hl=en&authuser=0&gen=2nd) to update the leaderboard and stats on document changes, but it would requiring setting a (non-free) billing plan
 
 ## Secondary Technologies 🛠️
 | [Koin](https://insert-koin.io/docs/quickstart/android-annotations/) |       [Lottie](https://airbnb.io/lottie/#/android-compose)       |                            [Mockk](https://mockk.io/)                             |                      [Coil](https://coil-kt.github.io/coil/)                      |                             [Jetpack Compose UI Test](https://developer.android.com/develop/ui/compose/testing)                              | 
 |:-------------------------------------------------------------------:|:----------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------:|
 | <img width="50" src='https://insert-koin.io/img/koin_new_logo.png'> | <img width="50" src='https://airbnb.io/lottie/images/logo.webp'> | <img width="50" src='https://avatars.githubusercontent.com/u/34787540?s=200&v=4'> | <img width="50" src='https://avatars.githubusercontent.com/u/52722434?s=200&v=4'> | <img width="50" src='https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/jetpackcompose/jetpackcompose-original.svg'> |
-|                      For dependency injection                       |                      For animated graphics                       |                            For object mocking in tests                            |                            For efficient & flexible image loading                            |                                                             For (some) UI tests                                                              |
+|                      For dependency injection                       |                      For animated graphics                       |                            For object mocking in tests                            |                      For efficient & flexible image loading                       |                                                             For (some) UI tests                                                              |
 
 ### Plugins Used & Other Dependencies 🔌
 #### Gradle Plugins 🐘

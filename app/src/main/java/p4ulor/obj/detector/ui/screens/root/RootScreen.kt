@@ -42,8 +42,6 @@ import p4ulor.obj.detector.ui.screens.achievements.AchievementsScreen
 import p4ulor.obj.detector.ui.screens.home.HomeScreen
 import p4ulor.obj.detector.ui.screens.settings.SettingsScreen
 
-val BottomNavigationBarHeight = 60.dp
-
 @Composable
 fun RootScreen() = Surface { // The surface is used to for theming to work properly
     val ctx = LocalContext.current

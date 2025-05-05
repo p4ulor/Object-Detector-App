@@ -3,6 +3,7 @@ package p4ulor.obj.detector.android.viewmodels
 import android.annotation.SuppressLint
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.koin.android.annotation.KoinViewModel
@@ -13,6 +14,8 @@ import p4ulor.obj.detector.android.viewmodels.utils.launch
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.sources.cloud.firebase.FirebaseInstance
+import p4ulor.obj.detector.data.utils.ConnectionStatus
+import p4ulor.obj.detector.ui.screens.achievements.Tab
 import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
 
 @SuppressLint("StaticFieldLeak") // Property ctx will be injected
@@ -27,8 +30,29 @@ class AchievementsViewModel(
     private val _currUser = MutableStateFlow<User?>(null)
     val currUser = _currUser.asStateFlow()
 
+    private val _connectionStatus = MutableStateFlow(ConnectionStatus.Off)
+    val connectionStatus = _connectionStatus.asStateFlow()
+
+    private val _selectedTab = MutableStateFlow(Tab.YourAchievements)
+    val selectedTab = _selectedTab.asStateFlow()
+
     init {
         firebase.init(application.applicationContext)
+
+        launch {
+            network.hasConnection.collect { hasConnection ->
+                if(!hasConnection) {
+                    if (currUser.value != null){
+                        _connectionStatus.value = ConnectionStatus.Disconnected
+                        signOut()
+                        delay(300) // Give some time for the disconnection event to be transmitted and valid
+                        _connectionStatus.value = ConnectionStatus.Off
+                    }
+                } else {
+                    _connectionStatus.value = ConnectionStatus.On
+                }
+            }
+        }
     }
 
     private val achievementsDao by lazy {
@@ -44,6 +68,10 @@ class AchievementsViewModel(
     private val _orderOption = MutableStateFlow(OrderOption.Name)
     val orderOption =_orderOption.asStateFlow()
 
+    fun setSelectedTab(tab: Tab) {
+        _selectedTab.value = tab
+    }
+
     fun loadAchievements() {
         launch {
             userAchievementsOrderedByName = Achievement.from(achievementsDao.getAllOrderedByName())
@@ -57,22 +85,18 @@ class AchievementsViewModel(
 
     fun deleteAchievements() {
         launch {
-            achievementsDao.resetAll()
             _userAchievements.value = Achievement.reset(_userAchievements.value)
+            userAchievementsOrderedByName =_userAchievements.value
+            userAchievementsOrderedByDone = _userAchievements.value
+            achievementsDao.resetAll()
         }
     }
 
     fun setOrderOption(options: OrderOption) {
         _orderOption.value = options
-        orderAchievements()
-    }
-
-    private fun orderAchievements() {
-        launch {
-            _userAchievements.value = when (_orderOption.value) {
-                OrderOption.Name -> userAchievementsOrderedByName
-                OrderOption.Done -> userAchievementsOrderedByDone
-            }
+        _userAchievements.value = when (_orderOption.value) {
+            OrderOption.Name -> userAchievementsOrderedByName
+            OrderOption.Done -> userAchievementsOrderedByDone
         }
     }
 
@@ -108,8 +132,8 @@ class AchievementsViewModel(
 
     fun signOut() {
         launch {
-            firebase.signOut()
             _currUser.value = null
+            firebase.signOut()
         }
     }
 }

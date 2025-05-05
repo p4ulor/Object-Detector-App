@@ -5,12 +5,15 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -53,11 +56,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import kotlinx.coroutines.delay
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.ui.animations.smooth
@@ -66,6 +74,7 @@ import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.QuickText
 import p4ulor.obj.detector.ui.components.utils.BoxWithBackground
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
+import p4ulor.obj.detector.ui.components.utils.RoundRectangleShape
 import p4ulor.obj.detector.ui.components.utils.roundMessageBox
 import p4ulor.obj.detector.ui.screens.achievements.Tab
 
@@ -84,13 +93,13 @@ private val unset2 = Color(0xFFFF0000)
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF0073FF), // Primary color used for prominent components like buttons, sliders, radio buttons, and important text.
-    onPrimary = Color(0xFFFFEFEF), // For text/circle widget (in switch)/checkmark displayed on top of the primary color
+    onPrimary = Color(0xFFFFFFFF), // For text/circle widget (in switch)/checkmark displayed on top of the primary color
     primaryContainer = Color(0xFF005BBB), // A tonal variation of the primary color for containers
-    onPrimaryContainer = Color(0xFFFFEFEF), // For text/icons on primary containers
+    onPrimaryContainer = Color(0xFFFFFFFF), // For text/icons on primary containers
     inversePrimary = unset2, // Inverse of the primary color for contrasting UI elements
 
     secondary = Color(0xAA6797C6), // Secondary color used for less prominent components
-    onSecondary = Color(0xFFB1B1B1), // Color for text/icons displayed on top of the secondary color
+    onSecondary = Color(0xFFFFFFFF), // Color for text/icons displayed on top of the secondary color
     secondaryContainer = Color(0x77004490), // A tonal variation of the secondary color for containers
     onSecondaryContainer = Color(0xFFFFFFFF), // Color for text/icons on secondary containers
 
@@ -281,10 +290,44 @@ private fun SampleComposable(){
                     shape = roundMessageBox(true)
                 ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
 
-                Card(elevation = CardDefaults.outlinedCardElevation(defaultElevation = 5.dp)) {
+                Box {
+                    Box(
+                        Modifier.size(33.dp, 62.dp)
+                            .blur(6.dp, BlurredEdgeTreatment.Unbounded)
+                            //.border(2.dp, Color.Black, RoundRectangleShape)
+                    ) {
+                        Box(
+                            Modifier.size(33.dp, 63.dp)
+                                .clip(RoundRectangleShape)
+                                .background(Color(0xE1000000))
+                        ) {
+
+                        }
+                    }
+
+                    Box(
+                        Modifier.size(30.dp, 60.dp)
+                            .clip(RoundRectangleShape)
+                            .background(Color.White)
+                            //.border(1.dp, Color.Black, RoundRectangleShape)
+                        ) { CircularProgressIndicator(Modifier.padding(10.dp)) }
+                }
+
+                Card(elevation = CardDefaults.outlinedCardElevation(defaultElevation = 5.dp)) { // ridiculous weak shadow...
                     Column(Modifier.padding(8.dp)) {
                         Text("Card Title", style = MaterialTheme.typography.titleMedium)
-                        Text("Card Content", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Elevation", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                Card(Modifier.shadow( // ridiculous weak shadow...
+                    15.dp,
+                    RoundRectangleShape,
+                    ambientColor = Color.Black,
+                    spotColor = Color.Black
+                ).zIndex(1f)) {
+                    Column(Modifier.padding(8.dp)) {
+                        Text("Card", style = MaterialTheme.typography.titleMedium)
+                        Text("Shadow", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -339,7 +382,7 @@ private fun DarkColorSchemePreview2() = PreviewComposable(enableDarkTheme = true
 
 @Preview
 @Composable
-private fun LightColorSchemePreview() = AppTheme(enableDarkTheme = false){
+private fun LightColorSchemePreview() = PreviewComposable(enableDarkTheme = false){
     BoxWithBackground(R.drawable.background_light) { SampleComposable() }
 }
 

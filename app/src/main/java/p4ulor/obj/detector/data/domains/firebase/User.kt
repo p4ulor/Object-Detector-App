@@ -18,7 +18,8 @@ import p4ulor.obj.detector.data.sources.cloud.firebase.FbCollection
  */
 data class User(
     val name: String = "",
-    val uuid: String  = "",
+    val uuid: String = "",
+    val photoUri: String = "",
     val points: Float = 0f,
     val achievementCount: Int = 0
 ) {
@@ -27,6 +28,7 @@ data class User(
         fun createFrom(user: FirebaseUser) = User(
             name = user.displayName.toString(),
             uuid = user.uid,
+            photoUri = user.photoUrl.toString(),
             points = 0f,
             achievementCount = 0
         )

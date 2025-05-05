@@ -1,15 +1,16 @@
 package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -17,59 +18,121 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.data.domains.firebase.User
+import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.i
+import p4ulor.obj.detector.ui.animations.VerticallyAnimatedVisibility
+import p4ulor.obj.detector.ui.components.IconMediumSize
 import p4ulor.obj.detector.ui.components.IconSmallSize
+import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
 import p4ulor.obj.detector.ui.components.QuickIcon
 import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.utils.BoxWithBackground
 import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.components.utils.GeneralPaddingSmall
+import p4ulor.obj.detector.ui.components.utils.RoundRectangleShape
+import p4ulor.obj.detector.ui.components.utils.toast
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 @Composable
 fun TabLeaderboard(
     onSignInWithGoogle: () -> Unit,
     onLogOut: () -> Unit,
-    currUser: User?
+    currUser: User?,
+    topUsers: List<User>,
+    connectionStatus: ConnectionStatus
 ) {
-    AnimatedVisibility(visible = currUser != null) {
-        Card(
-            Modifier.padding(GeneralPaddingSmall),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-        ) {
-            CenteredRow {
-                Column(Modifier.padding(GeneralPadding)) {
-                    Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
-                    Text("${currUser?.points} points")
+    val ctx = LocalContext.current
+    
+    VerticallyAnimatedVisibility(visible = currUser != null) {
+        Column {
+            Card(
+                Modifier.padding(GeneralPaddingSmall),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                CenteredRow {
+                    Column(Modifier.padding(GeneralPadding)) {
+                        Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
+                        Text("${currUser?.points} ${stringResource(R.string.points)}")
+                    }
+                    ProfilePicture(currUser?.photoUri)
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        QuickText(R.string.logout, Modifier.clickable { onLogOut() })
+                        QuickIcon(MaterialIconsExt.Logout, IconSmallSize) { onLogOut() }
+                    }
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Row (
-                    Modifier.clickable { onLogOut() },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    QuickText(R.string.logout)
-                    QuickIcon(MaterialIconsExt.Logout, IconSmallSize) { }
+            }
+
+            Card(
+                Modifier.padding(GeneralPaddingSmall).fillMaxSize(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
+            ) {
+                Column (verticalArrangement = Arrangement.spacedBy(space = 1.dp)) {
+                    topUsers.forEachIndexed { index, user ->
+                        Card(
+                            Modifier.padding(GeneralPaddingSmall),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                        ) {
+                            CenteredRow(Modifier.padding(GeneralPaddingSmall)) {
+                                Text("${1 + index}")
+                                ProfilePicture(user.photoUri)
+                                Text(user.name)
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text("${currUser?.points} ${stringResource(R.string.points)}")
+                            }
+                        }
+                    }
                 }
             }
         }
-
     }
 
-    AnimatedVisibility(visible = currUser == null) {
+    VerticallyAnimatedVisibility(visible = currUser == null) {
         CenteredColumn {
             SignInWithGoogle(Modifier.width(200.dp), onClick = {
-                i("SignInWithGoogle")
-                onSignInWithGoogle()
+                if (connectionStatus.isEnabled) {
+                    i("onSignInWithGoogle")
+                    onSignInWithGoogle()
+                } else {
+                    ctx.toast(R.string.no_internet_connection)
+                }
             })
         }
     }
+}
+
+@Composable
+private fun ProfilePicture(photoUri: String?) {
+    val isValid = photoUri.orEmpty().isNotEmpty()
+    AsyncImage(
+        model = if(isValid) photoUri else null,
+        contentDescription = "User profile picture",
+        Modifier.size(IconMediumSize).clip(RoundRectangleShape),
+        colorFilter = if(isValid) {
+            null
+        } else {
+            ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+        },
+        fallback = rememberVectorPainter(MaterialIcons.Person)
+    )
 }
 
 @Preview
@@ -78,8 +141,24 @@ private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme 
     TabLeaderboard(
         onSignInWithGoogle = {},
         onLogOut = {},
-        currUser = User("Paulo", "123", 22.3f, 10)
+        currUser = User("Paulo", "123", "", 22.3f, 10),
+        connectionStatus = ConnectionStatus.On,
+        topUsers = buildList { repeat(5) { add(User("Paulo", "123", "", 22.3f, 10)) } }
     )
+}
+
+@Preview
+@Composable
+private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(enableDarkTheme = true) {
+    BoxWithBackground(R.drawable.background_dark_2) {
+        TabLeaderboard(
+            onSignInWithGoogle = {},
+            onLogOut = {},
+            currUser = User("Paulo", "123", "", 22.3f, 10),
+            connectionStatus = ConnectionStatus.On,
+            topUsers = buildList { repeat(5) { add(User("Paulo", "123", "", 22.3f, 10)) } }
+        )
+    }
 }
 
 @Preview
@@ -88,6 +167,12 @@ private fun TabLeaderboardPreviewNoUser() = PreviewComposable(enableDarkTheme = 
     TabLeaderboard(
         onSignInWithGoogle = {},
         onLogOut = {},
-        currUser = null
+        currUser = null,
+        connectionStatus = ConnectionStatus.Off,
+        topUsers = emptyList()
     )
 }
+
+
+
+

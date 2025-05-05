@@ -55,8 +55,9 @@ import java.util.Date
 
 /**
  * A manually injected view model for demo/historical purposes, which consequently demonstrates the
- * use of [KoinComponent], which is used to inject [network] and [notificationManager].
+ * use of [KoinComponent], which is used to inject [network] and [notificationManager] with Koin.
  * - https://insert-koin.io/docs/reference/koin-core/koin-component/
+ *
  * I'm using AndroidViewModel here in order to have the [application] which is used for
  * [achievementsDao], [initObjectDetector], [loadAndGetUserPrefs] and [promptGemini]
  *
@@ -66,6 +67,7 @@ import java.util.Date
  * It also handles some logic that should not be delegated to the UI and logic that uses both data
  * and UI components. These operations are: handling connection losses, performing
  * async calls, loading user preferences, launching coroutines and accessing other data components.
+ *
  * Note: [isGeminiEnabled] is also used to toggle on/off emissions of [_objDetectionResults] used
  * for MediaPipe (and thus the detection outlines)
  */

@@ -53,10 +53,7 @@ object UserSecretPreferencesSerializer: Serializer<UserSecretPreferences> {
         return Json.decodeFromString(decodedJsonString)
     }
 
-    /**
-     * @param t is named t to fix warning The corresponding parameter in the supertype 'Serializer'
-     *  is named 't'. This may cause problems when calling this function with named arguments.
-     */
+    /** Don't change the name of the params, otherwise you'll get warnings because of the supertype 'Serializer' */
     override suspend fun writeTo(t: UserSecretPreferences, output: OutputStream) {
         val json = Json.encodeToString(t)
         d("Will encrypt $json")

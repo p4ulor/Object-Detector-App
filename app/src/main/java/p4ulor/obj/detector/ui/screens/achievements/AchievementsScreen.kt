@@ -13,20 +13,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
+import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.viewmodels.AchievementsViewModel
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
+import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.data.utils.getTodaysDate
 import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.utils.toast
 import p4ulor.obj.detector.ui.screens.achievements.leaderboard.TabLeaderboard
 import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
 import p4ulor.obj.detector.ui.screens.achievements.local.TabYourAchievements
@@ -34,17 +37,29 @@ import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 @Composable
 fun AchievementsScreen(){
+    val ctx = LocalContext.current
     val vm = koinViewModel<AchievementsViewModel>()
 
+    val selectedTab by vm.selectedTab.collectAsState()
+
+    // Your Achievements
     val userAchievements by vm.userAchievements.collectAsState()
     val orderOption by vm.orderOption.collectAsState()
     var isLoaded by rememberSaveable { mutableStateOf(false) } // ensures there's always an animation even if are already loaded
 
+    // Leaderboard
     val currUser by vm.currUser.collectAsState()
+    val connectionStatus by vm.connectionStatus.collectAsState(initial = ConnectionStatus.Off)
 
     LaunchedEffect(Unit) {
         vm.loadAchievements()
         isLoaded = true
+    }
+
+    LaunchedEffect(connectionStatus) {
+        if(connectionStatus.isDisconnected) {
+            ctx.toast(R.string.no_internet_connection)
+        }
     }
 
     AnimatedVisibility(
@@ -53,13 +68,16 @@ fun AchievementsScreen(){
     ) {
         userAchievements?.let {
             AchievementsScreenUi(
+                selectedTab = selectedTab,
+                onSelectedTabChanged = { vm.setSelectedTab(it) },
                 achievements = it,
                 orderOptions = orderOption,
                 onChangeOrderOption = { vm.setOrderOption(it) },
                 onDeleteAchievements = { vm.deleteAchievements() },
                 onSignInWithGoogle = { vm.signInWithGoogle() },
                 onLogOut = { vm.signOut() },
-                currUser = currUser
+                currUser = currUser,
+                connectionStatus = connectionStatus
             )
         }
     }
@@ -68,15 +86,18 @@ fun AchievementsScreen(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AchievementsScreenUi( // todo, find fix for these params...
+    selectedTab: Tab,
+    onSelectedTabChanged: (Tab) -> Unit,
     achievements: List<Achievement>,
     orderOptions: OrderOption,
     onChangeOrderOption: (OrderOption) -> Unit,
     onDeleteAchievements: () -> Unit,
     onSignInWithGoogle: () -> Unit,
     onLogOut: () -> Unit,
-    currUser: User? = null
+    currUser: User? = null,
+    topUsers: List<User> = emptyList(),
+    connectionStatus: ConnectionStatus
 ) {
-    var selectedTab by remember { mutableStateOf(Tab.YourAchievements) }
 
     Column(
         Modifier.fillMaxSize(),
@@ -84,13 +105,13 @@ fun AchievementsScreenUi( // todo, find fix for these params...
     ) {
         PrimaryTabRow(
             selectedTabIndex = selectedTab.ordinal,
-            containerColor = Color.Transparent, // So the tabs rectangles don't use the default material theme, and just show the background
+            containerColor = Color.Transparent
         ) {
             Tab.entries.forEachIndexed { index, tab ->
                 Tab(
                     selected = selectedTab.ordinal == index,
                     text = { QuickText(tab.label, maxLines = 1) },
-                    onClick = { selectedTab = tab },
+                    onClick = { onSelectedTabChanged(tab) },
                 )
             }
         }
@@ -108,7 +129,9 @@ fun AchievementsScreenUi( // todo, find fix for these params...
                 TabLeaderboard(
                     onSignInWithGoogle,
                     onLogOut,
-                    currUser
+                    currUser,
+                    topUsers,
+                    connectionStatus
                 )
             }
         }
@@ -133,11 +156,14 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
     }
 
     AchievementsScreenUi(
+        Tab.YourAchievements,
+        onSelectedTabChanged = {},
         achievements,
         OrderOption.Name,
         onChangeOrderOption = {},
         onDeleteAchievements = {},
         onSignInWithGoogle = {},
-        onLogOut = {}
+        onLogOut = {},
+        connectionStatus = ConnectionStatus.Off
     )
 }
