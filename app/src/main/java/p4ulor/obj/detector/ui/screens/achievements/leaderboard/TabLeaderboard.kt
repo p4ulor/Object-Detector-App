@@ -1,24 +1,30 @@
 package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
@@ -27,24 +33,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import p4ulor.obj.detector.R
+import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.animations.VerticallyAnimatedVisibility
 import p4ulor.obj.detector.ui.components.IconMediumSize
-import p4ulor.obj.detector.ui.components.IconSmallSize
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
-import p4ulor.obj.detector.ui.components.QuickIcon
 import p4ulor.obj.detector.ui.components.QuickText
 import p4ulor.obj.detector.ui.components.utils.BoxWithBackground
 import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
+import p4ulor.obj.detector.ui.components.utils.GeneralPaddingMedium
 import p4ulor.obj.detector.ui.components.utils.GeneralPaddingSmall
+import p4ulor.obj.detector.ui.components.utils.GeneralPaddingTiny
 import p4ulor.obj.detector.ui.components.utils.RoundRectangleShape
 import p4ulor.obj.detector.ui.components.utils.toast
 import p4ulor.obj.detector.ui.theme.PreviewComposable
+
+private const val TOP_USERS_CAP = 5
 
 @Composable
 fun TabLeaderboard(
@@ -52,6 +61,7 @@ fun TabLeaderboard(
     onLogOut: () -> Unit,
     currUser: User?,
     topUsers: List<User>,
+    topObjects: List<ObjectDetectionStats>,
     connectionStatus: ConnectionStatus
 ) {
     val ctx = LocalContext.current
@@ -60,14 +70,16 @@ fun TabLeaderboard(
         Column {
             Card(
                 Modifier.padding(GeneralPaddingSmall),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             ) {
-                CenteredRow {
-                    Column(Modifier.padding(GeneralPadding)) {
-                        Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
+                CenteredRow(GeneralPadding.let { Modifier.padding(it, it, it) }) {
+                    Column {
+                        CenteredRow(Modifier) {
+                            Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
+                            ProfilePicture(currUser?.photoUri)
+                        }
                         Text("${currUser?.points} ${stringResource(R.string.points)}")
                     }
-                    ProfilePicture(currUser?.photoUri)
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -75,31 +87,65 @@ fun TabLeaderboard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End
                     ) {
-                        QuickText(R.string.logout, Modifier.clickable { onLogOut() })
-                        QuickIcon(MaterialIconsExt.Logout, IconSmallSize) { onLogOut() }
+                        OutlinedButton(onClick = onLogOut) {
+                            QuickText(R.string.logout)
+                            with(MaterialIconsExt.Logout) {
+                                Icon(this, name, Modifier.padding(horizontal = GeneralPaddingTiny))
+                            }
+                        }
                     }
                 }
+
+                LeaderboardActions(
+                    onSubmitAchievements = {},
+                    onDeleteAccount = {}
+                )
             }
 
             Card(
                 Modifier.padding(GeneralPaddingSmall).fillMaxSize(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
             ) {
-                Column (verticalArrangement = Arrangement.spacedBy(space = 1.dp)) {
-                    topUsers.forEachIndexed { index, user ->
+                CenteredColumn(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                    QuickText(
+                        R.string.top_user_points,
+                        Modifier.padding(GeneralPaddingSmall),
+                        textStyle = MaterialTheme.typography.headlineSmall
+                    )
+                    Spacer(Modifier.height(GeneralPaddingSmall))
+
+                    topUsers.take(TOP_USERS_CAP).forEachIndexed { index, user ->
                         Card(
-                            Modifier.padding(GeneralPaddingSmall),
+                            Modifier.padding(horizontal = GeneralPaddingSmall, vertical = GeneralPaddingTiny),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                         ) {
                             CenteredRow(Modifier.padding(GeneralPaddingSmall)) {
                                 Text("${1 + index}")
                                 ProfilePicture(user.photoUri)
                                 Text(user.name)
-                                Spacer(modifier = Modifier.weight(1f))
+                                Spacer(Modifier.weight(1f))
                                 Text("${currUser?.points} ${stringResource(R.string.points)}")
                             }
                         }
                     }
+
+                    Spacer(Modifier.height(GeneralPaddingMedium))
+
+                    QuickText(
+                        R.string.top_detected_objects,
+                        textStyle = MaterialTheme.typography.headlineSmall
+                    )
+
+                    DonutChartWithLabels(
+                        data = listOf(
+                            Triple("Pink", 50f, Color(0xFF9800FF)),
+                            Triple("2", 15f, Color(0xFF0AFF0D)),
+                            Triple("3", 15f, Color(0xFF4CAF50)),
+                            Triple("4", 20f, Color(0xAA0061FF))
+                        ),
+                        donutSize = 200.dp,
+                        Modifier.padding(GeneralPadding)
+                    )
                 }
             }
         }
@@ -125,7 +171,7 @@ private fun ProfilePicture(photoUri: String?) {
     AsyncImage(
         model = if(isValid) photoUri else null,
         contentDescription = "User profile picture",
-        Modifier.size(IconMediumSize).clip(RoundRectangleShape),
+        Modifier.size(IconMediumSize).clip(RoundRectangleShape).padding(1.dp),
         colorFilter = if(isValid) {
             null
         } else {
@@ -142,8 +188,9 @@ private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme 
         onSignInWithGoogle = {},
         onLogOut = {},
         currUser = User("Paulo", "123", "", 22.3f, 10),
+        topObjects = emptyList(),
         connectionStatus = ConnectionStatus.On,
-        topUsers = buildList { repeat(5) { add(User("Paulo", "123", "", 22.3f, 10)) } }
+        topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f, 10)) } }
     )
 }
 
@@ -155,8 +202,9 @@ private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(en
             onSignInWithGoogle = {},
             onLogOut = {},
             currUser = User("Paulo", "123", "", 22.3f, 10),
+            topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f, 10)) } },
+            topObjects = emptyList(),
             connectionStatus = ConnectionStatus.On,
-            topUsers = buildList { repeat(5) { add(User("Paulo", "123", "", 22.3f, 10)) } }
         )
     }
 }
@@ -169,10 +217,7 @@ private fun TabLeaderboardPreviewNoUser() = PreviewComposable(enableDarkTheme = 
         onLogOut = {},
         currUser = null,
         connectionStatus = ConnectionStatus.Off,
-        topUsers = emptyList()
+        topUsers = emptyList(),
+        topObjects = emptyList()
     )
 }
-
-
-
-

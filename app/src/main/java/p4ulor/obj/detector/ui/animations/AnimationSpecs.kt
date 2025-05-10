@@ -15,6 +15,12 @@ fun <T> smooth(durationMillis: Int = 300, delayMillis: Int = 0) = tween<T>(
     easing = EaseInEaseOut
 )
 
+fun <T> linear(durationMillis: Int = 300, delayMillis: Int = 0) = tween<T>(
+    durationMillis = durationMillis,
+    delayMillis = delayMillis,
+    easing = Linear
+)
+
 fun slideInVertSmooth(slideUp: Boolean = true, durationMillis: Int = 400) = slideInVertically(
     animationSpec = smooth(
         durationMillis = durationMillis,

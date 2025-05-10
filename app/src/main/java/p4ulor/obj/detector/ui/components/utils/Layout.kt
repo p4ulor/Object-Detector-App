@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CenteredColumn(content: @Composable () -> Unit) {
+fun CenteredColumn(modifier: Modifier = Modifier.fillMaxSize(), content: @Composable () -> Unit) {
     Column(
-        Modifier.fillMaxSize(),
+        modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

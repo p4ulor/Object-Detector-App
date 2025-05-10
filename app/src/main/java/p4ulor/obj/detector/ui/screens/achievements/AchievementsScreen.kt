@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.viewmodels.AchievementsViewModel
+import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.ConnectionStatus
@@ -96,6 +97,7 @@ fun AchievementsScreenUi( // todo, find fix for these params...
     onLogOut: () -> Unit,
     currUser: User? = null,
     topUsers: List<User> = emptyList(),
+    topObjects: List<ObjectDetectionStats> = emptyList(),
     connectionStatus: ConnectionStatus
 ) {
 
@@ -131,6 +133,7 @@ fun AchievementsScreenUi( // todo, find fix for these params...
                     onLogOut,
                     currUser,
                     topUsers,
+                    topObjects,
                     connectionStatus
                 )
             }

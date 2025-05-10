@@ -63,9 +63,19 @@ android {
             println("local.properties exists")
             load(localProperties.reader())
         } else {
-            error("local.properties does not exist")
+            println("local.properties not present. This is likely the GH Actions build")
+            println("Printing all env vars")
+            System.getenv().map {
+                println("${it.key}")
+            }
         }
     }
+
+    // local.properties and GH actions keys
+    val RELEASE_JKS_FILE_BASE64 = "RELEASE_JKS_FILE_BASE64"
+    val RELEASE_JSK_PASSWORD = "RELEASE_JSK_PASSWORD"
+    val RELEASE_KEY_ALIAS = "RELEASE_KEY_ALIAS"
+    val RELEASE_KEY_PASSWORD = "RELEASE_KEY_PASSWORD"
 
     /**
      * Read docs/README.md for more information for proper setup
@@ -75,15 +85,15 @@ android {
         create(releaseSigning) {
             // set these RELEASE_ constants in local.properties in root dir. And for Github Actions
 
-            val encodedJSKFile = properties.getProperty("RELEASE_JKS_FILE_BASE64")
+            val encodedJSKFile = properties.getProperty(RELEASE_JKS_FILE_BASE64) ?: System.getenv(RELEASE_JKS_FILE_BASE64)
             val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
             val tempKeystore = File(layout.buildDirectory.asFile.get(), "release.keystore") // Create a temp file.
             FileOutputStream(tempKeystore).use { it.write(decodedBytes) }
 
             storeFile = tempKeystore
-            storePassword = properties.getProperty("RELEASE_JSK_PASSWORD")
-            keyAlias = properties.getProperty("RELEASE_KEY_ALIAS")
-            keyPassword = properties.getProperty("RELEASE_KEY_PASSWORD")
+            storePassword = properties.getProperty(RELEASE_JSK_PASSWORD) ?: System.getenv(RELEASE_JSK_PASSWORD)
+            keyAlias = properties.getProperty(RELEASE_KEY_ALIAS) ?: System.getenv(RELEASE_KEY_ALIAS)
+            keyPassword = properties.getProperty(RELEASE_KEY_PASSWORD) ?: System.getenv(RELEASE_KEY_PASSWORD)
         }
     }
 
@@ -176,7 +186,7 @@ dependencies {
 
     // Firebase, using Bill of Materials. The version in this project is 32.8.1, so it comes with
     // Kotlin Extensions (read this for context https://firebase.google.com/docs/android/kotlin-migration#ktx-apis-to-main-whats-changing)
-    // Note: for extra FB dependencies not part of BOM, don't specify versions
+    // Note: Because BoM is used, don't specify versions for the FB dependencies
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.auth)
@@ -225,8 +235,9 @@ private val ASSET_DIR = "$projectDir/src/main/assets"
 
 // The tasks have an underscore to appear at the top of the gradle task list in the gradle tab,
 // at app/tasks/other
+// The links point to the version of each model built with a Numerical Precision of Float32 (Single Precision), which is the standard precision for training most deep learning models
 /**
- *  This model is recommended because it strikes a balance between latency and accuracy
+ *  This model is recommended because it strikes a balance between latency and accuracy ()
  *  https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#efficientdet-lite0_model_recommended
  */
 task<Download>("_download1") {
@@ -236,7 +247,7 @@ task<Download>("_download1") {
 }
 
 /**
- * This model is generally more accurate than EfficientDet-Lite0, but is also slower and more memory intensive
+ * This model is generally more accurate than EfficientDet-Lite0, but is also slower and more memory intensive (Float32 (Single Precision))
  * https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#efficientdet-lite2_model
  */
 task<Download>("_download2") {

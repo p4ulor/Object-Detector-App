@@ -20,7 +20,7 @@ data class User(
     val name: String = "",
     val uuid: String = "",
     val photoUri: String = "",
-    val points: Float = 0f,
+    val points: Float = 0f, // max should be 80.0f
     val achievementCount: Int = 0
 ) {
 

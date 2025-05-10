@@ -52,10 +52,11 @@ import p4ulor.obj.detector.ui.components.mediaPipeLikeText
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.components.utils.textWidthOf
 
+private val SliderTrackHeight = 10.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserPreferences) -> Unit) {
-    val SliderTrackHeight = 10.dp
     val ctx = LocalContext.current
 
     var minDetectCertainty by remember { mutableFloatStateOf(currPrefs.minDetectCertainty) }

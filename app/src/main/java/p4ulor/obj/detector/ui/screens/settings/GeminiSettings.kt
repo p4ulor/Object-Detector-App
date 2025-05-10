@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import p4ulor.obj.detector.R
-import p4ulor.obj.detector.data.domains.gemini.GEMINI_AI_STUDIO_LINK
+import p4ulor.obj.detector.data.sources.cloud.gemini.GEMINI_AI_STUDIO_LINK
 import p4ulor.obj.detector.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.components.IconSmallSize
