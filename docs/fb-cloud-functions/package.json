@@ -1,0 +1,15 @@
+{
+  "name": "fb-cloud-functions",
+  "version": "1.0.0",
+  "description": "- npm install -g firebase-tools - firebase init - firebase deploy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "p4ulor",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-tools": "^14.3.1"
+  }
+}

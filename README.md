@@ -8,7 +8,7 @@
 ## Main Features ✨
 - Detect very simple objects with MediaPipe
 - Ask Gemini anything about a picture taken
-- Tracks the user's achievements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) towards those achievements
+- Tracks the user's achievements towards MediaPipe's detectable objects and provides a leaderboard for the users (that opted in by logging in with Google) towards those achievements. Along with statistics regarding user-wide detections.
 - It supports various customizations and other features: 
     - Camera settings: ratio, flashlight and saving pictures taken
     - Model settings: detection sensitivity, max detection count, detection animations and the model itself (2 choices)
@@ -21,7 +21,8 @@
 
 ### 1. [MediaPipe](https://github.com/google/mediapipe)
 - An open-source framework from Google. It facilitates the integration of AI & ML into your applications. Here's a showcase of the [tasks MediaPipe supports](https://mediapipe-studio.webapps.google.com/home)
-- I'm using the [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android) dependency and the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models), which can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
+- I'm using the [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android) Mediapipe dependency and the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models) of the family "EfficientDet" developed by Google. These models can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
+- You can learn more about object detection with PyTorch and in making your own model through this [DeepLearningExamples repository](https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/Detection/README.md) by NVIDIA
 
 ### 2. [Gemini API](https://aistudio.google.com/app/apikey)
 - A RESTful API for performing HTTP requests to a Gemini model,
@@ -37,7 +38,8 @@ one or monitor the use of your API key
 ### 4. [Firebase](https://firebase.google.com/docs/build)
 - A cloud platform or BaaS (Backend As A Service) that provides a wide range of utilities for different environments (and programming languages) via SDK's (Software Development Kits) for each one. Firebase runs on Google Cloud infrastructure, but it contains Firebase-specific configurations and services
 - I use it to store the achievement leaderboard of the users using [Cloud Firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore?hl=en&authuser=0), which is a NoSQL document database. And also Firebase [Authentication](https://firebase.google.com/docs/auth) is used in order to sign-in users with Google
-- Pricing: [Free tier](https://firebase.google.com/pricing). [Cloud Functions](https://firebase.google.com/products/functions/?hl=en&authuser=0) could have been used to make use of [Firestore triggers](https://firebase.google.com/docs/functions/firestore-events?hl=en&authuser=0&gen=2nd) to update the leaderboard and stats on document changes, but it would requiring setting a (non-free) billing plan
+- [Cloud Functions](https://firebase.google.com/products/functions/?hl=en&authuser=0) are used to make use of [Firestore triggers](https://firebase.google.com/docs/functions/firestore-events?hl=en&authuser=0&gen=2nd) to update the leaderboard and stats on document changes, and it requires setting up a Pay as you go (Blaze) billing plan
+- [Check pricing here](https://firebase.google.com/pricing). The pay-start ceiling for Cloud functions is very high for the use case of the app, so it's basically free. You can also use the [300$ trial](https://firebase.blog/posts/2024/11/claim-300-to-get-started)
 
 ## Secondary Technologies 🛠️
 | [Koin](https://insert-koin.io/docs/quickstart/android-annotations/) |       [Lottie](https://airbnb.io/lottie/#/android-compose)       |                            [Mockk](https://mockk.io/)                             |                      [Coil](https://coil-kt.github.io/coil/)                      |                             [Jetpack Compose UI Test](https://developer.android.com/develop/ui/compose/testing)                              | 
@@ -50,7 +52,7 @@ one or monitor the use of your API key
 - [gradle-download-task by Michel Krämer](https://github.com/michel-kraemer/gradle-download-task) -> To facilitate the download of the small TFlite ML models. It is ran automatically after building the project. In gradle tool window, access it in the task category "other"
 - [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html) -> Used to process Kotlin's @Serialization annotations
 - [Kotlin Symbol Processing (KSP)](https://kotlinlang.org/docs/ksp-quickstart.html#add-a-processor) -> Used to process Koin's and Room's annotations and build the dependencies
-- [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> API documentation engine for KDocs comments. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
+- [Dokka](https://kotlinlang.org/docs/dokka-introduction.html) -> Documentation engine for KDoc comments. Run it via `./gradlew app:dokkaHtml`. Or in gradle tool window, access it in the task category "documentation"
 - [Google Services](https://firebase.google.com/docs/android/setup#add-config-file) -> Used to process the `google-services.json` file and build other resources for the Firebase SDK to work
 
 #### Other Dependencies

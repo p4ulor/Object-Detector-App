@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # UPDATE: It turns out this is the process for submitting images that are greater than 20MB (see gemini test2.sh for what I use in the app)
 # https://ai.google.dev/gemini-api/docs/vision?lang=rest#upload-image
 

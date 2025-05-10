@@ -13,12 +13,18 @@
         HS(HomeScreen 🏠)
         AS(AchievementsScreen 🏅)
         SC(SettingsScreen 🔧)
-        FAB{"<p style="font-size: 10px;"> Floating </br> Action </br> Button"}
+        FAB{"<p style="font-size: 10px;"> User </br> Actions"}
 
     %% Icon Nodes
         DB("<img style="max-height: 50px; object-fit: contain" src='./imgs/db.png'> Room DB")
         FB("<img style="max-height: 50px; object-fit: contain" src="https://firebase.google.com/static/images/brand-guidelines/logo-logomark.png"> Firebase")
-        PD("<img style="max-height: 50px; object-fit: contain" src='./imgs/encrypted-db.png'> Preferences </br> DataStore")
+        FB_store("<img style="max-height: 50px; object-fit: contain" src="https://firebase.google.com/static/images/products/icons/build_firestore.svg"> Firestore")
+        FB_auth("<img style="max-height: 50px; object-fit: contain" src="https://firebase.google.com/static/images/products/icons/build_auth.svg"> Authentication")
+        FB_functions("<img style="max-height: 50px; object-fit: contain" src="https://firebase.google.com/images/products/icons/build_functions.svg"> Functions")
+
+
+        PD("<img style="max-height: 50px; object-fit: contain" src='./imgs/db-encrypted.png'> Preferences </br> DataStore")
+
         MP("<img style="max-height: 50px; object-fit: contain" src='../app/src/main/res/drawable/mediapipe.png'> MediaPipe")
         GEM("<img style="max-height: 50px; object-fit: contain" src='../app/src/main/res/drawable/gemini.png'> Gemini")
         KTOR("<img style="max-height: 50px; object-fit: contain" src="https://resources.jetbrains.com/storage/products/company/brand/logos/Ktor_icon.png"> Ktor")
@@ -38,7 +44,11 @@
     end
     
     AS <-- Your Achievements --> DB
-    AS <-- Leaderboard--> FB
+    AS <-- Leaderboard --> FB
+
+    FB --- FB_store
+    FB --- FB_functions
+    FB --- FB_auth
 
     SC <--> PD
 
@@ -49,7 +59,7 @@
 
     %% Definitions applied
     class HS,SC,AS screenStyle
-    class DB,FB,PD,MP,GEM,KTOR,GeminiApiService noBackgroundStyle
+    class DB,FB,FB_store,FB_auth,FB_functions,PD,MP,GEM,KTOR,GeminiApiService noBackgroundStyle
 
     %% Direct style definitions
     style FAB color:#FFFFFF, fill:#163a9e 
@@ -107,6 +117,9 @@ graph TD
 
     U3_2 --> D3_2_1(outline)
     U3_2 --> D3_2_2(chat)
+
+    U3_1(achievements) --> U3_1_1(local)
+    U3_1(achievements) --> U3_1_2(leaderboard)
 
 %% Styles
     classDef noBackgroundStyle color:#FFFFFF, fill:#0d1117
