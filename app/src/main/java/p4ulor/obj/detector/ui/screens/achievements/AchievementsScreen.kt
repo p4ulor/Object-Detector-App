@@ -50,7 +50,13 @@ fun AchievementsScreen(){
     val leaderboardCallbacks = remember {
         LeaderboardSCallbacks(
             onSignInWithGoogle = { vm.signInWithGoogle() },
-            onSignOut = { vm.signOut() }
+            onSignOut = { vm.signOut() },
+            onSubmitAchievements = {
+                vm.submitAchievements(onNoNewAchievements = {
+                    ctx.toast(R.string.no_new_achievements)
+                })
+            },
+            onDeleteAccount = { vm.deleteAccount() }
         )
     }
 
@@ -131,7 +137,9 @@ fun AchievementsScreenUi(
                     topObjects = leaderboardState.topObjects,
                     connectionStatus = leaderboardState.connectionStatus,
                     onSignInWithGoogle = leaderboardSCallbacks.onSignInWithGoogle,
-                    onSignOut = leaderboardSCallbacks.onSignOut
+                    onSignOut = leaderboardSCallbacks.onSignOut,
+                    onSubmitAchievements = leaderboardSCallbacks.onSubmitAchievements,
+                    onDeleteAccount = leaderboardSCallbacks.onDeleteAccount
                 )
             }
         }
@@ -168,14 +176,16 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
         ),
         leaderboardState = LeaderboardState(
             currUser = null,
-            achievements = emptyList(),
+            userAchievements = emptyList(),
             topUsers = emptyList(),
             topObjects = emptyList(),
             connectionStatus = ConnectionStatus.Off
         ),
         leaderboardSCallbacks = LeaderboardSCallbacks(
             onSignInWithGoogle = { },
-            onSignOut = { }
+            onSignOut = { },
+            onSubmitAchievements = { },
+            onDeleteAccount = { }
         )
     )
 }

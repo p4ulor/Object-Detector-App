@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
+import p4ulor.obj.detector.data.domains.mediapipe.getDonePercentage
 import p4ulor.obj.detector.data.utils.capitalized
 import p4ulor.obj.detector.data.utils.getTodaysDate
 import p4ulor.obj.detector.data.utils.toPercentage
@@ -84,7 +85,7 @@ fun TabYourAchievements(
     )
 
     LaunchedEffect(achievements.hashCode()) {
-        donePercentageValue = Achievement.getDonePercentage(achievements)
+        donePercentageValue = achievements.getDonePercentage()
     }
 
     Scaffold(

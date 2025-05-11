@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
@@ -87,7 +89,10 @@ private fun SettingsScreenUi(
     onSaveUserPrefs: (UserPreferences) -> Unit,
     onSaveUserSecretPrefs: (UserSecretPreferences) -> Unit
 ) {
-    Column(Modifier.padding(GeneralPadding), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        Modifier.padding(GeneralPadding).verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         MediaPipeSettings(
             currPrefs = userPreferences,
             onNewPrefs = { onSaveUserPrefs(it) }

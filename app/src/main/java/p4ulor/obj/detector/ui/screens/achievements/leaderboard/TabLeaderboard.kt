@@ -62,17 +62,19 @@ fun TabLeaderboard(
     topObjects: List<ObjectDetectionStats>,
     connectionStatus: ConnectionStatus,
     onSignInWithGoogle: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onSubmitAchievements: () -> Unit,
+    onDeleteAccount: () -> Unit
 ) {
     val ctx = LocalContext.current
     
     VerticallyAnimatedVisibility(visible = currUser != null) {
         Column {
             Card(
-                Modifier.padding(GeneralPaddingSmall),
+                Modifier.fillMaxWidth().padding(GeneralPaddingSmall),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             ) {
-                CenteredRow(GeneralPadding.let { Modifier.padding(it, it, it) }) {
+                CenteredRow(GeneralPadding.let { Modifier.padding(it) }) {
                     Column {
                         CenteredRow(Modifier) {
                             Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
@@ -83,9 +85,15 @@ fun TabLeaderboard(
 
                     Spacer(modifier = Modifier.weight(1f))
 
+                    LeaderboardActions(
+                        onSubmitAchievements = onSubmitAchievements,
+                        onDeleteAccount = onDeleteAccount
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
                     Row (
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
                     ) {
                         OutlinedButton(onClick = onSignOut) {
                             QuickText(R.string.logout)
@@ -95,11 +103,6 @@ fun TabLeaderboard(
                         }
                     }
                 }
-
-                LeaderboardActions(
-                    onSubmitAchievements = {},
-                    onDeleteAccount = {}
-                )
             }
 
             Card(
@@ -136,7 +139,7 @@ fun TabLeaderboard(
                         textStyle = MaterialTheme.typography.headlineSmall
                     )
 
-                    DonutChartWithLabels(
+                    DonutChartWithLabels( // todo with topObjects
                         data = listOf(
                             Triple("Pink", 50f, Color(0xFF9800FF)),
                             Triple("2", 15f, Color(0xFF0AFF0D)),
@@ -185,12 +188,14 @@ private fun ProfilePicture(photoUri: String?) {
 @Composable
 private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme = true) {
     TabLeaderboard(
-        currUser = User("Paulo", "123", "", 22.3f, 10),
+        currUser = User("Paulo", "123", "", 22.3f),
         topObjects = emptyList(),
         connectionStatus = ConnectionStatus.On,
-        topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f, 10)) } },
-        onSignInWithGoogle = {},
-        onSignOut = {},
+        topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f)) } },
+        onSignInWithGoogle = { },
+        onSignOut = { },
+        onSubmitAchievements = { },
+        onDeleteAccount = { }
     )
 }
 
@@ -199,12 +204,14 @@ private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme 
 private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(enableDarkTheme = true) {
     BoxWithBackground(R.drawable.background_dark_2) {
         TabLeaderboard(
-            onSignInWithGoogle = {},
-            onSignOut = {},
-            currUser = User("Paulo", "123", "", 22.3f, 10),
-            topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f, 10)) } },
+            currUser = User("Paulo", "123", "", 22.3f),
+            topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f)) } },
             topObjects = emptyList(),
             connectionStatus = ConnectionStatus.On,
+            onSignInWithGoogle = { },
+            onSignOut = { },
+            onSubmitAchievements = { },
+            onDeleteAccount = { }
         )
     }
 }
@@ -213,11 +220,13 @@ private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(en
 @Composable
 private fun TabLeaderboardPreviewNoUser() = PreviewComposable(enableDarkTheme = true) {
     TabLeaderboard(
-        onSignInWithGoogle = {},
-        onSignOut = {},
         currUser = null,
         connectionStatus = ConnectionStatus.Off,
         topUsers = emptyList(),
-        topObjects = emptyList()
+        topObjects = emptyList(),
+        onSignInWithGoogle = { },
+        onSignOut = { },
+        onSubmitAchievements = { },
+        onDeleteAccount = { }
     )
 }

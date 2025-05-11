@@ -13,9 +13,16 @@ import p4ulor.obj.detector.android.utils.NetworkObserver
 import p4ulor.obj.detector.android.viewmodels.utils.launch
 import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
+import p4ulor.obj.detector.data.domains.firebase.UserAchievement
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
+import p4ulor.obj.detector.data.domains.mediapipe.calculatePoints
+import p4ulor.obj.detector.data.domains.mediapipe.isDifferentThan
+import p4ulor.obj.detector.data.domains.mediapipe.reset
+import p4ulor.obj.detector.data.domains.mediapipe.toUserAchievements
 import p4ulor.obj.detector.data.sources.cloud.firebase.FirebaseInstance
 import p4ulor.obj.detector.data.utils.ConnectionStatus
+import p4ulor.obj.detector.e
+import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.screens.achievements.LeaderboardState
 import p4ulor.obj.detector.ui.screens.achievements.Tab
 import p4ulor.obj.detector.ui.screens.achievements.YourAchievementsState
@@ -45,7 +52,7 @@ class AchievementsViewModel(
     private val _leaderboard = MutableStateFlow(
         LeaderboardState(
             currUser = null,
-            achievements = emptyList(),
+            userAchievements = emptyList(),
             topUsers = emptyList(),
             topObjects = emptyList(),
             connectionStatus = ConnectionStatus.Off
@@ -93,8 +100,8 @@ class AchievementsViewModel(
 
     fun deleteAchievements() {
         launch {
-            userAchievementsOrderedByName = Achievement.reset(userAchievementsOrderedByName)
-            userAchievementsOrderedByDone = Achievement.reset(userAchievementsOrderedByName)
+            userAchievementsOrderedByName = userAchievementsOrderedByName.reset()
+            userAchievementsOrderedByDone = userAchievementsOrderedByName.reset()
             setOrderOption(yourAchievements.value.orderOptions)
             achievementsDao.resetAll()
         }
@@ -145,6 +152,35 @@ class AchievementsViewModel(
         }
     }
 
+    fun submitAchievements(onNoNewAchievements: () -> Unit) {
+        launch {
+            yourAchievements.value.achievements.let { achiev ->
+                if(achiev.isDifferentThan(leaderboard.value.currUser?.achievements)) {
+                    val points = achiev.calculatePoints()
+                    firebase.updateUserAchievements(achiev.toUserAchievements(), points)
+                        .onSuccess {
+                            setLeaderboard(
+                                currUser = leaderboard.value.currUser?.copy(
+                                    points = points
+                                )
+                            )
+                        }
+                        .onFailure {
+                            e("submitAchievements: $it ")
+                        }
+                } else {
+                    i("No new achievements to submit")
+                    onNoNewAchievements()
+                }
+            }
+        }
+    }
+
+    fun deleteAccount() {
+        firebase.deleteAccount()
+        signOut()
+    }
+
     /** Util to avoid having to do _yourAchievements.value = ... */
     private fun setYourAchievements(
         achievements: List<Achievement> = yourAchievements.value.achievements,
@@ -159,14 +195,14 @@ class AchievementsViewModel(
     /** Util to avoid having to do _leaderboard.value = ... */
     private fun setLeaderboard(
         currUser: User? = leaderboard.value.currUser,
-        achievements: List<Achievement> = leaderboard.value.achievements,
+        achievements: List<UserAchievement> = leaderboard.value.userAchievements,
         topUsers: List<User> = leaderboard.value.topUsers,
         topObjects: List<ObjectDetectionStats> = leaderboard.value.topObjects,
         connectionStatus: ConnectionStatus = leaderboard.value.connectionStatus
     ) {
         _leaderboard.value = leaderboard.value.copy(
             currUser = currUser,
-            achievements = achievements,
+            userAchievements = achievements,
             topUsers = topUsers,
             topObjects = topObjects,
             connectionStatus = connectionStatus

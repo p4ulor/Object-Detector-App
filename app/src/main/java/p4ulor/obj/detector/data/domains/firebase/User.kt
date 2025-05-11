@@ -1,6 +1,7 @@
 package p4ulor.obj.detector.data.domains.firebase
 
 import com.google.firebase.auth.FirebaseUser
+import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.sources.cloud.firebase.FbCollection
 
 /**
@@ -20,17 +21,21 @@ data class User(
     val name: String = "",
     val uuid: String = "",
     val photoUri: String = "",
-    val points: Float = 0f, // max should be 80.0f
-    val achievementCount: Int = 0
+    val points: Float = 0f, // so they dont have to be calculated everytime. max should be 80.0f
+    val achievements: List<UserAchievement> = emptyList()
 ) {
 
     companion object {
         fun createFrom(user: FirebaseUser) = User(
             name = user.displayName.toString(),
-            uuid = user.uid,
+            uuid = user.uid, // unique to the Firebase project
             photoUri = user.photoUrl.toString(),
             points = 0f,
-            achievementCount = 0
+            achievements = emptyList()
         )
+
+        // field names explicetly used in Firestore in case they are changed in the constructor
+        const val ACHIEVEMENTS = "achievements"
+        const val POINTS = "points"
     }
 }

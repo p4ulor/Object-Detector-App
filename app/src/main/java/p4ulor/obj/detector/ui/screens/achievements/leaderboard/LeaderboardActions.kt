@@ -1,6 +1,7 @@
 package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.PersonOff
@@ -32,7 +33,7 @@ fun LeaderboardActions(
     onSubmitAchievements: () -> Unit,
     onDeleteAccount: () -> Unit,
 ) {
-    CenteredRow(Modifier.fillMaxWidth().padding(bottom = GeneralPaddingTiny)) {
+    CenteredRow(Modifier.padding(bottom = GeneralPaddingTiny)) {
         LeaderboardAction(
             MaterialIcons.Publish,
             R.string.submit_achiv_action,

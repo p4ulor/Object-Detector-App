@@ -90,7 +90,9 @@ android {
                 println("$RELEASE_JKS_FILE_BASE64 not found")
             }
             val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
-            val tempKeystore = File(layout.buildDirectory.asFile.get(), "release.keystore") // Create a temp file.
+            val tempKeystore = File(layout.buildDirectory.asFile.get(), "release.keystore") // Create a temp file
+
+            tempKeystore.parentFile.mkdirs() // Ensure the parent directory exists (app/build/)
             FileOutputStream(tempKeystore).use { it.write(decodedBytes) }
 
             storeFile = tempKeystore
@@ -126,7 +128,7 @@ android {
 
 dependencies {
 
-    // Default (with some things removed, and androidTestImplementation moves to bottom):
+    // Default (with some things removed, and androidTestImplementation moved to bottom):
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
