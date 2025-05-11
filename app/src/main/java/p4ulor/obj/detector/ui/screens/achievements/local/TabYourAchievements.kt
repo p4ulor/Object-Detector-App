@@ -64,7 +64,7 @@ import p4ulor.obj.detector.ui.theme.PreviewComposable
 @Composable
 fun TabYourAchievements(
     achievements: List<Achievement>,
-    selectedOrderOption: OrderOption,
+    orderOptions: OrderOption,
     onDeleteAchievements: () -> Unit,
     onChangeOrderOption: (OrderOption) -> Unit
 ) {
@@ -100,7 +100,7 @@ fun TabYourAchievements(
                         SegmentedButton(
                             shape = SegmentedButtonDefaults.itemShape(index, OrderOption.entries.size),
                             onClick = { onChangeOrderOption(OrderOption.entries[index]) },
-                            selected = index == selectedOrderOption.ordinal,
+                            selected = index == orderOptions.ordinal,
                             colors = SegmentedButtonDefaults.colors().copy(
                                 activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
                                 inactiveContainerColor = MaterialTheme.colorScheme.tertiaryContainer
@@ -148,7 +148,7 @@ fun TabYourAchievements(
             )
         }
 
-        AchievementsList(paddingValues, achievements, selectedOrderOption)
+        AchievementsList(paddingValues, achievements, orderOptions)
     }
 }
 
@@ -254,7 +254,7 @@ private fun TabYourAchievementsPreview() = PreviewComposable(enableDarkTheme = t
     }
     TabYourAchievements(
         achievements = list,
-        selectedOrderOption = OrderOption.Name,
+        orderOptions = OrderOption.Name,
         onChangeOrderOption = {},
         onDeleteAchievements = {}
     )

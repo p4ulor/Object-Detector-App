@@ -81,7 +81,7 @@ fun BoxWithBackground(
 fun LightContainer(content: @Composable () -> Unit) = Box(
     Modifier
         .clip(SuperRoundRectangleShape)
-        .background(color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
+        .background(color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f))
         .border(
             width = 2.dp,
             color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),

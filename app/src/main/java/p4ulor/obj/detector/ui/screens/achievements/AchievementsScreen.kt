@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -23,8 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.viewmodels.AchievementsViewModel
-import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
-import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.data.utils.getTodaysDate
@@ -41,64 +40,62 @@ fun AchievementsScreen(){
     val ctx = LocalContext.current
     val vm = koinViewModel<AchievementsViewModel>()
 
+    val yourAchievementsCallbacks = remember {
+        YourAchievementsCallbacks(
+            onDeleteAchievements = { vm.deleteAchievements() },
+            onChangeOrderOption = { vm.setOrderOption(it) }
+        )
+    }
+
+    val leaderboardCallbacks = remember {
+        LeaderboardSCallbacks(
+            onSignInWithGoogle = { vm.signInWithGoogle() },
+            onSignOut = { vm.signOut() }
+        )
+    }
+
     val selectedTab by vm.selectedTab.collectAsState()
 
-    // Your Achievements
-    val userAchievements by vm.userAchievements.collectAsState()
-    val orderOption by vm.orderOption.collectAsState()
+    val yourAchievements by vm.yourAchievements.collectAsState()
+    val leaderboard by vm.leaderboard.collectAsState()
     var isLoaded by rememberSaveable { mutableStateOf(false) } // ensures there's always an animation even if are already loaded
 
-    // Leaderboard
-    val currUser by vm.currUser.collectAsState()
-    val connectionStatus by vm.connectionStatus.collectAsState(initial = ConnectionStatus.Off)
-
     LaunchedEffect(Unit) {
-        vm.loadAchievements()
+        vm.loadAchievements() // I won't wait for this to actually load since this is a somewhat expensive operation, I prefer to let the UI flow, and then after its loaded, the UI is updated
         isLoaded = true
     }
 
-    LaunchedEffect(connectionStatus) {
-        if(connectionStatus.isDisconnected) {
+    LaunchedEffect(leaderboard.connectionStatus) {
+        if(leaderboard.connectionStatus.isDisconnected) {
             ctx.toast(R.string.no_internet_connection)
         }
+        leaderboardCallbacks.copy()
     }
 
     AnimatedVisibility(
-        visible = isLoaded && userAchievements.isNotEmpty(),
+        visible = isLoaded && yourAchievements.achievements.isNotEmpty(),
         enter = fadeIn(smooth()) + scaleIn()
     ) {
-        userAchievements?.let {
-            AchievementsScreenUi(
-                selectedTab = selectedTab,
-                onSelectedTabChanged = { vm.setSelectedTab(it) },
-                achievements = it,
-                orderOptions = orderOption,
-                onChangeOrderOption = { vm.setOrderOption(it) },
-                onDeleteAchievements = { vm.deleteAchievements() },
-                onSignInWithGoogle = { vm.signInWithGoogle() },
-                onLogOut = { vm.signOut() },
-                currUser = currUser,
-                connectionStatus = connectionStatus
-            )
-        }
+        AchievementsScreenUi(
+            selectedTab = selectedTab,
+            onSelectedTabChanged = { vm.setSelectedTab(it) },
+            yourAchievementsState = yourAchievements,
+            yourAchievementsCallbacks = yourAchievementsCallbacks,
+            leaderboardState = leaderboard,
+            leaderboardSCallbacks = leaderboardCallbacks,
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AchievementsScreenUi( // todo, find fix for these params...
+fun AchievementsScreenUi(
     selectedTab: Tab,
     onSelectedTabChanged: (Tab) -> Unit,
-    achievements: List<Achievement>,
-    orderOptions: OrderOption,
-    onChangeOrderOption: (OrderOption) -> Unit,
-    onDeleteAchievements: () -> Unit,
-    onSignInWithGoogle: () -> Unit,
-    onLogOut: () -> Unit,
-    currUser: User? = null,
-    topUsers: List<User> = emptyList(),
-    topObjects: List<ObjectDetectionStats> = emptyList(),
-    connectionStatus: ConnectionStatus
+    yourAchievementsState: YourAchievementsState,
+    yourAchievementsCallbacks: YourAchievementsCallbacks,
+    leaderboardState: LeaderboardState,
+    leaderboardSCallbacks: LeaderboardSCallbacks
 ) {
 
     Column(
@@ -121,20 +118,20 @@ fun AchievementsScreenUi( // todo, find fix for these params...
         when(selectedTab){
             Tab.YourAchievements -> {
                 TabYourAchievements(
-                    achievements,
-                    orderOptions,
-                    onDeleteAchievements,
-                    onChangeOrderOption
+                    achievements = yourAchievementsState.achievements,
+                    orderOptions = yourAchievementsState.orderOptions,
+                    onDeleteAchievements = yourAchievementsCallbacks.onDeleteAchievements,
+                    onChangeOrderOption = yourAchievementsCallbacks.onChangeOrderOption
                 )
             }
             Tab.Leaderboard -> {
                 TabLeaderboard(
-                    onSignInWithGoogle,
-                    onLogOut,
-                    currUser,
-                    topUsers,
-                    topObjects,
-                    connectionStatus
+                    currUser = leaderboardState.currUser,
+                    topUsers = leaderboardState.topUsers,
+                    topObjects = leaderboardState.topObjects,
+                    connectionStatus = leaderboardState.connectionStatus,
+                    onSignInWithGoogle = leaderboardSCallbacks.onSignInWithGoogle,
+                    onSignOut = leaderboardSCallbacks.onSignOut
                 )
             }
         }
@@ -161,12 +158,24 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
     AchievementsScreenUi(
         Tab.YourAchievements,
         onSelectedTabChanged = {},
-        achievements,
-        OrderOption.Name,
-        onChangeOrderOption = {},
-        onDeleteAchievements = {},
-        onSignInWithGoogle = {},
-        onLogOut = {},
-        connectionStatus = ConnectionStatus.Off
+        yourAchievementsState = YourAchievementsState(
+            achievements = emptyList(),
+            orderOptions = OrderOption.Name
+        ),
+        yourAchievementsCallbacks = YourAchievementsCallbacks(
+            onDeleteAchievements = {  },
+            onChangeOrderOption = {  }
+        ),
+        leaderboardState = LeaderboardState(
+            currUser = null,
+            achievements = emptyList(),
+            topUsers = emptyList(),
+            topObjects = emptyList(),
+            connectionStatus = ConnectionStatus.Off
+        ),
+        leaderboardSCallbacks = LeaderboardSCallbacks(
+            onSignInWithGoogle = { },
+            onSignOut = { }
+        )
     )
 }

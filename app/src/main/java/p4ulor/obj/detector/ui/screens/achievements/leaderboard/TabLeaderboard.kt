@@ -57,12 +57,12 @@ private const val TOP_USERS_CAP = 5
 
 @Composable
 fun TabLeaderboard(
-    onSignInWithGoogle: () -> Unit,
-    onLogOut: () -> Unit,
     currUser: User?,
     topUsers: List<User>,
     topObjects: List<ObjectDetectionStats>,
-    connectionStatus: ConnectionStatus
+    connectionStatus: ConnectionStatus,
+    onSignInWithGoogle: () -> Unit,
+    onSignOut: () -> Unit
 ) {
     val ctx = LocalContext.current
     
@@ -87,7 +87,7 @@ fun TabLeaderboard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End
                     ) {
-                        OutlinedButton(onClick = onLogOut) {
+                        OutlinedButton(onClick = onSignOut) {
                             QuickText(R.string.logout)
                             with(MaterialIconsExt.Logout) {
                                 Icon(this, name, Modifier.padding(horizontal = GeneralPaddingTiny))
@@ -185,12 +185,12 @@ private fun ProfilePicture(photoUri: String?) {
 @Composable
 private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme = true) {
     TabLeaderboard(
-        onSignInWithGoogle = {},
-        onLogOut = {},
         currUser = User("Paulo", "123", "", 22.3f, 10),
         topObjects = emptyList(),
         connectionStatus = ConnectionStatus.On,
-        topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f, 10)) } }
+        topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f, 10)) } },
+        onSignInWithGoogle = {},
+        onSignOut = {},
     )
 }
 
@@ -200,7 +200,7 @@ private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(en
     BoxWithBackground(R.drawable.background_dark_2) {
         TabLeaderboard(
             onSignInWithGoogle = {},
-            onLogOut = {},
+            onSignOut = {},
             currUser = User("Paulo", "123", "", 22.3f, 10),
             topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f, 10)) } },
             topObjects = emptyList(),
@@ -214,7 +214,7 @@ private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(en
 private fun TabLeaderboardPreviewNoUser() = PreviewComposable(enableDarkTheme = true) {
     TabLeaderboard(
         onSignInWithGoogle = {},
-        onLogOut = {},
+        onSignOut = {},
         currUser = null,
         connectionStatus = ConnectionStatus.Off,
         topUsers = emptyList(),

@@ -1,7 +1,8 @@
 ## Setup
 - npm init -y
 - npm install -g firebase-tools
-- npx firebase-tools login
+- npx firebase-tools login (credentials will be stored at `/home/username/.config/configstore
+`)
 - npx firebase init functions
 - npx firebase init firestore
 

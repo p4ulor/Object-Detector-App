@@ -11,11 +11,14 @@ import org.koin.core.annotation.Single
 import p4ulor.obj.detector.android.MyApplication
 import p4ulor.obj.detector.android.utils.NetworkObserver
 import p4ulor.obj.detector.android.viewmodels.utils.launch
+import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.sources.cloud.firebase.FirebaseInstance
 import p4ulor.obj.detector.data.utils.ConnectionStatus
+import p4ulor.obj.detector.ui.screens.achievements.LeaderboardState
 import p4ulor.obj.detector.ui.screens.achievements.Tab
+import p4ulor.obj.detector.ui.screens.achievements.YourAchievementsState
 import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
 
 @SuppressLint("StaticFieldLeak") // Property ctx will be injected
@@ -27,14 +30,35 @@ class AchievementsViewModel(
     private val firebase: FirebaseInstance
 ) : AndroidViewModel(application) {
 
-    private val _currUser = MutableStateFlow<User?>(null)
-    val currUser = _currUser.asStateFlow()
+    private val _yourAchievements = MutableStateFlow(
+        YourAchievementsState(
+            achievements = emptyList(),
+            orderOptions = OrderOption.Name
+        )
+    )
+    val yourAchievements = _yourAchievements.asStateFlow()
 
-    private val _connectionStatus = MutableStateFlow(ConnectionStatus.Off)
-    val connectionStatus = _connectionStatus.asStateFlow()
+    // Cached ordering
+    private var userAchievementsOrderedByName = emptyList<Achievement>()
+    private var userAchievementsOrderedByDone = emptyList<Achievement>()
+
+    private val _leaderboard = MutableStateFlow(
+        LeaderboardState(
+            currUser = null,
+            achievements = emptyList(),
+            topUsers = emptyList(),
+            topObjects = emptyList(),
+            connectionStatus = ConnectionStatus.Off
+        )
+    )
+    val leaderboard = _leaderboard.asStateFlow()
 
     private val _selectedTab = MutableStateFlow(Tab.YourAchievements)
     val selectedTab = _selectedTab.asStateFlow()
+
+    private val achievementsDao by lazy {
+        getApplication<MyApplication>().appDb.achievements()
+    }
 
     init {
         firebase.init(application.applicationContext)
@@ -42,31 +66,18 @@ class AchievementsViewModel(
         launch {
             network.hasConnection.collect { hasConnection ->
                 if(!hasConnection) {
-                    if (currUser.value != null){
-                        _connectionStatus.value = ConnectionStatus.Disconnected
+                    if (leaderboard.value.currUser != null){
+                        setLeaderboard(connectionStatus = ConnectionStatus.Disconnected)
                         signOut()
                         delay(300) // Give some time for the disconnection event to be transmitted and valid
-                        _connectionStatus.value = ConnectionStatus.Off
+                        setLeaderboard(connectionStatus = ConnectionStatus.Off)
                     }
                 } else {
-                    _connectionStatus.value = ConnectionStatus.On
+                    setLeaderboard(connectionStatus = ConnectionStatus.On)
                 }
             }
         }
     }
-
-    private val achievementsDao by lazy {
-        getApplication<MyApplication>().appDb.achievements()
-    }
-
-    private val _userAchievements= MutableStateFlow(emptyList<Achievement>())
-    val userAchievements = _userAchievements.asStateFlow()
-    // Cached ordering
-    private var userAchievementsOrderedByName = emptyList<Achievement>()
-    private var userAchievementsOrderedByDone = emptyList<Achievement>()
-
-    private val _orderOption = MutableStateFlow(OrderOption.Name)
-    val orderOption =_orderOption.asStateFlow()
 
     fun setSelectedTab(tab: Tab) {
         _selectedTab.value = tab
@@ -76,28 +87,27 @@ class AchievementsViewModel(
         launch {
             userAchievementsOrderedByName = Achievement.from(achievementsDao.getAllOrderedByName())
             userAchievementsOrderedByDone = Achievement.from(achievementsDao.getAllOrderedByCompletionAndName())
-            _userAchievements.value = when (_orderOption.value) {
-                OrderOption.Name -> userAchievementsOrderedByName
-                OrderOption.Done -> userAchievementsOrderedByDone
-            }
+            setOrderOption(yourAchievements.value.orderOptions)
         }
     }
 
     fun deleteAchievements() {
         launch {
-            _userAchievements.value = Achievement.reset(_userAchievements.value)
-            userAchievementsOrderedByName =_userAchievements.value
-            userAchievementsOrderedByDone = _userAchievements.value
+            userAchievementsOrderedByName = Achievement.reset(userAchievementsOrderedByName)
+            userAchievementsOrderedByDone = Achievement.reset(userAchievementsOrderedByName)
+            setOrderOption(yourAchievements.value.orderOptions)
             achievementsDao.resetAll()
         }
     }
 
     fun setOrderOption(options: OrderOption) {
-        _orderOption.value = options
-        _userAchievements.value = when (_orderOption.value) {
-            OrderOption.Name -> userAchievementsOrderedByName
-            OrderOption.Done -> userAchievementsOrderedByDone
-        }
+        setYourAchievements(
+            orderOptions = options,
+            achievements = when (options) {
+                OrderOption.Name -> userAchievementsOrderedByName
+                OrderOption.Done -> userAchievementsOrderedByDone
+            }
+        )
     }
 
     /**
@@ -106,34 +116,60 @@ class AchievementsViewModel(
      */
     private fun orderAchievementsDeprecated() {
         launch {
-            _userAchievements.value = when (_orderOption.value) {
-                OrderOption.Name -> userAchievements.value?.toMutableList()?.apply {
+            setYourAchievements(achievements = when (yourAchievements.value.orderOptions) {
+                OrderOption.Name -> yourAchievements.value.achievements.toMutableList().apply {
                     sortBy { it.objectName }
-                } ?: emptyList()
+                }
 
-                OrderOption.Done -> userAchievements.value?.toMutableList()?.apply {
+                OrderOption.Done -> yourAchievements.value.achievements.toMutableList().apply {
                     sortBy { it.objectName }
                 }?.let {
                     it.groupBy { if (it.detectionDate != null) 0 else 1 }
                         .toSortedMap()
                         .flatMap { it.value }
-                } ?: emptyList()
-            }
+                }
+            })
         }
     }
 
-    /** Firebase */
-
     fun signInWithGoogle() {
         launch {
-            _currUser.value = firebase.signInWithGoogle(application.applicationContext)
+            setLeaderboard(currUser = firebase.signInWithGoogle(application.applicationContext))
         }
     }
 
     fun signOut() {
         launch {
-            _currUser.value = null
+            setLeaderboard(currUser = null)
             firebase.signOut()
         }
+    }
+
+    /** Util to avoid having to do _yourAchievements.value = ... */
+    private fun setYourAchievements(
+        achievements: List<Achievement> = yourAchievements.value.achievements,
+        orderOptions: OrderOption = yourAchievements.value.orderOptions
+    ) {
+        _yourAchievements.value = yourAchievements.value.copy(
+            achievements = achievements,
+            orderOptions = orderOptions
+        )
+    }
+
+    /** Util to avoid having to do _leaderboard.value = ... */
+    private fun setLeaderboard(
+        currUser: User? = leaderboard.value.currUser,
+        achievements: List<Achievement> = leaderboard.value.achievements,
+        topUsers: List<User> = leaderboard.value.topUsers,
+        topObjects: List<ObjectDetectionStats> = leaderboard.value.topObjects,
+        connectionStatus: ConnectionStatus = leaderboard.value.connectionStatus
+    ) {
+        _leaderboard.value = leaderboard.value.copy(
+            currUser = currUser,
+            achievements = achievements,
+            topUsers = topUsers,
+            topObjects = topObjects,
+            connectionStatus = connectionStatus
+        )
     }
 }

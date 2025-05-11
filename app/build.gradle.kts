@@ -86,6 +86,9 @@ android {
             // set these RELEASE_ constants in local.properties in root dir. And for Github Actions
 
             val encodedJSKFile = properties.getProperty(RELEASE_JKS_FILE_BASE64) ?: System.getenv(RELEASE_JKS_FILE_BASE64)
+            if( encodedJSKFile == null) {
+                println("$RELEASE_JKS_FILE_BASE64 not found")
+            }
             val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
             val tempKeystore = File(layout.buildDirectory.asFile.get(), "release.keystore") // Create a temp file.
             FileOutputStream(tempKeystore).use { it.write(decodedBytes) }
