@@ -68,7 +68,7 @@ fun TabLeaderboard(
 ) {
     val ctx = LocalContext.current
     
-    VerticallyAnimatedVisibility(visible = currUser != null) {
+    VerticallyAnimatedVisibility(visible = currUser != null) { // Login granted
         Column {
             Card(
                 Modifier.fillMaxWidth().padding(GeneralPaddingSmall),
@@ -154,7 +154,7 @@ fun TabLeaderboard(
         }
     }
 
-    VerticallyAnimatedVisibility(visible = currUser == null) {
+    VerticallyAnimatedVisibility(visible = currUser == null) { // Login not granted
         CenteredColumn {
             SignInWithGoogle(Modifier.width(200.dp), onClick = {
                 if (connectionStatus.isEnabled) {
@@ -188,10 +188,10 @@ private fun ProfilePicture(photoUri: String?) {
 @Composable
 private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme = true) {
     TabLeaderboard(
-        currUser = User("Paulo", "123", "", 22.3f),
+        currUser = User("Paulo", "uri", 22.3f),
         topObjects = emptyList(),
         connectionStatus = ConnectionStatus.On,
-        topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f)) } },
+        topUsers = buildList { repeat(8) { add(User("Paulo", "uri", 22.3f)) } },
         onSignInWithGoogle = { },
         onSignOut = { },
         onSubmitAchievements = { },
@@ -204,8 +204,8 @@ private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme 
 private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(enableDarkTheme = true) {
     BoxWithBackground(R.drawable.background_dark_2) {
         TabLeaderboard(
-            currUser = User("Paulo", "123", "", 22.3f),
-            topUsers = buildList { repeat(8) { add(User("Paulo", "123", "", 22.3f)) } },
+            currUser = User("Paulo", "uri", 22.3f),
+            topUsers = buildList { repeat(8) { add(User("Paulo", "uri", 22.3f)) } },
             topObjects = emptyList(),
             connectionStatus = ConnectionStatus.On,
             onSignInWithGoogle = { },

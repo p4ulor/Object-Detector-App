@@ -12,6 +12,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.CompletableDeferred
@@ -19,6 +20,7 @@ import kotlinx.coroutines.tasks.await
 import org.koin.core.annotation.Single
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.d
+import p4ulor.obj.detector.data.domains.firebase.TopUser
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.firebase.UserAchievement
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
@@ -36,6 +38,7 @@ class FirebaseInstance {
     // Firestore
     private val db = Firebase.firestore
     private val usersCollection = db.collection(FbCollection.Users.id)
+    private val topUsersCollection = db.collection(FbCollection.TopUsers.id)
 
     // Auth
     private val fbAuth = FirebaseAuth.getInstance()
@@ -87,6 +90,34 @@ class FirebaseInstance {
         }
     }
 
+    suspend fun getTopUsers(): Result<List<User>> {
+        var result = Result.success<List<User>>(emptyList())
+        topUsersCollection
+            .orderBy(TopUser.POINTS, Query.Direction.DESCENDING)
+            .limit(FbCollection.TopUsers.maxCollectionSize.toLong())
+            .get()
+            .addOnSuccessListener { query ->
+                result = Result.success(
+                    buildList {
+                        query.documents.filterNotNull().forEach {
+                            val user = it.toObject<User>()
+                            if (user != null) {
+                                add(user)
+                            } else {
+                                e("Unexpected error, user is null")
+                            }
+                        }
+                    }
+                )
+            }
+            .addOnFailureListener {
+                result = Result.failure(it)
+            }
+            .await()
+
+        return result
+    }
+
     suspend fun updateUserAchievements(achievements: List<UserAchievement>, points: Float): Result<Unit> {
         val error = StringBuilder("")
         usersCollection.document(currUserId)
@@ -128,7 +159,7 @@ class FirebaseInstance {
                 if (!doc.exists()) {
                     val newUser = User.createFrom(fbUser)
 
-                    usersCollection.document(newUser.uuid)
+                    usersCollection.document(uid)
                         .set(newUser)
                         .addOnSuccessListener {
                             i("User document created")
@@ -172,9 +203,6 @@ class FirebaseInstance {
         result.await()
         return currUser
     }
-
-
-
 }
 
 private val Credential.isGoogleSignIn: Boolean

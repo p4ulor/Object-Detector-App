@@ -57,6 +57,12 @@ android {
     println("Building version: ${defaultConfig.versionName}")
     val releaseSigning = "release"
 
+    // local.properties and GH actions repository secret keys
+    val RELEASE_JKS_FILE_BASE64 = "RELEASE_JKS_FILE_BASE64"
+    val RELEASE_JSK_PASSWORD = "RELEASE_JSK_PASSWORD"
+    val RELEASE_KEY_ALIAS = "RELEASE_KEY_ALIAS"
+    val RELEASE_KEY_PASSWORD = "RELEASE_KEY_PASSWORD"
+
     val properties = Properties().apply {
         val localProperties = project.rootProject.file("local.properties")
         if (localProperties.exists()) {
@@ -66,16 +72,10 @@ android {
             println("local.properties not present. This is likely the GH Actions build")
             println("Printing all env vars")
             System.getenv().map {
-                println("${it.key}")
+                // println("${it.key}")
             }
         }
     }
-
-    // local.properties and GH actions keys
-    val RELEASE_JKS_FILE_BASE64 = "RELEASE_JKS_FILE_BASE64"
-    val RELEASE_JSK_PASSWORD = "RELEASE_JSK_PASSWORD"
-    val RELEASE_KEY_ALIAS = "RELEASE_KEY_ALIAS"
-    val RELEASE_KEY_PASSWORD = "RELEASE_KEY_PASSWORD"
 
     /**
      * Read docs/README.md for more information for proper setup
@@ -261,8 +261,24 @@ task<Download>("_download2") {
     overwrite(false)
 }
 
+// GH actions repository secret keys
+val GOOGLE_SERVICES_JSON = "GOOGLE_SERVICES_JSON"
+
+task("create_google_services_json") {
+    val localProperties = project.rootProject.file("local.properties")
+    if (!localProperties.exists()) {
+        println("local.properties not present. This is likely the GH Actions build")
+        println("Creating google-services.json")
+        val googleJsonFile = File(layout.buildDirectory.asFile.get().path+"/app", "google-services.json")
+
+        googleJsonFile.parentFile.mkdirs() // Ensure the parent directory exists (app/build/)
+        FileOutputStream(googleJsonFile).use { it.write(System.getenv(GOOGLE_SERVICES_JSON).encodeToByteArray()) }
+    }
+}
+
 /** Download models after building */
 tasks.named("build") {
+    dependsOn("create_google_services_json")
     finalizedBy("_download1")
     finalizedBy("_download2")
 }

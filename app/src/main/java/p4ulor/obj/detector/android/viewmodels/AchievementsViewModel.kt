@@ -141,7 +141,19 @@ class AchievementsViewModel(
 
     fun signInWithGoogle() {
         launch {
-            setLeaderboard(currUser = firebase.signInWithGoogle(application.applicationContext))
+            val userObtained = firebase.signInWithGoogle(application.applicationContext)
+            val topUsers = if (userObtained != null) {
+                firebase.getTopUsers().let {
+                    it.onFailure { e("Error at getTopUsers ${it.message}") }
+                    it.getOrNull() ?: emptyList()
+                }
+            } else {
+                emptyList()
+            }
+            setLeaderboard(
+                currUser = userObtained,
+                topUsers = topUsers
+            )
         }
     }
 

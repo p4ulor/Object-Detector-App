@@ -5,7 +5,8 @@ import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.sources.cloud.firebase.FbCollection
 
 /**
- * A type of a document in the [FbCollection.Users] collection
+ * A type of a document in the [FbCollection.Users] collection.
+ * The uuid used for this document should be equal to the [FirebaseUser.uid] which is unique per Firebase project
  * Note: there's no need to convert it to a a Hashmap when adding it to a collection
  * (since Firestore SDK for Kotlin Extensions update). This class just needs to be a data class
  * and have default params in order for implicit deserialization to work at
@@ -19,7 +20,6 @@ import p4ulor.obj.detector.data.sources.cloud.firebase.FbCollection
  */
 data class User(
     val name: String = "",
-    val uuid: String = "",
     val photoUri: String = "",
     val points: Float = 0f, // so they dont have to be calculated everytime. max should be 80.0f
     val achievements: List<UserAchievement> = emptyList()
@@ -28,13 +28,12 @@ data class User(
     companion object {
         fun createFrom(user: FirebaseUser) = User(
             name = user.displayName.toString(),
-            uuid = user.uid, // unique to the Firebase project
             photoUri = user.photoUrl.toString(),
             points = 0f,
             achievements = emptyList()
         )
 
-        // field names explicetly used in Firestore in case they are changed in the constructor
+        // field names explicitly used in Firestore in case they are changed in the constructor
         const val ACHIEVEMENTS = "achievements"
         const val POINTS = "points"
     }

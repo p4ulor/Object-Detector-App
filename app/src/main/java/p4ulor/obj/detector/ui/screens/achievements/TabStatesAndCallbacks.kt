@@ -19,7 +19,7 @@ data class YourAchievementsCallbacks(
 
 data class LeaderboardState(
     val currUser: User?,
-    val userAchievements: List<UserAchievement>,
+    val userAchievements: List<UserAchievement>, // todo is this needed?
     val topUsers: List<User>,
     val topObjects: List<ObjectDetectionStats>,
     val connectionStatus: ConnectionStatus
