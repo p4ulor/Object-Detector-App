@@ -57,9 +57,9 @@ fun SettingsScreen() {
     val hasConnection by vm.network.hasConnection.collectAsState(initial = false) // Is cancelled when leaving composition
     var isLoaded by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) { // Collect only on first composition rendering
-        currentPrefs = vm.getUserPrefs().first() // These need to be loaded everytime
-        currentSecretPrefs = vm.getUserSecretPrefs().first()
+    LaunchedEffect(Unit) { // Load only on first composition rendering
+        currentPrefs = vm.getUserPrefs().await()
+        currentSecretPrefs = vm.getUserSecretPrefs().await()
         isLoaded = true
     }
 

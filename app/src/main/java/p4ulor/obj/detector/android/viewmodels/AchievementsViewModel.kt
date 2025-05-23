@@ -29,7 +29,7 @@ import p4ulor.obj.detector.ui.screens.achievements.YourAchievementsState
 import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
 
 @SuppressLint("StaticFieldLeak") // Property ctx will be injected
-@Single // So it's also not re-instantiated on composable destruction's
+@Single // So it's also not re-instantiated on composable destruction's (KoinViewModel isn't enough)
 @KoinViewModel
 class AchievementsViewModel(
     private val application: Application,

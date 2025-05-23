@@ -80,6 +80,7 @@ one or monitor the use of your API key
     - [Gemini API](https://aistudio.google.com/app/apikey). There's a link to this in the app too so you can better copy paste it from your phone's browser
     - 
 2. Installing ⬇️
+    - Minimum Android version: 11 (API level 30)
     - a) From .apk file: Download in [releases](https://github.com/p4ulor/Object-Detector-App/releases). Built with Github Actions
     - b) From source code: 
         - Decide if you want to comment out all firebase code so you don't create a firebase project or create your own and add your `google-services.json` file. Then try building the project

@@ -1,5 +1,9 @@
 package p4ulor.obj.detector.ui.screens.home
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MainThread
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -21,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PermMedia
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +45,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import p4ulor.obj.detector.R
+import p4ulor.obj.detector.android.utils.camera.Picture
 import p4ulor.obj.detector.android.utils.camera.createCameraImageAnalyser
 import p4ulor.obj.detector.android.utils.camera.createImageCaptureUseCase
 import p4ulor.obj.detector.android.utils.camera.getSizeOfBoxKeepingRatioGivenContainer
@@ -54,6 +60,7 @@ import p4ulor.obj.detector.data.domains.gemini.GeminiStatus
 import p4ulor.obj.detector.data.domains.mediapipe.Model
 import p4ulor.obj.detector.data.domains.mediapipe.ObjectDetectorSettings
 import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
+import p4ulor.obj.detector.e
 import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.components.ExpandableFAB
 import p4ulor.obj.detector.ui.components.FloatingActionButton
@@ -100,6 +107,20 @@ fun HomeScreenGranted(
     // Gemini
     val geminiStatus by vm.geminiStatus.collectAsState()
     val geminiMessage by vm.geminiMessage.collectAsState()
+    /**
+     * Doesn't require storage permissions, it's compatible from Android 11 (API level 30) up
+     * https://developer.android.com/training/data-storage/shared/photopicker
+     */
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            i("Obtained picture $uri")
+            vm.setPicture(Picture.File(uri, wasImported = true))
+        } else {
+            e("Launcher exited or picture is invalid")
+        }
+    }
 
     // MediaPipe
     val resultsBundle by vm.objDetectionResults.collectAsState()
@@ -130,7 +151,7 @@ fun HomeScreenGranted(
         }
     }
 
-    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera uses a lot of resources. And this is also used to terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to cancel the render of the AndroidView in the compose tree)
+    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera and MediaPipe uses a lot of resources. And this is also used to terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to cancel the render of the AndroidView in the compose tree)
         Box(Modifier.fillMaxSize()) {
             val (modifier, alignment) = modifierAndAlignmentFor(cameraPreviewRatio, geminiStatus)
 
@@ -199,7 +220,7 @@ fun HomeScreenGranted(
                     newGeminiMessage = geminiMessage,
                     pictureTaken = pictureTaken,
                     onValidUserSubmit = { text ->
-                        i("Prompting Gemini with $text")
+                        i("Prompting Gemini with: $text")
                         vm.promptGemini(text)
                     }
                 )
@@ -248,6 +269,13 @@ fun HomeScreenGranted(
                                 i("Torch not supported")
                             }
                         }
+                    }
+                )
+                add(
+                    FloatingActionButton(Icon.Material(MaterialIcons.PermMedia)) {
+                        photoPicker.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
                     }
                 )
             }

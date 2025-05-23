@@ -57,4 +57,5 @@
     <string name="top_detected_objects">Top detected objects</string>
     <string name="top_user_points">Top user points</string>
     <string name="no_new_achievements">No new achievements to submit</string>
+    <string name="imported_imgs_not_previewable">Imported images cannot be previewed</string>
 </resources>

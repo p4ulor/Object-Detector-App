@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -44,12 +45,12 @@ fun GeminiChatContainer(
     newGeminiMessage: Message,
     onValidUserSubmit: (String) -> Unit
 ) {
+    val density = LocalDensity.current
+
     var newMessage by remember { mutableStateOf(Message()) }
     var isPendingOrAnimationInProgress by remember { mutableStateOf(false) }
     var chatInputHeight by remember { mutableStateOf(0.dp) }
     var base64ImagePreview by remember { mutableStateOf<ImageRequest?>(null) }
-
-    val density = LocalDensity.current
 
     LaunchedEffect(newGeminiMessage) {
         newMessage = newGeminiMessage

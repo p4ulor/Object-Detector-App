@@ -2,21 +2,34 @@
 # https://docs.github.com/en/actions/writing-workflows/quickstart
 # https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-gradle
 # https://github.com/gradle/actions
+# https://cli.github.com/manual/gh_release_upload
 
 # Workflow name
 name: Object Detector GitHub Actions
 
 # Workflow title
 run-name: ${{ github.actor }} is cooking up some GitHub Actions
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [ published ] # this workflow runs when a new release is published
+
+# Make sure the GITHUB_TOKEN has permission to upload to our releases
+permissions:
+  contents: write
+
 jobs:
-  GitHub-Actions:
+  # Only 1 job, so only 1 file system is used. If the action is a release, other steps are performed
+  build-and-run:
     runs-on: ubuntu-latest
     env:
       RELEASE_JKS_FILE_BASE64: ${{ secrets.RELEASE_JKS_FILE_BASE64 }}
       RELEASE_JSK_PASSWORD: ${{ secrets.RELEASE_JSK_PASSWORD }}
       RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
       RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
     steps:
       - run: echo "The job was triggered by ${{ github.event_name }} event. Branch ${{ github.ref }}"
 
@@ -30,14 +43,14 @@ jobs:
         run: |
           ls ${{ github.workspace }}
 
-      # Setup java
+      # Setup java https://github.com/actions/setup-java
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
-      # Set up gradle
+      # Set up gradle https://github.com/gradle/actions
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -47,9 +60,48 @@ jobs:
       - name: Grant Permissions to gradlew
         run: chmod +x gradlew
 
-      # build also runs tests, so just run release .apk:
-      # ./gradlew assembleRelease
+      # build without running tests so it's faster
       - name: Build app
+        id: build_app
+        run: ./gradlew build -x test
+
+      - run: echo "Job's status is ${{ job.status }}. GH event = ${{ github.event.name }}"
+
+      # Release logic
+      # Build apk
+      - name: Release app
+        if: github.event_name == 'release' && github.event.action == 'published'
         run: ./gradlew assembleRelease
 
-      - run: echo "Job's status is ${{ job.status }}."
+      - name: Find APK file
+        if: github.event_name == 'release' && github.event.action == 'published'
+        id: find_apk
+        run: |
+          # Locate the generated APK
+          APK_PATH=$(find . -name "*.apk" -path "*app/build/outputs/apk/release/*" -print -quit)
+          if [ -z "$APK_PATH" ]; then
+            echo "Error: No APK file found in expected location!"
+            exit 1
+          fi
+          echo "Found APK at: $APK_PATH"
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT # Set an output variable
+          echo "apk_name=$(basename $APK_PATH)" >> $GITHUB_OUTPUT
+
+      - name: Upload APK to Release
+        if: github.event_name == 'release' && github.event.action == 'published' && steps.find_apk.outputs.apk_path != '' # Only upload if an APK was found
+        run: |
+          echo "Uploading ${{ steps.find_apk_release.outputs.apk_path }} to release ${{ github.event.release.tag_name }}"
+          gh release upload \
+            '${{ github.event.release.tag_name }}' \
+            '${{ steps.find_apk_release.outputs.apk_path }}'
+
+      # Post build and/or release logic (the script will clear everything due to checkout and only contain .gitignored files)
+
+      - name: Make script executable
+        run: chmod +x ./.github/workflows/deploy-gh-pages.sh
+
+      - name: Run local bash script
+        if: success() && steps.build_app == 'success'
+        run: |
+          ./gradlew app:dokkaHtml
+          ./.github/workflows/deploy-gh-pages.sh

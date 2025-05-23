@@ -86,11 +86,28 @@ exports.onUserDeleted = functions.firestore.onDocumentDeleted(collections.users+
     const topUsers = await getTopUsersInAscPoints()
     const isDeletedUserInTopUsers = topUsers.some(value => value.uid == deletedUserId)
     if (isDeletedUserInTopUsers) {
-        topUsersCollection
+        await topUsersCollection
                 .doc(deletedUserId)
                 .delete()
+        //now, the expected lenght of topUsers should be 4, get the 5th user with the most points
+        const eligibleUserQuery = await usersCollection
+            .where(admin.firestore.FieldPath.documentId(), "not-in", topUsers.map(value => value.uid))
+            .orderBy('points', 'desc')
+            .limit(1)
+            .get()
+        if (!eligibleUserQuery.empty) {
+            // Get the user with the most points who is not in the current topUsers
+            const eligibleUserDoc = eligibleUserQuery.docs[0]
+            const newTopUser = new User(eligibleUserDoc.data())
 
-        // todo get user with most points, not already in top users
+            await topUsersCollection
+                .doc(eligibleUserDoc.id)
+                .set(newTopUser)
+
+            logger.info(`Replaced deleted user ${deletedUserId} with ${newTopUser.uid}`);
+        } else {
+            logger.info(`No eligible replacement user found for ${deletedUserId}`);
+        }
     }
 
     return true

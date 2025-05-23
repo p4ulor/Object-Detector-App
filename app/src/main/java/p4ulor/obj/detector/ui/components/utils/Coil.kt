@@ -2,6 +2,9 @@ package p4ulor.obj.detector.ui.components.utils
 
 import android.content.Context
 import android.net.Uri
+import coil3.ImageLoader
+import coil3.executeBlocking
+import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Size
@@ -22,3 +25,8 @@ fun Context.pathToImageRequest(path: Uri) =
         .data(path)
         .crossfade(true)
         .build()
+
+/** This is useful in the case an image that was saved was deleted */
+fun ImageRequest?.hasError(ctx: Context) = this?.let {
+    ImageLoader(ctx).executeBlocking(this) is ErrorResult
+} ?: false

@@ -38,21 +38,26 @@ RELEASE_JSK_PASSWORD=...
 RELEASE_KEY_ALIAS=...
 RELEASE_KEY_PASSWORD=...
 ```
-3. The previous step should create an `app_certificate.jks` (Java KeyStore (JKS)) file. Then run `base64 --wrap=0 app_certificate.jks > app_certificate.base64` and copy it's contents to the `RELEASE_JKS_FILE_BASE64` variable. The JKS file is converted to a Base64 string so it's easily set as a string environment variable in the Github Actions pipeline. The `build.gradle.kts` converts it back to a temp JKS file in order to work.
-4. Go to settings of the [environment variables for Github Actions](https://github.com/p4ulor/Object-Detector-App/settings/secrets/actions) and setup these strings as "Repository secrets". Then, convert your `google-services.json` to Base64 and also set it as a "Repository secret". Run `base64 --wrap=0 google-services.json > google_services_json.base64`
-5. The previous operations and variable names should match the code inside the `signingConfigs` block in build.gradle.kts (:app) which setups up a release signing.
-6. With the `app_certificate.base64` and the `signingConfigs` setup, the SHA-1 and SHA-256 can now be generated when running `./gradlew signingReport` (in Gradle task tree `app/Tasks/android`). It will print 2 pairs of these hashes: one for debug and one for release. Save both of these hashes (you can generate new ones any time)
-7. To setup the `google-services.json` with these hashes, go to your Firebase project settings at `https://console.firebase.google.com/project/«firebase project id»/settings/general`, then go to `SDK setup and configuration`. Click on `Add fingerprint` and place the debug and release SHA-1's to create your `google-services.json`. The SHA-1 is used so the app is able to work with Google Sign In.
-8. Why is SHA-1 [is still used](https://developers.google.com/android/guides/client-auth) for Google Sign-in? A [plausible explanation](https://security.stackexchange.com/questions/91446/why-is-google-still-using-a-sha-1-certificate-on-its-own-site-when-they-are-phas) is to allow support for older systems. The SHA-256 is used in App Check for authentication. The SHA-256 that can be binded to the `google-services.json` is only used for Firebase Dynamic links, not for authentication
-9. Finally, the `google-services.json` file should be set as an Base64 string environment variable in Github Actions and be converted to a file that's placed in `app/` directory during the job execution (and before the gradle build step)
+3. The previous step should create an `app_certificate.jks` (Java KeyStore (JKS)) file. Then run
+```cmake
+base64 --wrap=0 app_certificate.jks > app_certificate.base64
+```
+and copy it's contents to the `RELEASE_JKS_FILE_BASE64` variable. The JKS file is converted to a Base64 string so it's easily set as a string environment variable in the Github Actions pipeline. The `build.gradle.kts` converts it back to a temp JKS file in order to work.
+
+4. Go to the settings of the [environment variables for Github Actions](https://github.com/p4ulor/Object-Detector-App/settings/secrets/actions) and setup these strings as "Repository secrets". Then, convert your `google-services.json` to Base64 and also set it as a "Repository secret". Run 
+```cmake
+base64 --wrap=0 google-services.json > google_services_json.base64
+```
+
+5. The previous operations and variable names should match the code insiprevious step should cretring environment variable in Github Actions and be converted to a file that's placed in `app/` directory during the job execution (and before the gradle build step)
 10. More info
    - https://developers.google.com/android/guides/client-auth
    - https://developer.android.com/studio/publish/app-signing
-11. In essence, it can be said that the app is theoretically safe with the `google-services.json` file in place because:
+11. In essence, it can be said that the app is sufficiently safe with the `google-services.json` file in place because:
     - The API keys within `google-services.json` are platform-restricted to Android (lesser attack surface compared to allowing the web SDK per example)
     - With Firestore rules, only authenticated users can write to their own data
     - With Firestore rules, only authenticated users can read data. And the only authentication method is with Google
-    - And the most important step is to setup the Firebase project (and the app) with ["App Check"](https://firebase.google.com/docs/app-check?hl=en&authuser=0#how_is_related_to), which is complementary to the Firebase authentication. It offers periodic attestation of the app or device's authenticity by requiring API calls to contain a valid App Check token with an expiration date. It requires creating a Play Console developer account (costs 25 dollars) and associating a Google Play project to the Firebase project. This is where the gradle generated SHA-256 comes in. To configure App Check is pretty simple, just go to it's tab in Firebase, click register, add the SHA-256, and on API's tab check enforcement for Firestore. But I don't want to pay 25 dollars and I want to move on to other things, so I didn't perform this step
+    - And the most important step is to setup the Firebase project (and the app) with ["App Check"](https://firebase.google.com/docs/app-check?hl=en&authuser=0#how_is_related_to), which is complementary to the Firebase authentication. It offers periodic attestation of the app or device's authenticity by requiring API calls to contain a valid App Check token with an expiration date. It requires creating a Play Console developer account (costs 25 dollars) and associating a Google Play project to the Firebase project. This is where the gradle generated SHA-256 comes in. To configure App Check is pretty simple, just go to it's tab in Firebase, click register, add the SHA-256, and on API's tab check enforcement for Firestore. But I didn't do this because: I don't want to pay 25 dollars, I want to move on to other things and I don't want to complicate the app use and building for other devs so they can try it out more easily.
 
 ### Firebase rules (prod)
 ```javascript
@@ -111,9 +116,9 @@ service cloud.firestore {
 - https://firebase.google.com/docs/samples?hl=en&authuser=0
 
 ### Trivia
-- In the past before my decision to use Gemini, I intended to use [Text Generation](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/android)
-    - But it would require the user to download a LLM to their phone. So I decided to go for the Gemini API.
-    - The LLM Inference API support these [types of models](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference#models). The most lightwheight (1.30 GB) is:
+- In the past before my decision to use Gemini, I intended to use [Text Generation](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/android) to simply talk about a MediaPipe detected object, but:
+    - It would require the user to download a LLM to their phone. So I decided to go for the Gemini API.
+    - The LLM Inference API supports these [types of models](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference#models). The most lightwheight (1.30 GB) is:
 [gemma-1.1-2b-it-cpu-int4, LiteRT/TFLite variation](https://www.kaggle.com/models/google/gemma/tfLite/gemma-1.1-2b-it-cpu-int4)
     - [mediapipe-samples - llm_inference](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/llm_inference/android).
 

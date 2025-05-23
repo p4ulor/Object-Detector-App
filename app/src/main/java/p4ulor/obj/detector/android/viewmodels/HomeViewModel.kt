@@ -149,6 +149,10 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         }
     }
 
+    fun setPicture(picture: Picture) {
+        _pictureTaken.value = picture
+    }
+
     fun toggleCameraPreviewRatio(): ResolutionSelector {
         _cameraPreviewRatio.value = _cameraPreviewRatio.value.toggle()
         return _cameraPreviewRatio.value

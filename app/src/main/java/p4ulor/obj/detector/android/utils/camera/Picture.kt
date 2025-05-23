@@ -9,7 +9,7 @@ sealed class Picture private constructor(val mimeType: MimeType = ImageCaptureDe
     /**
      * @property path should be something like `content://media/external/images/media/1000069851`
      */
-    data class File(val path: Uri) : Picture()
+    data class File(val path: Uri, val wasImported: Boolean = false) : Picture()
     /** Used when the Picture is only to be in memory and was not saved to a file */
     data class Base64(val base64: String) : Picture()
 

@@ -60,7 +60,7 @@ class KtorClient(private val hostName: String) : Closeable {
             }
         }
         install(HttpTimeout){
-            requestTimeoutMillis = 10000
+            //requestTimeoutMillis = 10000 // this timeout sometimes expired IDK why, Ktor or Google bug?
         }
         install(HttpRequestRetry){
             delayMillis { retryCount ->

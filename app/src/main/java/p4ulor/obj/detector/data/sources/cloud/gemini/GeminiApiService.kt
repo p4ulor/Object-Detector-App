@@ -40,13 +40,13 @@ class GeminiApiService(apiKey: String) : Closeable {
                     },
                     onFailure = {
                         it.toDomainError().also {
-                            e("promptWithImage error: $it")
+                            e("promptWithImage error http response: $it")
                         }
                     }
                 )
             }
         }.onFailure {
-            e("promptWithImage stacktrace: ${it.stackTrace.asList()}")
+            e("promptWithImage error throwable message: ${it.message}")
         }.getOrNull()
     }
 
@@ -65,6 +65,7 @@ class GeminiApiService(apiKey: String) : Closeable {
         totalTokensUsed = usageMetadata.totalTokenCount
     )
 
+    /** To improve the text, I could have defined the possible JSON formats of the errors */
     private suspend fun HttpResponse.toDomainError() = GeminiResponse(
         generatedText = "Error (this message is shown on purpose): ${bodyAsText()}. Status: ${status.description}",
         totalTokensUsed = 0

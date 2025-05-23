@@ -9,15 +9,15 @@
  * @property {Array<UserAchievement>} achievements
  */
 class User {
-    /**
-     * @param {QueryDocumentSnapshot} snapshot 
-     */
+    /** @param {QueryDocumentSnapshot} snapshot */
     constructor(snapshot) {
         this.name = snapshot.name
         this.photoUri = snapshot.photoUri
         this.points = snapshot.points
         this.achievements = snapshot.achievements
     }
+
+    static POINTS_FIELD = "points"
 }
 
 class UserAchievement {
@@ -39,7 +39,7 @@ class TopUser {
 
     constructor(points) {
         this.points = points
-    }
+    }  
 }
 
 /** The uid should be the objectName */
@@ -56,9 +56,7 @@ class ObjectDetectionStats {
 class Document {
     /** @type {string} */
     uid
-    /** 
-     * @type {User | TopUser | ObjectDetectionStats} data
-     */
+    /**  @type {User | TopUser | ObjectDetectionStats} data */
     data
 
     constructor(uid, data) {

@@ -6,9 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-/**
- * Factory method to create any [AndroidViewModel] with Application
- */
+/** Factory method to create any [AndroidViewModel] with Application */
 inline fun <reified VM : ViewModel> create(
     context: Context
 ) = object : ViewModelProvider.AndroidViewModelFactory(context as Application) {
