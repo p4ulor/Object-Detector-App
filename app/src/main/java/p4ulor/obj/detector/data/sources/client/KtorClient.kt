@@ -36,7 +36,7 @@ import java.io.Closeable
  * [Configuration.json]. All methods can throw exception if the [HttpStatusCode] is not ok
  *
  * Notes:
- * - [hostName] cannot contain the URL scheme/protocol, which is defined in [DefaultRequest]
+ * - [hostName] cannot contain the URL scheme/protocol, which is defined in [DefaultRequest] block
  * - [QueryParams] cannot be in the path when calling [get], [post], etc. They need to be specially
  * encoded by Ktor at [withUrl]
  * - Consider using [close] when closing the app
@@ -60,7 +60,7 @@ class KtorClient(private val hostName: String) : Closeable {
             }
         }
         install(HttpTimeout){
-            //requestTimeoutMillis = 10000 // this timeout sometimes expired IDK why, Ktor or Google bug?
+            //requestTimeoutMillis = 10000 // this timeout sometimes expired IDK why, Ktor or Gemini bug?
         }
         install(HttpRequestRetry){
             delayMillis { retryCount ->

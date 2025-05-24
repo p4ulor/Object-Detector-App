@@ -5,6 +5,7 @@ import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.DynamicRange
+import androidx.camera.core.ExperimentalCameraInfo
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -101,6 +102,8 @@ private val openGLPipelineSupportedDynamicRanges = setOf(
  * cameras with 10-bit output
  * - https://android-developers.googleblog.com/2024/12/whats-new-in-camerax-140-and-jetpack-compose-support.html
  */
+@OptIn(markerClass = arrayOf(androidx.camera.core.ExperimentalCameraInfo::class))
+@Suppress("UnsafeOptInUsageError")
 val ProcessCameraProvider.isHdrSupported: DynamicRange?
     get() = run {
         val range = DynamicRange.HDR10_10_BIT

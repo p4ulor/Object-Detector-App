@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleOwner
 import p4ulor.obj.detector.i
 
 /**
- * Utility class that wraps a [DisposableEffect] and callbacks that should either cause the
+ * Utility function that wraps a [DisposableEffect] and callbacks that should either cause the
  * unbinding of the camera or trigger the re-binding of the camera in order to save resources.
  * This contains the logic of the lifecycle stages where the camera should be un-binded (which is
  * when the app is "minimized", in Android terms, in [Lifecycle.Event.ON_PAUSE]) and returned on

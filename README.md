@@ -20,9 +20,11 @@
 | <img width="50" src='https://ai.google.dev/edge/mediapipe/images/mediapipe_icon.svg'> | <img width="50" src='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png'> | <img width="50" src='https://resources.jetbrains.com/storage/products/company/brand/logos/Ktor_icon.png'> | <img width="50" src='https://firebase.google.com/static/images/brand-guidelines/logo-logomark.png'> |
 
 ### 1. [MediaPipe](https://github.com/google/mediapipe)
-- An open-source framework from Google. It facilitates the integration of AI & ML into your applications. Here's a showcase of the [tasks MediaPipe supports](https://mediapipe-studio.webapps.google.com/home)
+- An open-source framework that facilitates the integration of AI & ML, made by Google. It's mostly geared towards lightweight devices or "edge devices" (mobile devices and embedded systems) and is cross-platform. 
+- MP supports models authored in [LiteRT](https://developers.googleblog.com/en/tensorflow-lite-is-now-litert/) (formelly known as TensorFlow Lite (TFLite)), which is a framework and runtime for on-device AI that's also built by Google. LiteRT also supports models authored in PyTorch by [converting them](https://ai.google.dev/edge/litert/models/convert_pytorch)
+- Here's a showcase of the [tasks MediaPipe supports](https://mediapipe-studio.webapps.google.com/home)
 - I'm using the [Object Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector/android) Mediapipe dependency and the provided pre-trained [models](https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#models) of the family "EfficientDet" developed by Google. These models can detect these [80 objects](https://storage.googleapis.com/mediapipe-tasks/object_detector/labelmap.txt)
-- You can learn more about object detection with PyTorch and in making your own model through this [DeepLearningExamples repository](https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/Detection/README.md) by NVIDIA
+- You can learn more about object detection (in this example with PyTorch) and in making your own model through these [DeepLearningExamples repository](https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/Detection/README.md) by NVIDIA
 
 ### 2. [Gemini API](https://aistudio.google.com/app/apikey)
 - A RESTful API for performing HTTP requests to a Gemini model,

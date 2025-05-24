@@ -58,6 +58,7 @@ base64 --wrap=0 google-services.json > google_services_json.base64
     - With Firestore rules, only authenticated users can write to their own data
     - With Firestore rules, only authenticated users can read data. And the only authentication method is with Google
     - And the most important step is to setup the Firebase project (and the app) with ["App Check"](https://firebase.google.com/docs/app-check?hl=en&authuser=0#how_is_related_to), which is complementary to the Firebase authentication. It offers periodic attestation of the app or device's authenticity by requiring API calls to contain a valid App Check token with an expiration date. It requires creating a Play Console developer account (costs 25 dollars) and associating a Google Play project to the Firebase project. This is where the gradle generated SHA-256 comes in. To configure App Check is pretty simple, just go to it's tab in Firebase, click register, add the SHA-256, and on API's tab check enforcement for Firestore. But I didn't do this because: I don't want to pay 25 dollars, I want to move on to other things and I don't want to complicate the app use and building for other devs so they can try it out more easily.
+12. For testing outside of GH actions, you can set the environment variables (and rename some files that can be overwritten) in the terminal with `èxport GOOGLE_SERVICES_JSON=...` and then running the gradle script through the same terminal ` ./gradlew build -x test`
 
 ### Firebase rules (prod)
 ```javascript
@@ -110,6 +111,7 @@ service cloud.firestore {
 - Not worrying about still using ImageDetectionUseCase when toggling Gemini mode. Only the emission of results is stopped. This was done like this in order to not restart (and interrupt) the camera preview, it's also faster this way.
 - Not displaying the whole list of Gemini messages in the chat, but only displaying the latest one
 - Not opening the Achievements screen when clicking on a new achievement notification, but only navigating to the MainActivity
+- Not supporting zooming in with camera
 
 ### Resources
 - https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android

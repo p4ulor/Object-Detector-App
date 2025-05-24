@@ -7,7 +7,11 @@ import p4ulor.obj.detector.data.utils.fileToBase64
 
 sealed class Picture private constructor(val mimeType: MimeType = ImageCaptureDefault.mimeType) {
     /**
-     * @property path should be something like `content://media/external/images/media/1000069851`
+     * @property path When taking a picture it should be something like:
+     * - `content://media/external/images/media/1000069851`
+     *
+     * Or when using photoPicker:
+     * - `content://media/picker/0/com.android.providers.media.photopicker/media/1000095337`
      */
     data class File(val path: Uri, val wasImported: Boolean = false) : Picture()
     /** Used when the Picture is only to be in memory and was not saved to a file */

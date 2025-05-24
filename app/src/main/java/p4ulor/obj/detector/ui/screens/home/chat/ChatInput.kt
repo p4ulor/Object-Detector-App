@@ -1,6 +1,7 @@
 package p4ulor.obj.detector.ui.screens.home.chat
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -81,8 +82,13 @@ fun ChatInput(
     LaunchedEffect(pictureTaken) {
         pictureTaken?.let { pic ->
             with(ctx){
-                pic.asFile?.path?.let {
-                    pathToImageRequest(it) to true
+                pic.asFile?.let {
+                    if (it.wasImported) { // Imported image are done without permissions with image picker, so trying to open them with Intent.ACTION_VIEW will show some a blank image placeholder-like-icon from the OS
+                        val img64 = it.imageAsBase64() ?: "".also { e("Image Base64 shouldn't be null") }
+                        base64ToImageRequest(img64) to false
+                    } else {
+                        pathToImageRequest(it.path) to true
+                    }
                 } ?: pic.asBase64?.base64?.let {
                     base64ToImageRequest(it) to false
                 }
@@ -107,7 +113,7 @@ fun ChatInput(
                         if (isImageFile) {
                             pictureTaken.asFile?.let { file ->
                                 if (file.wasImported) {
-                                    ctx.toast(R.string.imported_imgs_not_previewable)
+                                    image?.run { onShowBase64ImagePreview(this) }
                                 } else {
                                     ctx.startActivity(Intent().apply {
                                         action = Intent.ACTION_VIEW

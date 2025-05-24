@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import p4ulor.obj.detector.android.utils.camera.Picture
 import p4ulor.obj.detector.ui.components.utils.DisplayHeight
+import p4ulor.obj.detector.ui.components.utils.GeneralPaddingMedium
 import p4ulor.obj.detector.ui.components.utils.ScreenCenter
 import p4ulor.obj.detector.ui.components.utils.ScreenHeight
 import p4ulor.obj.detector.ui.theme.PreviewComposable
@@ -103,7 +105,9 @@ fun GeminiChatContainer(
             AsyncImage(
                 model = base64ImagePreview,
                 contentDescription = "picture taken large preview",
-                Modifier.height(DisplayHeight / 1.8f)
+                Modifier
+                    .height(DisplayHeight / 1.8f)
+                    .padding(GeneralPaddingMedium)
             )
         }
     }

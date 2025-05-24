@@ -42,8 +42,8 @@ suspend fun Context.initializeDb(db: AppDatabase) {
 
 /** YOLO, just to try it out since I had to change it */
 val MIGRATION_V1_V2 = object : Migration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
             "ALTER TABLE $tableAchivements ADD COLUMN certaintyScore REAL NOT NULL DEFAULT 0.0"
         )
     }

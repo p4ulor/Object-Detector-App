@@ -103,6 +103,7 @@ fun HomeScreenGranted(
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
     val pictureTaken by vm.pictureTaken.collectAsState()
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
+    var enableCameraUnbinding by rememberSaveable { mutableStateOf(true) }
 
     // Gemini
     val geminiStatus by vm.geminiStatus.collectAsState()
@@ -120,6 +121,7 @@ fun HomeScreenGranted(
         } else {
             e("Launcher exited or picture is invalid")
         }
+        enableCameraUnbinding = true
     }
 
     // MediaPipe
@@ -132,11 +134,13 @@ fun HomeScreenGranted(
             isAppMinimized = false
         },
         onUnbind = {
-            i("Unbinding camera")
-            cameraProvider.unbindAll()
-            camera = null
-            isAppMinimized = true
-            isFlashEnabled = false
+            if (enableCameraUnbinding) {
+                i("Unbinding camera")
+                cameraProvider.unbindAll()
+                camera = null
+                isAppMinimized = true
+                isFlashEnabled = false
+            }
         }
     )
 
@@ -231,30 +235,11 @@ fun HomeScreenGranted(
             listOpenerFAB = FloatingActionButton(Icon.Material(MaterialIcons.Add)),
             fabs = buildList {
                 add(
-                    FloatingActionButton(Icon.App(ResourcesIcon.Camera)) {
-                        vm.takePicture(imageCaptureUseCase)
-                    }
-                )
-                add(
-                    if(geminiStatus.isEnabled){
-                        FloatingActionButton(Icon.App(ResourcesIcon.MediaPipe)){
-                            vm.toggleGemini(onFail = {})
-                        }
-                    } else {
-                        FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) {
-                            vm.toggleGemini(onFail = {
-                                ctx.toast(R.string.check_internet_and_gemini_key)
-                            })
-                        }
-                    }
-                )
-                add(
                     FloatingActionButton(Icon.App(ResourcesIcon.Scale)) {
                         cameraProvider.unbindAll() // because a new [camera] will be initialized in the AndroidView
                         imageCaptureUseCase = createImageCaptureUseCase(vm.toggleCameraPreviewRatio())
                     }
                 )
-
                 add(
                     FloatingActionButton(
                         Icon.App(
@@ -272,12 +257,33 @@ fun HomeScreenGranted(
                     }
                 )
                 add(
-                    FloatingActionButton(Icon.Material(MaterialIcons.PermMedia)) {
-                        photoPicker.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
+                    if(geminiStatus.isEnabled){
+                        FloatingActionButton(Icon.App(ResourcesIcon.MediaPipe)){
+                            vm.toggleGemini(onFail = {})
+                        }
+                    } else {
+                        FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) {
+                            vm.toggleGemini(onFail = {
+                                ctx.toast(R.string.check_internet_and_gemini_key)
+                            })
+                        }
                     }
                 )
+                if (geminiStatus.isEnabled) {
+                    add(
+                        FloatingActionButton(Icon.App(ResourcesIcon.Camera)) {
+                            vm.takePicture(imageCaptureUseCase)
+                        }
+                    )
+                    add(
+                        FloatingActionButton(Icon.Material(MaterialIcons.PermMedia)) {
+                            enableCameraUnbinding = false
+                            photoPicker.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        }
+                    )
+                }
             }
         )
     }

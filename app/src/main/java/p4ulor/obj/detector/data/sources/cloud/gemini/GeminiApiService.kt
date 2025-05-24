@@ -33,7 +33,7 @@ class GeminiApiService(apiKey: String) : Closeable {
         val body = prompt.toHttpRequest()
 
         return runCatching {
-            http.post(path, queryParams, body, defaultHeaders)?.let { response ->
+            http.post(path, queryParams, body, defaultHeaders).let { response ->
                 response.handle<HttpResponse, GeminiResponse>(
                     onSuccess = {
                         it.body<GenerateContentResponse>().toDomain()

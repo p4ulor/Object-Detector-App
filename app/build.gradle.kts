@@ -79,23 +79,25 @@ android {
 
     /**
      * Read docs/README.md for more information for proper setup
+     * set these RELEASE_ constants in local.properties in root dir. And for Github Actions
      * TLDR - In order for this to work, first setup the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key)
      */
     signingConfigs {
         create(releaseSigning) {
-            // set these RELEASE_ constants in local.properties in root dir. And for Github Actions
-
             val encodedJSKFile = properties.getProperty(RELEASE_JKS_FILE_BASE64) ?: System.getenv(RELEASE_JKS_FILE_BASE64)
-            if( encodedJSKFile == null) {
+            if(encodedJSKFile == null) {
                 println("$RELEASE_JKS_FILE_BASE64 not found")
+            } else {
+                val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
+                println("Creating release.keystore to ${project.rootDir.path}")
+                val tempKeystore = File(project.rootDir.path, "release.keystore") // Create a temp file
+
+                tempKeystore.parentFile.mkdirs() // Ensure the parent directory exists (app/)
+                FileOutputStream(tempKeystore).use { it.write(decodedBytes) }
+
+                storeFile = tempKeystore
             }
-            val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
-            val tempKeystore = File(layout.buildDirectory.asFile.get(), "release.keystore") // Create a temp file
 
-            tempKeystore.parentFile.mkdirs() // Ensure the parent directory exists (app/build/)
-            FileOutputStream(tempKeystore).use { it.write(decodedBytes) }
-
-            storeFile = tempKeystore
             storePassword = properties.getProperty(RELEASE_JSK_PASSWORD) ?: System.getenv(RELEASE_JSK_PASSWORD)
             keyAlias = properties.getProperty(RELEASE_KEY_ALIAS) ?: System.getenv(RELEASE_KEY_ALIAS)
             keyPassword = properties.getProperty(RELEASE_KEY_PASSWORD) ?: System.getenv(RELEASE_KEY_PASSWORD)
@@ -268,16 +270,21 @@ task("create_google_services_json") {
     val localProperties = project.rootProject.file("local.properties")
     if (!localProperties.exists()) {
         println("local.properties not present. This is likely the GH Actions build")
-        println("Creating google-services.json")
-        val googleJsonFile = File(layout.buildDirectory.asFile.get().path+"/app", "google-services.json")
+        println("Creating google-services.json to ${project.projectDir.path}")
+        val googleJsonFile = File(project.projectDir.path, "google-services.json")
 
         googleJsonFile.parentFile.mkdirs() // Ensure the parent directory exists (app/build/)
-        FileOutputStream(googleJsonFile).use { it.write(System.getenv(GOOGLE_SERVICES_JSON).encodeToByteArray()) }
+        val base64Value = System.getenv(GOOGLE_SERVICES_JSON)
+        val decodedBytes = Base64.getDecoder().decode(base64Value)
+        FileOutputStream(googleJsonFile).use { it.write(decodedBytes) }
+    } else {
+        println("local.properties is present. This is likely a NOT a GH Actions build")
     }
 }
 
 /** Download models after building */
 tasks.named("build") {
+    println("config pre and post build tasks, if these dont run, change up some things from these tasks so they are reset in gradle cache")
     dependsOn("create_google_services_json")
     finalizedBy("_download1")
     finalizedBy("_download2")

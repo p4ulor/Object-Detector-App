@@ -50,12 +50,10 @@
     <string name="submit_achiv_action">Submit Achievements</string>
     <string name="submit_achiv_action_desc">Update your points in the leaderboard with the points you have locally</string>
     <string name="submit">Submit</string>
-    <string name="reset_achiv_action">Reset Achievements</string>
     <string name="delete_acc_action">Delete Account</string>
     <string name="delete_acc__action_desc">This will delete all data associated with your account. You can then unbind your account from Object Detector in your Google account settings</string>
     <string name="delete">Delete</string>
     <string name="top_detected_objects">Top detected objects</string>
     <string name="top_user_points">Top user points</string>
     <string name="no_new_achievements">No new achievements to submit</string>
-    <string name="imported_imgs_not_previewable">Imported images cannot be previewed</string>
 </resources>
