@@ -1,7 +1,11 @@
 ## Main commands
 Inside `functions/` dir:
 - npm run deploy -> to deploy to Firebase's Cloud Functions, when they are ready for production
-- npm run serve -> to run firebase emulator (with UI, great for testing)
+- npm run serve -> to run firebase emulator (with UI, great for testing). http://127.0.0.1:4000/
+- npm run serve-saved -> to run firebase emulator in a way that saves and imports the dummy data written to it
+
+Manual command to export data of running emulators. Inside root npm dir:
+- npx firebase emulators:export dev-data
 
 ## Notes
 - I'm using CommonJS, not ES Modules (ESM) importing syntax
@@ -12,11 +16,11 @@ Inside `functions/` dir:
     - And click the check box `Include Google-provided role grants`
 
 ## Setup used (for future reference)
-Avoiding installing firebase globally (without -g)
+THis setup avoids installing firebase globally (without -g). Inside root npm dir:
+
 - npm init -y
 - npm install firebase-tools --save-dev
-- npx firebase-tools login (credentials will be stored at `/home/username/.config/configstore
-`)
+- npx firebase-tools login (credentials will be stored at `/home/username/.config/configstore`)
 - npx firebase init functions
 - npx firebase init firestore
 - npx firebase init emulators -> select Functions Emulator and Firestore Emulator

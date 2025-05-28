@@ -3,6 +3,7 @@
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "serve": "firebase emulators:start --only firestore,functions --project=object-detector-7f0d6",
+    "serve-saved": "firebase emulators:start --only firestore,functions --project=object-detector-7f0d6 --import=exported-dev-data --export-on-exit=exported-dev-data",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",

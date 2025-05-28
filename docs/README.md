@@ -107,6 +107,7 @@ service cloud.firestore {
 - GeminiChat feature, state management and persistence (could be improved, per example saving the whole conversation instead of the latest message when toggling on/off Gemini)
 
 ## Things that were not done for the sake of moving on to other things
+- The data in viewmodels maybe could have been more organized. I could have added the "UseCases" pattern to encapsulate logic
 - Not supporting the animated detection outlines for more than 1 object when detection animation is enabled, since an identifier is required for the animation to track something, that being 1 object, but MediaPipe doesn't provide identifiers (and it wouldn't make sense that it did). Guessing could be done with the positioning and size of the outline, but it would be overkill
 - Not worrying about still using ImageDetectionUseCase when toggling Gemini mode. Only the emission of results is stopped. This was done like this in order to not restart (and interrupt) the camera preview, it's also faster this way.
 - Not displaying the whole list of Gemini messages in the chat, but only displaying the latest one

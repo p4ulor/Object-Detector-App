@@ -56,7 +56,8 @@ fun AchievementsScreen(){
                     ctx.toast(R.string.no_new_achievements)
                 })
             },
-            onDeleteAccount = { vm.deleteAccount() }
+            onDeleteAccount = { vm.deleteAccount() },
+            onRefreshLeaderboard = { vm.refreshLeaderboard() }
         )
     }
 
@@ -139,7 +140,8 @@ fun AchievementsScreenUi(
                     onSignInWithGoogle = leaderboardSCallbacks.onSignInWithGoogle,
                     onSignOut = leaderboardSCallbacks.onSignOut,
                     onSubmitAchievements = leaderboardSCallbacks.onSubmitAchievements,
-                    onDeleteAccount = leaderboardSCallbacks.onDeleteAccount
+                    onDeleteAccount = leaderboardSCallbacks.onDeleteAccount,
+                    onRefreshLeaderboard = leaderboardSCallbacks.onRefreshLeaderboard
                 )
             }
         }
@@ -176,7 +178,6 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
         ),
         leaderboardState = LeaderboardState(
             currUser = null,
-            userAchievements = emptyList(),
             topUsers = emptyList(),
             topObjects = emptyList(),
             connectionStatus = ConnectionStatus.Off
@@ -185,7 +186,8 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
             onSignInWithGoogle = { },
             onSignOut = { },
             onSubmitAchievements = { },
-            onDeleteAccount = { }
+            onDeleteAccount = { },
+            onRefreshLeaderboard = { }
         )
     )
 }

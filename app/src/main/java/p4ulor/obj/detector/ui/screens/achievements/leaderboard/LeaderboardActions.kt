@@ -1,8 +1,6 @@
 package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material.icons.filled.Publish

@@ -281,7 +281,7 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
 
     private suspend fun checkForNewAchievements(objectsDetected: MutableList<Detection>) {
         objectsDetected.forEach { obj -> // Go through the (definitely) smaller list
-            val iterator = allUnreachedAchievements.iterator() // Go through the unreached achievements and see if the detected object is in this list. The iterator is used to avoid ConcurrentModificationException. An iterator can't be reset so it must be created here everytime
+            val iterator = allUnreachedAchievements.iterator() // Go through the unreached achievements and see if the detected object is in this list. The iterator is used to avoid ConcurrentModificationException, since I'm removing elements from the list. An iterator can't be reset so it must be created here everytime
             while (iterator.hasNext()) {
                 val unreached = iterator.next()
                 if (obj.objectName.equals(unreached.objectName, ignoreCase = true)) {

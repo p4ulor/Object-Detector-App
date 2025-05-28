@@ -19,7 +19,6 @@ data class YourAchievementsCallbacks(
 
 data class LeaderboardState(
     val currUser: User?,
-    val userAchievements: List<UserAchievement>, // todo is this needed?
     val topUsers: List<User>,
     val topObjects: List<ObjectDetectionStats>,
     val connectionStatus: ConnectionStatus
@@ -29,5 +28,6 @@ data class LeaderboardSCallbacks(
     val onSignInWithGoogle: () -> Unit,
     val onSignOut: () -> Unit,
     val onSubmitAchievements: () -> Unit,
-    val onDeleteAccount: () -> Unit
+    val onDeleteAccount: () -> Unit,
+    val onRefreshLeaderboard: () -> Unit
 )

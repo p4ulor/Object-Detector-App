@@ -52,7 +52,6 @@ class AchievementsViewModel(
     private val _leaderboard = MutableStateFlow(
         LeaderboardState(
             currUser = null,
-            userAchievements = emptyList(),
             topUsers = emptyList(),
             topObjects = emptyList(),
             connectionStatus = ConnectionStatus.Off
@@ -142,14 +141,7 @@ class AchievementsViewModel(
     fun signInWithGoogle() {
         launch {
             val userObtained = firebase.signInWithGoogle(application.applicationContext)
-            val topUsers = if (userObtained != null) {
-                firebase.getTopUsers().let {
-                    it.onFailure { e("Error at getTopUsers ${it.message}") }
-                    it.getOrNull() ?: emptyList()
-                }
-            } else {
-                emptyList()
-            }
+            val topUsers = getTopUsers(currUser = userObtained)
             setLeaderboard(
                 currUser = userObtained,
                 topUsers = topUsers
@@ -193,6 +185,25 @@ class AchievementsViewModel(
         signOut()
     }
 
+    fun refreshLeaderboard() {
+        launch {
+            val topUsers = getTopUsers(currUser = _leaderboard.value.currUser)
+            setLeaderboard(topUsers = topUsers)
+        }
+    }
+
+    private suspend fun getTopUsers(currUser: User?) : List<User> {
+        return if (currUser != null) {
+            firebase.getTopUsers().let {
+                it.onFailure { e("Error at getTopUsers ${it.message}") }
+                it.getOrNull() ?: emptyList()
+            }
+        } else {
+            i("No user logged in to get getTopUsers")
+            emptyList()
+        }
+    }
+
     /** Util to avoid having to do _yourAchievements.value = ... */
     private fun setYourAchievements(
         achievements: List<Achievement> = yourAchievements.value.achievements,
@@ -207,14 +218,12 @@ class AchievementsViewModel(
     /** Util to avoid having to do _leaderboard.value = ... */
     private fun setLeaderboard(
         currUser: User? = leaderboard.value.currUser,
-        achievements: List<UserAchievement> = leaderboard.value.userAchievements,
         topUsers: List<User> = leaderboard.value.topUsers,
         topObjects: List<ObjectDetectionStats> = leaderboard.value.topObjects,
         connectionStatus: ConnectionStatus = leaderboard.value.connectionStatus
     ) {
         _leaderboard.value = leaderboard.value.copy(
             currUser = currUser,
-            userAchievements = achievements,
             topUsers = topUsers,
             topObjects = topObjects,
             connectionStatus = connectionStatus

@@ -16,6 +16,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.core.annotation.Single
 import p4ulor.obj.detector.R
@@ -23,8 +26,6 @@ import p4ulor.obj.detector.d
 import p4ulor.obj.detector.data.domains.firebase.TopUser
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.firebase.UserAchievement
-import p4ulor.obj.detector.data.domains.mediapipe.Achievement
-import p4ulor.obj.detector.data.domains.mediapipe.calculatePoints
 import p4ulor.obj.detector.data.utils.executorCommon
 import p4ulor.obj.detector.e
 import p4ulor.obj.detector.i
@@ -34,7 +35,7 @@ import p4ulor.obj.detector.i
  * - https://firebase.google.com/docs/auth/android/google-signin
  */
 @Single
-class FirebaseInstance {
+class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
     // Firestore
     private val db = Firebase.firestore
     private val usersCollection = db.collection(FbCollection.Users.id)
@@ -59,7 +60,7 @@ class FirebaseInstance {
     }
 
     suspend fun signInWithGoogle(ctx: Context): User? {
-        runCatching {
+        return runCatching {
             val selectedCredential = credentialManager?.getCredential( // launch Credential Manager (native) UI
                 context = ctx,
                 request = crendentialRequest ?: error("crendentialRequest is null")
@@ -67,16 +68,16 @@ class FirebaseInstance {
 
             if (selectedCredential.isGoogleSignIn) {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(selectedCredential.data) // create Google ID Token
-                return firebaseAuthWithGoogle(googleIdTokenCredential.idToken)?.let { fbUser ->
+                firebaseAuthWithGoogle(googleIdTokenCredential.idToken)?.let { fbUser ->
                     createOrGetUser(fbUser)
                 }
             } else {
                 e("signInWithGoogle: credential is not of type Google ID")
+                null
             }
         }.onFailure { // Mostly to catch when the user closes the dialog
             e("signInWithGoogle failure: $it")
-        }
-        return null
+        }.getOrNull()
     }
 
     /** Clear the current user credential state from all credential providers */
@@ -91,31 +92,44 @@ class FirebaseInstance {
     }
 
     suspend fun getTopUsers(): Result<List<User>> {
-        var result = Result.success<List<User>>(emptyList())
+        var result = CompletableDeferred<Result<List<User>>>()
         topUsersCollection
             .orderBy(TopUser.POINTS, Query.Direction.DESCENDING)
             .limit(FbCollection.TopUsers.maxCollectionSize.toLong())
             .get()
             .addOnSuccessListener { query ->
-                result = Result.success(
-                    buildList {
-                        query.documents.filterNotNull().forEach {
-                            val user = it.toObject<User>()
-                            if (user != null) {
-                                add(user)
-                            } else {
-                                e("Unexpected error, user is null")
-                            }
-                        }
-                    }
-                )
+                i("getTopUsers addOnSuccessListener")
+                launch {
+                    val usersWithTopPoints = query.documents.filterNotNull()
+                        .map { it.id }
+                    val topUsers = getUsers(usersWithTopPoints)
+                    result.complete(Result.success(topUsers))
+                }
             }
             .addOnFailureListener {
-                result = Result.failure(it)
+                result.complete(Result.failure(it))
             }
-            .await()
+            // .await() // wont do the job because we launch a coroutine in addOnSuccessListener
+        return result.await()
+    }
 
-        return result
+    private suspend fun getUsers(ids: List<String>) : List<User> {
+        val users = mutableListOf<User>()
+        ids.forEach { id ->
+            usersCollection
+                .document(id)
+                .get()
+                .addOnSuccessListener {
+                    runCatching {
+                        users.add(it.toObject<User>()!!)
+                    }.onFailure {
+                        e("Error getting user $id")
+                    }
+                }
+                .addOnFailureListener { e("Failure getting user $id") }
+                .await()
+        }
+        return users
     }
 
     suspend fun updateUserAchievements(achievements: List<UserAchievement>, points: Float): Result<Unit> {

@@ -1,6 +1,5 @@
 package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +15,18 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.delay
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
@@ -55,18 +62,26 @@ import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 private const val TOP_USERS_CAP = 5
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabLeaderboard(
     currUser: User?,
     topUsers: List<User>,
     topObjects: List<ObjectDetectionStats>,
     connectionStatus: ConnectionStatus,
-    onSignInWithGoogle: () -> Unit,
-    onSignOut: () -> Unit,
-    onSubmitAchievements: () -> Unit,
-    onDeleteAccount: () -> Unit
+    onSignInWithGoogle: () -> Unit = {},
+    onSignOut: () -> Unit= {},
+    onSubmitAchievements: () -> Unit= {},
+    onDeleteAccount: () -> Unit= {},
+    onRefreshLeaderboard: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
+    var isRefreshing by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(isRefreshing) {
+        delay(1000) // its easier, than handling the case where the lists dont change and their hash is the same...
+        isRefreshing = false
+    }
     
     VerticallyAnimatedVisibility(visible = currUser != null) { // Login granted
         Column {
@@ -109,46 +124,54 @@ fun TabLeaderboard(
                 Modifier.padding(GeneralPaddingSmall).fillMaxSize(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
             ) {
-                CenteredColumn(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-                    QuickText(
-                        R.string.top_user_points,
-                        Modifier.padding(GeneralPaddingSmall),
-                        textStyle = MaterialTheme.typography.headlineSmall
-                    )
-                    Spacer(Modifier.height(GeneralPaddingSmall))
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = {
+                        isRefreshing = true
+                        onRefreshLeaderboard()
+                    }
+                ) {
+                    CenteredColumn(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                        QuickText(
+                            R.string.top_user_points,
+                            Modifier.padding(GeneralPaddingSmall),
+                            textStyle = MaterialTheme.typography.headlineSmall
+                        )
+                        Spacer(Modifier.height(GeneralPaddingSmall))
 
-                    topUsers.take(TOP_USERS_CAP).forEachIndexed { index, user ->
-                        Card(
-                            Modifier.padding(horizontal = GeneralPaddingSmall, vertical = GeneralPaddingTiny),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) {
-                            CenteredRow(Modifier.padding(GeneralPaddingSmall)) {
-                                Text("${1 + index}")
-                                ProfilePicture(user.photoUri)
-                                Text(user.name)
-                                Spacer(Modifier.weight(1f))
-                                Text("${currUser?.points} ${stringResource(R.string.points)}")
+                        topUsers.take(TOP_USERS_CAP).forEachIndexed { index, user ->
+                            Card(
+                                Modifier.padding(horizontal = GeneralPaddingSmall, vertical = GeneralPaddingTiny),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                            ) {
+                                CenteredRow(Modifier.padding(GeneralPaddingSmall)) {
+                                    Text("${1 + index}", Modifier.padding(start = GeneralPaddingSmall))
+                                    ProfilePicture(user.photoUri)
+                                    Text(user.name)
+                                    Spacer(Modifier.weight(1f))
+                                    Text("${user.points} ${stringResource(R.string.points)}")
+                                }
                             }
                         }
+
+                        Spacer(Modifier.height(GeneralPaddingMedium))
+
+                        QuickText(
+                            R.string.top_detected_objects,
+                            textStyle = MaterialTheme.typography.headlineSmall
+                        )
+
+                        DonutChartWithLabels( // todo with topObjects
+                            data = listOf(
+                                Triple("Pink", 50f, Color(0xFF9800FF)),
+                                Triple("2", 15f, Color(0xFF0AFF0D)),
+                                Triple("3", 15f, Color(0xFF4CAF50)),
+                                Triple("4", 20f, Color(0xAA0061FF))
+                            ),
+                            donutSize = 200.dp,
+                            Modifier.padding(GeneralPadding)
+                        )
                     }
-
-                    Spacer(Modifier.height(GeneralPaddingMedium))
-
-                    QuickText(
-                        R.string.top_detected_objects,
-                        textStyle = MaterialTheme.typography.headlineSmall
-                    )
-
-                    DonutChartWithLabels( // todo with topObjects
-                        data = listOf(
-                            Triple("Pink", 50f, Color(0xFF9800FF)),
-                            Triple("2", 15f, Color(0xFF0AFF0D)),
-                            Triple("3", 15f, Color(0xFF4CAF50)),
-                            Triple("4", 20f, Color(0xAA0061FF))
-                        ),
-                        donutSize = 200.dp,
-                        Modifier.padding(GeneralPadding)
-                    )
                 }
             }
         }
@@ -191,11 +214,7 @@ private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme 
         currUser = User("Paulo", "uri", 22.3f),
         topObjects = emptyList(),
         connectionStatus = ConnectionStatus.On,
-        topUsers = buildList { repeat(8) { add(User("Paulo", "uri", 22.3f)) } },
-        onSignInWithGoogle = { },
-        onSignOut = { },
-        onSubmitAchievements = { },
-        onDeleteAccount = { }
+        topUsers = buildList { repeat(8) { add(User("Paulo", "uri", 22.3f)) } }
     )
 }
 
@@ -204,14 +223,10 @@ private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme 
 private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(enableDarkTheme = true) {
     BoxWithBackground(R.drawable.background_dark_2) {
         TabLeaderboard(
-            currUser = User("Paulo", "uri", 22.3f),
+            currUser = User("Paulo", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin_Icon.png/250px-Kotlin_Icon.png", 22.3f),
             topUsers = buildList { repeat(8) { add(User("Paulo", "uri", 22.3f)) } },
             topObjects = emptyList(),
-            connectionStatus = ConnectionStatus.On,
-            onSignInWithGoogle = { },
-            onSignOut = { },
-            onSubmitAchievements = { },
-            onDeleteAccount = { }
+            connectionStatus = ConnectionStatus.On
         )
     }
 }
@@ -223,10 +238,6 @@ private fun TabLeaderboardPreviewNoUser() = PreviewComposable(enableDarkTheme = 
         currUser = null,
         connectionStatus = ConnectionStatus.Off,
         topUsers = emptyList(),
-        topObjects = emptyList(),
-        onSignInWithGoogle = { },
-        onSignOut = { },
-        onSubmitAchievements = { },
-        onDeleteAccount = { }
+        topObjects = emptyList()
     )
 }
