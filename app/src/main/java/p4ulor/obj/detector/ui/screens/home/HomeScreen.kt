@@ -59,9 +59,9 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
     LaunchedEffect(cameraPermission.isGranted) {
         if (cameraPermission.isGranted) {
-            delay(50) // Gives time for CircularProgressIndicator and NavigationBar animations to show
-            withContext(Dispatchers.Default){ // So the UI thread is not used and 2 coroutines are used to try to load ASAP
-                launch { cameraProvider = ctx.getCameraProvider() }
+            delay(200) // Gives time for CircularProgressIndicator animation to show
+            withContext(Dispatchers.Default){ // So the UI thread is not used and 2 coroutines are used to try to load ASAP (no need to put in the VM to add more noise)
+                launch { cameraProvider = ctx.getCameraProvider() } // No, these shouldn't be in the VM, since the camera should be unbinded when we leave HomeScreenGranted
                 launch { prefs = viewModel.loadAndGetUserPrefs().first() } // Loads prefs which need to be obtained everytime if user changed them in Settings
             }
         }

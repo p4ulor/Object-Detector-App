@@ -80,7 +80,7 @@ fun TabYourAchievements(
 
     val donePercentage: Float by animateFloatAsState(
         targetValue = donePercentageValue,
-        animationSpec = smooth(delayMillis = 500),
+        animationSpec = smooth(durationMillis = 800, delayMillis = 300),
         label = "donePercentage"
     )
 

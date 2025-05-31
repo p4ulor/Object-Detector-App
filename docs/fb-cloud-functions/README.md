@@ -1,3 +1,10 @@
+## Setup
+In `root` npm project dir AND `functions` npm project dir
+- npm install
+
+Inside `root` npm dir
+- npx firebase-tools login
+
 ## Main commands
 Inside `functions/` dir:
 - npm run deploy -> to deploy to Firebase's Cloud Functions, when they are ready for production
@@ -15,7 +22,7 @@ Manual command to export data of running emulators. Inside root npm dir:
     - Go to the IAM tab in Google Cloud panel that belongs to the Firebase project `https://console.cloud.google.com/iam-admin/iam?inv=1&invt=Abxwjw&project=object-detector-7f0d6` 
     - And click the check box `Include Google-provided role grants`
 
-## Setup used (for future reference)
+## Project setup used (for future reference)
 THis setup avoids installing firebase globally (without -g). Inside root npm dir:
 
 - npm init -y

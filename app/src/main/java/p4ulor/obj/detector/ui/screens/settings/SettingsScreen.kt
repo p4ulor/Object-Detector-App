@@ -1,6 +1,7 @@
 package p4ulor.obj.detector.ui.screens.settings
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import kotlinx.coroutines.flow.first
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.viewmodels.SettingsViewModel
@@ -65,7 +65,8 @@ fun SettingsScreen() {
 
     AnimatedVisibility(
         visible = isLoaded,
-        enter = fadeIn(smooth()) + scaleIn()
+        enter = fadeIn(smooth()) + scaleIn(),
+        exit = ExitTransition.None // improves performance when navigating
     ) {
         SettingsScreenUi(
             hasConnection,

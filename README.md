@@ -76,8 +76,8 @@ one or monitor the use of your API key
 </details>
 
 ## Setup Guide 🙌
-[Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
-
+- [Gradle JDK](https://www.jetbrains.com/help/idea/gradle-jvm-selection.html#jvm_settings) used: JetBrains Runtime (JBR) 17.0.10
+- Android 14 (UpsideDownCake) API Level 34
 1. Get API Keys 🔑
     - [Gemini API](https://aistudio.google.com/app/apikey). There's a link to this in the app too so you can better copy paste it from your phone's browser
     - 

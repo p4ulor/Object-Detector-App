@@ -40,6 +40,7 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
     private val db = Firebase.firestore
     private val usersCollection = db.collection(FbCollection.Users.id)
     private val topUsersCollection = db.collection(FbCollection.TopUsers.id)
+    private val topObjectsCollection = db.collection(FbCollection.TopObjects.id)
 
     // Auth
     private val fbAuth = FirebaseAuth.getInstance()
@@ -75,7 +76,7 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
                 e("signInWithGoogle: credential is not of type Google ID")
                 null
             }
-        }.onFailure { // Mostly to catch when the user closes the dialog
+        }.onFailure { // Mostly to catch when the user closes the dialog, but can also fail if the app signing doesn't match to the signings that were added to the firebase project when creating the google-services.json). Per example when installing a new Android Studio, a different debug keystore will be at ~/.android/debug.keystore . You can replace your curr file with that other .keystore (thus avoiding creating a new google-services.json. Then, clean gradle build, invalidate caches and restart. (long story short: windows 11 messed up my wifi in my Ubuntu 22, so I had to get Ubuntu 24. yeah...)
             e("signInWithGoogle failure: $it")
         }.getOrNull()
     }
@@ -92,7 +93,7 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
     }
 
     suspend fun getTopUsers(): Result<List<User>> {
-        var result = CompletableDeferred<Result<List<User>>>()
+        val result = CompletableDeferred<Result<List<User>>>()
         topUsersCollection
             .orderBy(TopUser.POINTS, Query.Direction.DESCENDING)
             .limit(FbCollection.TopUsers.maxCollectionSize.toLong())
@@ -116,8 +117,7 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
     private suspend fun getUsers(ids: List<String>) : List<User> {
         val users = mutableListOf<User>()
         ids.forEach { id ->
-            usersCollection
-                .document(id)
+            usersCollection.document(id)
                 .get()
                 .addOnSuccessListener {
                     runCatching {
@@ -149,25 +149,27 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
         return if (error.isEmpty()) {
             Result.success(Unit)
         } else {
-            Result.failure(error(error.toString()))
+            Result.failure(Throwable(error.toString()))
         }
     }
 
     fun deleteAccount() {
         usersCollection.document(currUserId)
             .delete()
-            .addOnSuccessListener { i("User data deleted") }
-            .addOnFailureListener { e("Error deleting user data") }
-        fbAuth.currentUser?.let {
-            it.delete()
-            .addOnSuccessListener { i("User deleted") }
-            .addOnFailureListener { e("Error deleting user") }
-        }
+            .addOnSuccessListener {
+                i("User $currUserId deleted")
+                fbAuth.currentUser?.let {
+                    it.delete()
+                        .addOnSuccessListener { i("User deleted") }
+                        .addOnFailureListener { e("Error deleting user") }
+                }
+            }
+            .addOnFailureListener { e("Error deleting user $currUserId") }
     }
 
     private suspend fun createOrGetUser(fbUser: FirebaseUser) : User? {
         val result = CompletableDeferred<User?>() // because I don't want to use callbacks
-        val uid = fbUser?.uid.orEmpty() // (will just fail if its null)
+        val uid = fbUser.uid
         usersCollection.document(uid).get()
             .addOnSuccessListener { doc ->
                 if (!doc.exists()) {

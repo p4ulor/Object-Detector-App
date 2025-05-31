@@ -20,6 +20,7 @@ This text details things about conditions, state handling, decisions made, remin
 
 ### AchievementsScreen 🏅
 - Everytime the user navigates to this screen, the list of achievements are loaded
+- If a user deletes his account the top objects stats coming from that user won't be deleted. New object detections are counted to the stats by doing a diff between the achievements already in firestore and the ones submitted by the user
 
 ## Firebase
 1.
@@ -28,7 +29,7 @@ This text details things about conditions, state handling, decisions made, remin
 ## Firebase & Authentication 🛂
 ### Setup
 - For properly setting up the Firebase project with authentication, a set of things must be done regarding the app signing and providing the SHA codes to the Firebase SDK setup for Android (the google-services.json). This will be used to authenticate the clients (android phones) doing requests to the Firebase project. You can change these SHA codes anytime, so you can leave it blank when creating the project's SDK.
-- These changes will make so that trying to decompile the .apk will make any attempts to make requests with any other built app not valid, along with the Firebase rules requiring user authentication.
+- These changes will make so that trying to decompile the .apk and making any attempts to make requests with any other built app not valid.
 1. Set up the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key). This will be used when generating the SHA certificate fingerprints
 2. Save the values and place them in `local.properties` (so you don't forget them. This is not checked in version control) like so
 ```cmake
@@ -38,7 +39,19 @@ RELEASE_JSK_PASSWORD=...
 RELEASE_KEY_ALIAS=...
 RELEASE_KEY_PASSWORD=...
 ```
-3. The previous step should create an `app_certificate.jks` (Java KeyStore (JKS)) file. Then run
+3. The previous step should create an `app_certificate.jks` (Java KeyStore (JKS)) file. A better name could be `release.keystore`, but now I named it like this... 
+
+Now, everytime you run `./gradlew signingReport` it should print an equal hashes for release, per example, unless you changed the passwords and stuff used to generate the .jks. The hash coming from release will then have to be added to the `google-services.json`. Example after running signingReport:
+
+```cmake
+Config: release
+Store: /home/p4ulor/Object-Detector-App/app_certificate.jks
+Alias: the_key_alias
+MD5: ...
+SHA1: 3B:CA:...
+```
+
+Then run
 ```cmake
 base64 --wrap=0 app_certificate.jks > app_certificate.base64
 ```
@@ -57,6 +70,7 @@ base64 --wrap=0 google-services.json > google_services_json.base64
     - The API keys within `google-services.json` are platform-restricted to Android (lesser attack surface compared to allowing the web SDK per example)
     - With Firestore rules, only authenticated users can write to their own data
     - With Firestore rules, only authenticated users can read data. And the only authentication method is with Google
+    - Apps with unrecognized hashes will not be able to connect to the firebase project, even for trying to obtain authentication (see `onFailure` of `signInWithGoogle()`).
     - And the most important step is to setup the Firebase project (and the app) with ["App Check"](https://firebase.google.com/docs/app-check?hl=en&authuser=0#how_is_related_to), which is complementary to the Firebase authentication. It offers periodic attestation of the app or device's authenticity by requiring API calls to contain a valid App Check token with an expiration date. It requires creating a Play Console developer account (costs 25 dollars) and associating a Google Play project to the Firebase project. This is where the gradle generated SHA-256 comes in. To configure App Check is pretty simple, just go to it's tab in Firebase, click register, add the SHA-256, and on API's tab check enforcement for Firestore. But I didn't do this because: I don't want to pay 25 dollars, I want to move on to other things and I don't want to complicate the app use and building for other devs so they can try it out more easily.
 12. For testing outside of GH actions, you can set the environment variables (and rename some files that can be overwritten) in the terminal with `èxport GOOGLE_SERVICES_JSON=...` and then running the gradle script through the same terminal ` ./gradlew build -x test`
 
@@ -66,17 +80,20 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // users can only read and write their own data
+    // only authenticated users can read and only authenticated users can write to their own data
     match /users/{userId} {
+    	allow read: if request.auth != null;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
-    // only authenticated users can read
-    match /users/{document=**} {
-      allow read, write: if true;
-    }
-    // only authenticated users can read
+    
     match /top-users/{document=**} {
-      allow read, write: if true;
+      allow read: if request.auth != null;
+      // allow write: if request.auth != null; will only be writable by Cloud Functions since they use the admin SDK
+    }
+    
+    match /top-objects/{document=**} {
+      allow read: if request.auth != null;
+      // allow write: if request.auth != null; will only be writable by Cloud Functions since they use the admin SDK
     }
   }
 }

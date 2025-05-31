@@ -25,6 +25,7 @@ jobs:
   build-and-run:
     runs-on: ubuntu-latest
     env:
+      GH_TOKEN: ${{ github.token }}
       RELEASE_JKS_FILE_BASE64: ${{ secrets.RELEASE_JKS_FILE_BASE64 }}
       RELEASE_JSK_PASSWORD: ${{ secrets.RELEASE_JSK_PASSWORD }}
       RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}

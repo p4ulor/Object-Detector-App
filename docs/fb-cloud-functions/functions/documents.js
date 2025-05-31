@@ -1,4 +1,4 @@
-/** These are used to define a structure to the firestore documents and for intellisense */
+/** These are used to define a structure to the firestore documents and so we have intellisense definitions in JS */
 
 /**
  * The uid should be the uid of the FirebaseUser
@@ -50,13 +50,15 @@ class ObjectDetectionStats {
     constructor(detectionCount) {
         this.detectionCount = detectionCount
     }
+
+    static DETECTION_COUNT_FIELD = "detectionCount"
 }
 
 /** Represents a document (it's uid and it's data) */
 class Document {
     /** @type {string} */
     uid
-    /**  @type {User | TopUser | ObjectDetectionStats} data */
+    /** @type {User | TopUser | ObjectDetectionStats} data */
     data
 
     constructor(uid, data) {
@@ -76,4 +78,4 @@ class Document {
     asObjectDetectionStats() { return this.data }
 }
 
-module.exports = { User, TopUser, ObjectDetectionStats, Document }
+module.exports = { User, UserAchievement, TopUser, ObjectDetectionStats, Document }

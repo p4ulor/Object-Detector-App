@@ -16,4 +16,3 @@ app_certificate.jks
 app_certificate.base64
 app/google-services.json
 app/google_services_json.base64
-release.keystore

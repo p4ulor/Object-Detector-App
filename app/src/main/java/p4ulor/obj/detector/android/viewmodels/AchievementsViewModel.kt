@@ -89,11 +89,13 @@ class AchievementsViewModel(
         _selectedTab.value = tab
     }
 
-    fun loadAchievements() {
+    fun loadAchievements(onLoaded: () -> Unit) {
         launch {
             userAchievementsOrderedByName = Achievement.from(achievementsDao.getAllOrderedByName())
             userAchievementsOrderedByDone = Achievement.from(achievementsDao.getAllOrderedByCompletionAndName())
             setOrderOption(yourAchievements.value.orderOptions)
+        }.invokeOnCompletion {
+            onLoaded()
         }
     }
 
@@ -129,7 +131,7 @@ class AchievementsViewModel(
 
                 OrderOption.Done -> yourAchievements.value.achievements.toMutableList().apply {
                     sortBy { it.objectName }
-                }?.let {
+                }.let {
                     it.groupBy { if (it.detectionDate != null) 0 else 1 }
                         .toSortedMap()
                         .flatMap { it.value }
@@ -163,10 +165,13 @@ class AchievementsViewModel(
                     val points = achiev.calculatePoints()
                     firebase.updateUserAchievements(achiev.toUserAchievements(), points)
                         .onSuccess {
+                            delay(200) // wait a bit for Cloud Functions to process
+                            val refreshedTopUsers = firebase.getTopUsers()
                             setLeaderboard(
                                 currUser = leaderboard.value.currUser?.copy(
                                     points = points
-                                )
+                                ),
+                                topUsers = refreshedTopUsers.getOrNull() ?: leaderboard.value.topUsers
                             )
                         }
                         .onFailure {
@@ -181,8 +186,8 @@ class AchievementsViewModel(
     }
 
     fun deleteAccount() {
+        setLeaderboard(currUser = null)
         firebase.deleteAccount()
-        signOut()
     }
 
     fun refreshLeaderboard() {

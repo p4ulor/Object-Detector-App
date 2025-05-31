@@ -3,6 +3,8 @@ package p4ulor.obj.detector.ui.screens.root
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.activities.utils.getActivity
 import p4ulor.obj.detector.android.viewmodels.HomeViewModel
@@ -47,11 +50,6 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
     val ctx = LocalContext.current
     val navController = rememberNavController()
     var currentScreen by rememberSaveable { mutableStateOf(Screen.Home) }
-    var isBottomBarVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        isBottomBarVisible = true
-    }
 
     val navigateTo: (Screen) -> Unit = {
         currentScreen = it
@@ -69,10 +67,12 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
             Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             content = {
-                NavHost( // Comes with default fade transitions between routes
+                NavHost(
                     navController,
                     startDestination = Screen.Home.name,
                     Modifier.padding(it), // Important so that NavHost can make the screens automatically take in consideration the bottom bar
+                    enterTransition = { EnterTransition.None }, // Improves performance
+                    exitTransition = { ExitTransition.None } // Improves performance
                 ) {
                     composable(route = Screen.Achievements.name) { AchievementsScreen() }
                     composable(route = Screen.Home.name) { HomeScreen(homeVM) }
@@ -90,14 +90,9 @@ fun RootScreen() = Surface { // The surface is used to for theming to work prope
                 }
             },
             bottomBar = {
-                AnimatedVisibility(
-                    visible = isBottomBarVisible,
-                    enter = fadeIn(smooth())
-                ) {
-                    BottomBar(currentScreen, onNavigateTo = { screen ->
-                        navigateTo(screen)
-                    })
-                }
+                BottomBar(currentScreen, onNavigateTo = { screen ->
+                    navigateTo(screen)
+                })
             }
         )
     }

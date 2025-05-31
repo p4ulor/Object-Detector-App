@@ -103,7 +103,7 @@ fun HomeScreenGranted(
     var imageCaptureUseCase by remember { mutableStateOf(createImageCaptureUseCase(cameraPreviewRatio)) }
     val pictureTaken by vm.pictureTaken.collectAsState()
     var isAppMinimized by rememberSaveable { mutableStateOf(false) }
-    var enableCameraUnbinding by rememberSaveable { mutableStateOf(true) }
+    var enableCameraUnbinding by rememberSaveable { mutableStateOf(true) } // to cover the exceptional case of using photoPicker, so the camera isn't unbinded
 
     // Gemini
     val geminiStatus by vm.geminiStatus.collectAsState()
@@ -232,7 +232,7 @@ fun HomeScreenGranted(
         }
 
         ExpandableFAB(
-            listOpenerFAB = FloatingActionButton(Icon.Material(MaterialIcons.Add)),
+            listOpenerIcon = Icon.Material(MaterialIcons.Add),
             fabs = buildList {
                 add(
                     FloatingActionButton(Icon.App(ResourcesIcon.Scale)) {

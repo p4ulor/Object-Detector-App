@@ -89,8 +89,8 @@ android {
                 println("$RELEASE_JKS_FILE_BASE64 not found")
             } else {
                 val decodedBytes = Base64.getDecoder().decode(encodedJSKFile)
-                println("Creating release.keystore to ${project.rootDir.path}")
-                val tempKeystore = File(project.rootDir.path, "release.keystore") // Create a temp file
+                println("Creating app_certificate.jks to ${project.rootDir.path}")
+                val tempKeystore = File(project.rootDir.path, "app_certificate.jks") // Create Java KeyStore (JKS) file, will be used when generating SHA's
 
                 tempKeystore.parentFile.mkdirs() // Ensure the parent directory exists (app/)
                 FileOutputStream(tempKeystore).use { it.write(decodedBytes) }

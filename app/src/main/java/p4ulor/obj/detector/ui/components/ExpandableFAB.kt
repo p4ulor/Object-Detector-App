@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,7 +47,7 @@ private val PaddingBetweenButtons = 2.dp
  */
 @Composable
 fun ExpandableFAB(
-    listOpenerFAB: FloatingActionButton,
+    listOpenerIcon: Icon,
     fabs: List<FloatingActionButton>,
     initialPosition: FabPosition = FabPosition.TopRight
 ) {
@@ -66,25 +67,41 @@ fun ExpandableFAB(
         IntOffset(x = (maxAvailableWidthPx - extraPaddingPx).toInt(), y = maxAvailableHeightPx.toInt())
     }
 
-    // Cover the max area available
-    Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize()) { // Cover the max area available
         var isExpanded by remember { mutableStateOf(false) }
         var openerFabOffsetX by remember { mutableFloatStateOf(initialOffsetPx.x.toFloat()) }
         var openerFabOffsetY by remember { mutableFloatStateOf(initialOffsetPx.y.toFloat()) }
         var canOpenUpwards by remember { mutableStateOf(initialPosition.isBottomRight) }
+        var fabsYoffset by remember { mutableIntStateOf((iconContainerSizePx + paddingBetweenButtonsPx).toInt()) }
 
-        canOpenUpwards = run {
-            val maxYreachOfTheFabs = openerFabOffsetY + iconContainerSizePx + fabs.size * (iconContainerSizePx + paddingBetweenButtonsPx)
-            if(isExpanded) {
-                canOpenUpwards
+        LaunchedEffect(openerFabOffsetY, isExpanded, fabs.hashCode()) {
+            canOpenUpwards = run {
+                val maxYreachOfTheFabs = openerFabOffsetY + iconContainerSizePx + fabs.size * (iconContainerSizePx + paddingBetweenButtonsPx)
+                if(isExpanded) {
+                    canOpenUpwards
+                } else {
+                    maxYreachOfTheFabs >= maxAvailableHeightPx
+                }
+            }
+
+            // Used to place the fabs either bellow or above the openerFab. Using columns causes the openerFab to change abruptly change position
+            fabsYoffset = if (isExpanded) { // Logic to make the opening/closing of the fabs be done correctly when moving it through the screen through various states
+                run {
+                    if (canOpenUpwards) {
+                        (-fabs.size * iconContainerSizePx) - paddingBetweenButtonsPx*2
+                    } else {
+                        iconContainerSizePx + paddingBetweenButtonsPx
+                    }
+                }.toInt()
             } else {
-                maxYreachOfTheFabs >= maxAvailableHeightPx
+                fabsYoffset
             }
         }
 
-        val openerFAB: @Composable () -> Unit = {
+        // FAB opener + fabs
+        Box(Modifier.offset { IntOffset(openerFabOffsetX.toInt(), openerFabOffsetY.toInt()) }) {
             QuickIconWithBorder(
-                listOpenerFAB.icon,
+                listOpenerIcon,
                 onClick = { isExpanded = !isExpanded },
                 onDrag = { change, dragAmount ->
                     val current = Offset(openerFabOffsetX, openerFabOffsetY)
@@ -93,35 +110,10 @@ fun ExpandableFAB(
                     openerFabOffsetY = newPos.y.coerceIn(0f, maxAvailableHeightPx)
                 }
             )
-        }
-
-        // FAB opener + fabs
-        Box(Modifier.offset { IntOffset(openerFabOffsetX.toInt(), openerFabOffsetY.toInt()) }) {
-            var fabsYoffset by remember { mutableIntStateOf((iconContainerSizePx + paddingBetweenButtonsPx).toInt()) }
-            var hasOpenedUpwards by remember { mutableStateOf(false) }
-
-            // Used to place the fabs either bellow or above the openerFab. Using columns causes the openerFab to change abruptly change position
-            fabsYoffset = if (isExpanded) { // Logic to make the opening/closing of the fabs be done correctly when moving it through the screen through various states
-                run {
-                    if (canOpenUpwards && !hasOpenedUpwards) {
-                        hasOpenedUpwards = true
-                        (-fabs.size * iconContainerSizePx) - paddingBetweenButtonsPx*2
-                    } else if(!canOpenUpwards) {
-                        hasOpenedUpwards = false
-                        iconContainerSizePx + paddingBetweenButtonsPx
-                    } else {
-                        fabsYoffset
-                    }
-                }.toInt()
-            } else {
-                fabsYoffset
-            }
-
-            openerFAB()
 
             // The FABs
             Box(Modifier
-                .offset { IntOffset(0, fabsYoffset) }
+                .offset { IntOffset(x = 0, y = fabsYoffset) }
                 .zIndex(-1f) // So the fabs are placed under the openerFAB
             ) {
                 ExpandableFabs(fabs, canOpenUpwards, isVisible = isExpanded)
@@ -166,7 +158,7 @@ enum class FabPosition {
 @Composable
 private fun ExpandableFABPreview() = AppTheme {
     ExpandableFAB(
-        listOpenerFAB = FloatingActionButton(Icon.Material(MaterialIcons.Add)),
+        listOpenerIcon = Icon.Material(MaterialIcons.Add),
         listOf(
             FloatingActionButton(Icon.App(ResourcesIcon.Camera)) { i("Edit clicked") },
             FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) { i("Share clicked") },

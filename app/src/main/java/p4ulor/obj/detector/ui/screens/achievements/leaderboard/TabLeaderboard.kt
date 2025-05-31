@@ -92,7 +92,10 @@ fun TabLeaderboard(
                 CenteredRow(GeneralPadding.let { Modifier.padding(it) }) {
                     Column {
                         CenteredRow(Modifier) {
-                            Text("${currUser?.name}", style = MaterialTheme.typography.headlineSmall)
+                            Text(
+                                "${currUser?.name}",
+                                style = MaterialTheme.typography.headlineSmall
+                            )
                             ProfilePicture(currUser?.photoUri)
                         }
                         Text("${currUser?.points} ${stringResource(R.string.points)}")
@@ -122,7 +125,7 @@ fun TabLeaderboard(
 
             Card(
                 Modifier.padding(GeneralPaddingSmall).fillMaxSize(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f))
             ) {
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
@@ -231,6 +234,7 @@ private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(en
     }
 }
 
+/** Will only display on real device, not in AS compose preview */
 @Preview
 @Composable
 private fun TabLeaderboardPreviewNoUser() = PreviewComposable(enableDarkTheme = true) {

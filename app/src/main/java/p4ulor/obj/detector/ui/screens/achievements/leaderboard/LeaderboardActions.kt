@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import p4ulor.obj.detector.R
@@ -69,7 +70,7 @@ private fun LeaderboardAction(
         tooltip = {
             RichTooltip(
                 Modifier.padding(horizontal = GeneralPadding),
-                title = { QuickText(title) },
+                title = { QuickText(title, fontWeight = FontWeight.Bold) },
                 action = {
                     TextButton(onClick = {
                         onContinueAction()

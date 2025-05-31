@@ -1,2 +1,2 @@
-/docs/** linguist-documentation=false
-/docs/** linguist-detectable=true
+/docs/**/*.sh linguist-detectable=true
+/docs/**/*.js linguist-detectable=true

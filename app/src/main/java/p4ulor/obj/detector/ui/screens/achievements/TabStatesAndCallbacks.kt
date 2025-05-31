@@ -2,7 +2,6 @@ package p4ulor.obj.detector.ui.screens.achievements
 
 import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
-import p4ulor.obj.detector.data.domains.firebase.UserAchievement
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
