@@ -17,10 +17,11 @@ fun QuickAlertDialog(
     @StringRes dismissText: Int,
     confirmClick: () -> Unit,
     dismissClick: () -> Unit,
+    icon: Icon = Icon.Material(MaterialIcons.Warning)
 ){
     AlertDialog(
         onDismissRequest = dismissClick,
-        icon = { QuickIcon(MaterialIcons.Warning) { } },
+        icon = { QuickIcon(icon) { } },
         title = { QuickText(title) },
         text = { QuickText(description) },
         confirmButton = {

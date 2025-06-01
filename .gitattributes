@@ -1,2 +1,5 @@
-/docs/**/*.sh linguist-detectable=true
-/docs/**/*.js linguist-detectable=true
+/docs/** linguist-documentation=false
+# /docs/** linguist-detectable=true # will index everything, including .json, markdown, text file, (if too of these types they will be grouped with the label "Other")
+# not needed but, for the record:
+# *.sh linguist-detectable=true
+# *.js linguist-detectable=true

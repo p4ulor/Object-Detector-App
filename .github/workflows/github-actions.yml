@@ -91,10 +91,10 @@ jobs:
       - name: Upload APK to Release
         if: github.event_name == 'release' && github.event.action == 'published' && steps.find_apk.outputs.apk_path != '' # Only upload if an APK was found
         run: |
-          echo "Uploading ${{ steps.find_apk_release.outputs.apk_path }} to release ${{ github.event.release.tag_name }}"
+          echo "Uploading ${{ steps.find_apk.outputs.apk_path }} to release ${{ github.event.release.tag_name }}"
           gh release upload \
             '${{ github.event.release.tag_name }}' \
-            '${{ steps.find_apk_release.outputs.apk_path }}'
+            '${{ steps.find_apk.outputs.apk_path }}'
 
       # Post build and/or release logic (the script will clear everything due to checkout and only contain .gitignored files)
 

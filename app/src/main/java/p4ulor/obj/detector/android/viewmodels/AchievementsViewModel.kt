@@ -144,9 +144,11 @@ class AchievementsViewModel(
         launch {
             val userObtained = firebase.signInWithGoogle(application.applicationContext)
             val topUsers = getTopUsers(currUser = userObtained)
+            val topObjects = getTopObjects(currUser = userObtained)
             setLeaderboard(
                 currUser = userObtained,
-                topUsers = topUsers
+                topUsers = topUsers,
+                topObjects = topObjects
             )
         }
     }
@@ -193,7 +195,11 @@ class AchievementsViewModel(
     fun refreshLeaderboard() {
         launch {
             val topUsers = getTopUsers(currUser = _leaderboard.value.currUser)
-            setLeaderboard(topUsers = topUsers)
+            val topObjects = getTopObjects(currUser = _leaderboard.value.currUser)
+            setLeaderboard(
+                topUsers = topUsers,
+                topObjects = topObjects
+            )
         }
     }
 
@@ -205,6 +211,18 @@ class AchievementsViewModel(
             }
         } else {
             i("No user logged in to get getTopUsers")
+            emptyList()
+        }
+    }
+
+    private suspend fun getTopObjects(currUser: User?) : List<ObjectDetectionStats> {
+        return if (currUser != null) {
+            firebase.getTopObjects().let {
+                it.onFailure { e("Error at getTopObjects ${it.message}") }
+                it.getOrNull() ?: emptyList()
+            }
+        } else {
+            i("No user logged in to get getTopObjects")
             emptyList()
         }
     }

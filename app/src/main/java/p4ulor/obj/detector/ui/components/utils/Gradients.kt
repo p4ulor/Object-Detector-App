@@ -105,7 +105,7 @@ fun TransparentGradientPreview() = PreviewComposable(enableDarkTheme = false) {
     ) {
         LazyColumn(Modifier.fadingEdge(TransparencyGradient(position = TransparentGradientPosition.TopAndBottom))){
             items(list, key = { it.objectName }) { achievement ->
-                LightContainer {
+                LightCircularContainer {
                     val rowEntry = StringBuilder(achievement.objectName.capitalized())
                     if (achievement.detectionDate != null){
                         rowEntry.append(" (${achievement.certaintyScore.toPercentage()})")

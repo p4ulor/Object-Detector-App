@@ -70,14 +70,51 @@ val IconDefaultSize = 44.dp
 val IconMediumSize = 30.dp
 val IconSmallSize = 25.dp
 
+@Composable
+fun QuickIcon(
+    icon: Icon,
+    size: Dp = IconDefaultSize,
+    padding: Dp = PaddingAroundIcon,
+    onClick: () -> Unit,
+){
+    icon.asAppIcon?.let {
+        QuickIcon(it.resourcesIcon, size, padding, onClick)
+    } ?: icon.asMaterialIcon?.let {
+        QuickIcon(it.materialIcon, size, padding, onClick)
+    } ?: error("Something went wrong here")
+}
+
 /** Useful when using [MaterialIcons], which are [ImageVector]s. An alternative to [IconButton] */
 @Composable
-fun QuickIcon(icon: ImageVector, size: Dp? = null, onClick: () -> Unit) = Icon(
+fun QuickIcon(
+    icon: ImageVector,
+    size: Dp = IconDefaultSize,
+    padding: Dp = PaddingAroundIcon,
+    onClick: () -> Unit
+) = Icon(
     imageVector = icon,
     contentDescription = icon.name,
     Modifier
-        .padding(PaddingAroundIcon)
-        .size(size ?: IconDefaultSize)
+        .padding(padding)
+        .size(size)
+        .clickable {
+            onClick()
+        },
+    tint = Color.White
+)
+
+@Composable
+fun QuickIcon(
+    icon: ResourcesIcon,
+    size: Dp = IconDefaultSize,
+    padding: Dp = PaddingAroundIcon,
+    onClick: () -> Unit
+) = Icon(
+    painter = painterResource(icon.resourceId),
+    contentDescription = icon.name,
+    Modifier
+        .padding(padding)
+        .size(size)
         .clickable {
             onClick()
         },
@@ -125,10 +162,9 @@ private fun QuickIconWithBorder(
             icon.name,
             Modifier
                 .size(IconInContainerDefaultSize)
-                .addIfTrue(icon.useOriginalColors){
+                .addIfTrue(!icon.useOriginalColors){
                     Modifier.fadingEdge(LightFadeOut45Deg(IconInContainerDefaultSize))
-                }
-                .fadingEdge(LightFadeOut45Deg(IconInContainerDefaultSize)),
+                },
             tint = if (icon.useOriginalColors) {
                 Color.Unspecified
             } else {

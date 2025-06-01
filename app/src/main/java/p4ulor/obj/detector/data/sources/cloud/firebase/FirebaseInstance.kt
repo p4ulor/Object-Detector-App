@@ -18,11 +18,15 @@ import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.core.annotation.Single
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.d
+import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.TopUser
 import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.firebase.UserAchievement
@@ -92,11 +96,11 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
         }
     }
 
-    suspend fun getTopUsers(): Result<List<User>> {
+    suspend fun getTopUsers(): Result<List<User>> = coroutineScope {
         val result = CompletableDeferred<Result<List<User>>>()
         topUsersCollection
             .orderBy(TopUser.POINTS, Query.Direction.DESCENDING)
-            .limit(FbCollection.TopUsers.maxCollectionSize.toLong())
+            .limit(FbCollection.TopUsers.desiredDocsCap.toLong())
             .get()
             .addOnSuccessListener { query ->
                 i("getTopUsers addOnSuccessListener")
@@ -111,25 +115,44 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
                 result.complete(Result.failure(it))
             }
             // .await() // wont do the job because we launch a coroutine in addOnSuccessListener
+        return@coroutineScope result.await()
+    }
+
+    suspend fun getTopObjects(): Result<List<ObjectDetectionStats>> {
+        val result = CompletableDeferred<Result<List<ObjectDetectionStats>>>()
+        topObjectsCollection
+            .orderBy(ObjectDetectionStats.DETECTION_COUNT, Query.Direction.DESCENDING)
+            .limit(FbCollection.TopObjects.desiredDocsCap.toLong())
+            .get()
+            .addOnSuccessListener { query ->
+                i("getTopObjects addOnSuccessListener")
+                val topObjects = query.documents.filterNotNull().map {
+                    ObjectDetectionStats.from(it)
+                }
+                result.complete(Result.success(topObjects))
+            }
+            .addOnFailureListener {
+                result.complete(Result.failure(it))
+            }
         return result.await()
     }
 
-    private suspend fun getUsers(ids: List<String>) : List<User> {
-        val users = mutableListOf<User>()
-        ids.forEach { id ->
-            usersCollection.document(id)
-                .get()
-                .addOnSuccessListener {
+    private suspend fun getUsers(ids: List<String>) : List<User> = coroutineScope {
+        return@coroutineScope ids.map { id ->
+            coroutineScope {
+                async {
                     runCatching {
-                        users.add(it.toObject<User>()!!)
-                    }.onFailure {
-                        e("Error getting user $id")
+                        usersCollection.document(id)
+                            .get()
+                            .await()
+                            .toObject<User>()!!
                     }
+                    .onFailure {
+                        e("Error getting user $id")
+                    }.getOrNull()
                 }
-                .addOnFailureListener { e("Failure getting user $id") }
-                .await()
-        }
-        return users
+            }
+        }.awaitAll().filterNotNull()
     }
 
     suspend fun updateUserAchievements(achievements: List<UserAchievement>, points: Float): Result<Unit> {

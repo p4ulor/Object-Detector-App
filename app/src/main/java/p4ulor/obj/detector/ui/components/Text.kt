@@ -20,6 +20,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -40,11 +41,19 @@ fun QuickText(
     fontWeight: FontWeight? = null,
     fontFamily: FontFamily? = null,
     maxLines: Int = Int.MAX_VALUE,
-    textStyle: TextStyle = LocalTextStyle.current
+    textStyle: TextStyle = LocalTextStyle.current,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    onTextvOverflow: () -> Unit = {}
 ) = ComposeText(
     stringResource(text), modifier, color, fontSize, fontStyle, fontWeight, fontFamily,
     maxLines = maxLines,
-    style = textStyle
+    style = textStyle,
+    overflow = overflow,
+    onTextLayout = {
+        if (it.didOverflowWidth) {
+            onTextvOverflow()
+        }
+    }
 )
 
 @Composable

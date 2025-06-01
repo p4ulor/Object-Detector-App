@@ -2,9 +2,13 @@ package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +36,7 @@ fun SignInWithGoogle(modifier: Modifier = Modifier.fillMaxSize(), onClick: () ->
             .decoderFactory(SvgDecoder.Factory())
             .build(),
         contentDescription = "Google Logo",
-        modifier.clickable { onClick() },
+        modifier.clip(CircleShape).clickable { onClick() },
         error = painterResource(R.drawable.flashlight_off),
         onError = {
             i("Error loading SignInWithGoogle: $it")

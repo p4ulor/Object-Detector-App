@@ -6,8 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
@@ -24,16 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.viewmodels.AchievementsViewModel
+import p4ulor.obj.detector.data.domains.firebase.User
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.data.utils.getTodaysDate
 import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.QuickText
-import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.toast
 import p4ulor.obj.detector.ui.screens.achievements.leaderboard.TabLeaderboard
 import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
@@ -171,11 +168,13 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
         add(Achievement("END", 0f))
     }
 
+    val showAchievements = true
+
     AchievementsScreenUi(
-        Tab.YourAchievements,
+        if (showAchievements) Tab.YourAchievements else Tab.Leaderboard,
         onSelectedTabChanged = {},
         yourAchievementsState = YourAchievementsState(
-            achievements = emptyList(),
+            achievements = achievements,
             orderOptions = OrderOption.Name
         ),
         yourAchievementsCallbacks = YourAchievementsCallbacks(
@@ -183,7 +182,7 @@ private fun AchievementsScreenUiPreview() = PreviewComposable(enableDarkTheme = 
             onChangeOrderOption = {  }
         ),
         leaderboardState = LeaderboardState(
-            currUser = null,
+            currUser = User(),
             topUsers = emptyList(),
             topObjects = emptyList(),
             connectionStatus = ConnectionStatus.Off

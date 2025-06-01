@@ -2,7 +2,6 @@ package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.filled.PersonOff
 import androidx.compose.material.icons.filled.Publish
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,9 +27,8 @@ import p4ulor.obj.detector.ui.components.utils.GeneralPaddingTiny
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 @Composable
-fun LeaderboardActions(
+fun LeaderboardMainActions(
     onSubmitAchievements: () -> Unit,
-    onDeleteAccount: () -> Unit,
 ) {
     CenteredRow(Modifier.padding(bottom = GeneralPaddingTiny)) {
         LeaderboardAction(
@@ -40,15 +38,6 @@ fun LeaderboardActions(
             R.string.submit
         ) {
             onSubmitAchievements()
-        }
-
-        LeaderboardAction(
-            MaterialIcons.PersonOff,
-            R.string.delete_acc_action,
-            R.string.delete_acc__action_desc,
-            R.string.delete
-        ) {
-            onDeleteAccount()
         }
     }
 }
@@ -60,7 +49,7 @@ private fun LeaderboardAction(
     @StringRes title: Int,
     @StringRes description: Int,
     @StringRes actionName: Int,
-    onContinueAction: () -> Unit
+    performAction: () -> Unit
 ) {
     val toolTipState = rememberTooltipState(isPersistent = true)
     val scope = rememberCoroutineScope()
@@ -70,10 +59,10 @@ private fun LeaderboardAction(
         tooltip = {
             RichTooltip(
                 Modifier.padding(horizontal = GeneralPadding),
-                title = { QuickText(title, fontWeight = FontWeight.Bold) },
+                title = { QuickText(title, fontWeight = FontWeight.ExtraBold) },
                 action = {
                     TextButton(onClick = {
-                        onContinueAction()
+                        performAction()
                         toolTipState.dismiss()
                     }) {
                         QuickText(actionName)
@@ -99,8 +88,7 @@ private fun LeaderboardAction(
 @Preview
 @Composable
 private fun LeaderBoardActionsPreview() = PreviewComposable (enableDarkTheme = true) {
-    LeaderboardActions(
+    LeaderboardMainActions(
         onSubmitAchievements = {},
-        onDeleteAccount = {}
     )
 }

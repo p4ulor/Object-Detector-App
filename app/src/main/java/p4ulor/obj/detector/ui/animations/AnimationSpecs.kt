@@ -1,6 +1,8 @@
 package p4ulor.obj.detector.ui.animations
 
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -19,6 +21,11 @@ fun <T> linear(durationMillis: Int = 300, delayMillis: Int = 0) = tween<T>(
     durationMillis = durationMillis,
     delayMillis = delayMillis,
     easing = Linear
+)
+
+fun <T> bouncySpring() = spring<T>(
+    dampingRatio = Spring.DampingRatioMediumBouncy,
+    stiffness = Spring.StiffnessLow
 )
 
 fun slideInVertSmooth(slideUp: Boolean = true, durationMillis: Int = 400) = slideInVertically(

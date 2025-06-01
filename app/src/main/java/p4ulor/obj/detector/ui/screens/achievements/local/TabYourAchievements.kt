@@ -55,7 +55,7 @@ import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.QuickText
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
-import p4ulor.obj.detector.ui.components.utils.LightContainer
+import p4ulor.obj.detector.ui.components.utils.LightCircularContainer
 import p4ulor.obj.detector.ui.components.utils.TransparencyGradient
 import p4ulor.obj.detector.ui.components.utils.TransparentGradientPosition
 import p4ulor.obj.detector.ui.components.utils.fadingEdge
@@ -204,7 +204,7 @@ private fun AchievementsList(
                 val toolTipState = rememberTooltipState(isPersistent = false)
                 val scope = rememberCoroutineScope() // Needed for TooltipBox...
 
-                LightContainer {
+                LightCircularContainer {
                     val rowEntry = StringBuilder(achievement.objectName.capitalized())
                     if (achievement.detectionDate != null){
                         rowEntry.append(" (${achievement.certaintyScore.toPercentage()})")

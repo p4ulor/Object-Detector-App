@@ -46,7 +46,7 @@ Now, everytime you run `./gradlew signingReport` it should print an equal hashes
 ```cmake
 Config: release
 Store: /home/p4ulor/Object-Detector-App/app_certificate.jks
-Alias: the_key_alias
+Alias: the_key_store_alias
 MD5: ...
 SHA1: 3B:CA:...
 ```

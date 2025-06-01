@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +27,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CenteredColumn(modifier: Modifier = Modifier.fillMaxSize(), content: @Composable () -> Unit) {
+fun CenteredColumn(
+    modifier: Modifier = Modifier.fillMaxSize(),
+    content: @Composable ColumnScope.() -> Unit
+) {
     Column(
         modifier,
         verticalArrangement = Arrangement.Center,
@@ -78,14 +83,14 @@ fun BoxWithBackground(
 
 /** Involves [content] with a Box with a light [secondaryContainer] background with a light [outline] border */
 @Composable
-fun LightContainer(content: @Composable () -> Unit) = Box(
+fun LightCircularContainer(content: @Composable () -> Unit) = Box(
     Modifier
-        .clip(SuperRoundRectangleShape)
+        .clip(CircleShape)
         .background(color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f))
         .border(
             width = 2.dp,
             color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-            shape = SuperRoundRectangleShape
+            shape = CircleShape
         )
         .padding(HorizontalPadding),
     contentAlignment = Alignment.Center
