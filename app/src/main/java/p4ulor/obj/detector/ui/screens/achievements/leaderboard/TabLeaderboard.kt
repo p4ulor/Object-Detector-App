@@ -38,6 +38,8 @@ import kotlinx.coroutines.delay
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
+import p4ulor.obj.detector.data.domains.firebase.UserAchievement
+import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.animations.VerticallyAnimatedVisibility
@@ -65,6 +67,7 @@ fun TabLeaderboard(
     topUsers: List<User>,
     topObjects: List<ObjectDetectionStats>,
     connectionStatus: ConnectionStatus,
+    localAchievements: List<Achievement>,
     onSignInWithGoogle: () -> Unit = {},
     onSignOut: () -> Unit= {},
     onSubmitAchievements: () -> Unit= {},
@@ -77,7 +80,6 @@ fun TabLeaderboard(
     val blurRadius: Dp by animateDpAsState(
         targetValue = if (showDeletionConfirmation.value) 20.dp else 0.dp,
         animationSpec = smooth(),
-        label = "blurRadius"
     )
 
     VerticallyAnimatedVisibility(visible = currUser != null) { // Login granted
@@ -99,7 +101,11 @@ fun TabLeaderboard(
 
                     Spacer(Modifier.weight(1f))
 
-                    LeaderboardMainActions(onSubmitAchievements,)
+                    LeaderboardMainActions(
+                        localAchievements,
+                        currUser?.achievements,
+                        onSubmitAchievements
+                    )
 
                     Spacer(Modifier.weight(1f))
 
@@ -108,8 +114,7 @@ fun TabLeaderboard(
                         dropDownActions = listOf(
                             DropdownAction(Icon.Material(MaterialIconsExt.Logout), action = { onSignOut() }),
                             DropdownAction(Icon.Material(MaterialIcons.PersonOff), action = { showDeletionConfirmation.toggle() })
-                        ),
-                        Modifier.padding(horizontal = GeneralPaddingTiny)
+                        )
                     )
                 }
             }
@@ -150,6 +155,11 @@ fun TopDataDashboard(
     onRefreshLeaderboard: () -> Unit
 ) {
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
+    var currTopUsers by remember { mutableStateOf(topUsers) }
+    
+    LaunchedEffect(topUsers.hashCode()) {
+        currTopUsers = topUsers
+    }
 
     LaunchedEffect(isRefreshing) {
         delay(1000) // its easier, than handling the case where the lists dont change and their hash is the same...
@@ -174,7 +184,7 @@ fun TopDataDashboard(
                     textStyle = MaterialTheme.typography.titleLarge
                 )
 
-                topUsers.take(TOP_USERS_CAP).forEachIndexed { index, user ->
+                currTopUsers.take(TOP_USERS_CAP).sortedByDescending { it.points }.forEachIndexed { index, user ->
                     Card(
                         Modifier.padding(horizontal = GeneralPaddingSmall, vertical = GeneralPaddingTiny),
                         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)
@@ -199,7 +209,6 @@ fun TopDataDashboard(
                     data = topObjects.map {
                         Triple(it.objectName, it.detectionCount.toFloat(), null)
                     }.toList(),
-                    donutSize = 200.dp,
                     Modifier.padding(GeneralPaddingSmall)
                 )
             }
@@ -210,11 +219,43 @@ fun TopDataDashboard(
 @Preview
 @Composable
 private fun TabLeaderboardPreviewWithUser() = PreviewComposable(enableDarkTheme = true) {
+
+    var topUsers by remember {
+        mutableStateOf(
+            buildList { repeat(6) { add(User("Paulo", "uri", 22.3f)) } }
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(3000)
+            topUsers = buildList {
+                repeat(4) {
+                    add(User("Paulo", "uri", 22.3f))
+                }
+                add(User("Paulo", "uri", 4200.3f))
+            }
+
+            delay(3000)
+
+            topUsers = buildList {
+                add(User("Paulo", "uri", 220.3f))
+                repeat(4) {
+                    add(User("Paulo", "uri", 22.3f))
+                }
+            }
+        }
+    }
+
     TabLeaderboard(
         currUser = User("Paulo aaaaaaaaaaaaa", "uri", 22.3f),
         topObjects = emptyList(),
         connectionStatus = ConnectionStatus.On,
-        topUsers = buildList { repeat(8) { add(User("Paulo", "uri", 22.3f)) } }
+        topUsers = topUsers,
+        localAchievements = listOf(
+            Achievement("cat", 0.8f),
+            Achievement("car", 0.3f)
+        )
     )
 }
 
@@ -227,7 +268,8 @@ private fun TabLeaderboardPreviewWithUserWithBackground() = PreviewComposable(en
             currUser = User("Paulo aaaaaaaaaaaaa", photoUri, 22.3f),
             topUsers = buildList { repeat(8) { add(User("Paulo", photoUri, 22.3f)) } },
             topObjects = emptyList(),
-            connectionStatus = ConnectionStatus.On
+            connectionStatus = ConnectionStatus.On,
+            localAchievements = emptyList()
         )
     }
 }
@@ -240,6 +282,7 @@ private fun TabLeaderboardPreviewNoUser() = PreviewComposable(enableDarkTheme = 
         currUser = null,
         connectionStatus = ConnectionStatus.Off,
         topUsers = emptyList(),
-        topObjects = emptyList()
+        topObjects = emptyList(),
+        localAchievements = emptyList()
     )
 }

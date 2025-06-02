@@ -13,10 +13,9 @@ import p4ulor.obj.detector.android.utils.NetworkObserver
 import p4ulor.obj.detector.android.viewmodels.utils.launch
 import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
-import p4ulor.obj.detector.data.domains.firebase.UserAchievement
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.domains.mediapipe.calculatePoints
-import p4ulor.obj.detector.data.domains.mediapipe.isDifferentThan
+import p4ulor.obj.detector.data.domains.mediapipe.pointsDifferenceBetween
 import p4ulor.obj.detector.data.domains.mediapipe.reset
 import p4ulor.obj.detector.data.domains.mediapipe.toUserAchievements
 import p4ulor.obj.detector.data.sources.cloud.firebase.FirebaseInstance
@@ -140,16 +139,18 @@ class AchievementsViewModel(
         }
     }
 
+    /** --- FIREBASE --- */
+
     fun signInWithGoogle() {
         launch {
             val userObtained = firebase.signInWithGoogle(application.applicationContext)
-            val topUsers = getTopUsers(currUser = userObtained)
-            val topObjects = getTopObjects(currUser = userObtained)
-            setLeaderboard(
-                currUser = userObtained,
-                topUsers = topUsers,
-                topObjects = topObjects
-            )
+            if (userObtained != null) {
+                setLeaderboard(
+                    currUser = userObtained,
+                    topUsers = getTopUsers(),
+                    topObjects = getTopObjects()
+                )
+            }
         }
     }
 
@@ -162,18 +163,20 @@ class AchievementsViewModel(
 
     fun submitAchievements(onNoNewAchievements: () -> Unit) {
         launch {
-            yourAchievements.value.achievements.let { achiev ->
-                if(achiev.isDifferentThan(leaderboard.value.currUser?.achievements)) {
-                    val points = achiev.calculatePoints()
-                    firebase.updateUserAchievements(achiev.toUserAchievements(), points)
+            with(yourAchievements.value.achievements) {
+                if(pointsDifferenceBetween(leaderboard.value.currUser?.achievements) != 0f) {
+                    val newPoints = calculatePoints()
+                    val newUserAchievements = toUserAchievements()
+                    firebase.updateUserAchievements(newUserAchievements, newPoints)
                         .onSuccess {
-                            delay(200) // wait a bit for Cloud Functions to process
-                            val refreshedTopUsers = firebase.getTopUsers()
+                            delay(400) // wait a bit for Cloud Functions to process
                             setLeaderboard(
                                 currUser = leaderboard.value.currUser?.copy(
-                                    points = points
+                                    points = newPoints,
+                                    achievements = newUserAchievements
                                 ),
-                                topUsers = refreshedTopUsers.getOrNull() ?: leaderboard.value.topUsers
+                                topUsers = getTopUsers(), // refreshed top users and objects
+                                topObjects = getTopObjects()
                             )
                         }
                         .onFailure {
@@ -194,38 +197,28 @@ class AchievementsViewModel(
 
     fun refreshLeaderboard() {
         launch {
-            val topUsers = getTopUsers(currUser = _leaderboard.value.currUser)
-            val topObjects = getTopObjects(currUser = _leaderboard.value.currUser)
             setLeaderboard(
-                topUsers = topUsers,
-                topObjects = topObjects
+                topUsers = getTopUsers(),
+                topObjects = getTopObjects()
             )
         }
     }
 
-    private suspend fun getTopUsers(currUser: User?) : List<User> {
-        return if (currUser != null) {
-            firebase.getTopUsers().let {
-                it.onFailure { e("Error at getTopUsers ${it.message}") }
-                it.getOrNull() ?: emptyList()
-            }
-        } else {
-            i("No user logged in to get getTopUsers")
-            emptyList()
+    private suspend fun getTopUsers() : List<User> {
+        return firebase.getTopUsers().let {
+            it.onFailure { e("Error at getTopUsers ${it.message}") }
+            it.getOrNull() ?: emptyList()
         }
     }
 
-    private suspend fun getTopObjects(currUser: User?) : List<ObjectDetectionStats> {
-        return if (currUser != null) {
-            firebase.getTopObjects().let {
-                it.onFailure { e("Error at getTopObjects ${it.message}") }
-                it.getOrNull() ?: emptyList()
-            }
-        } else {
-            i("No user logged in to get getTopObjects")
-            emptyList()
+    private suspend fun getTopObjects() : List<ObjectDetectionStats> {
+        return firebase.getTopObjects().let {
+            it.onFailure { e("Error at getTopObjects ${it.message}") }
+            it.getOrNull() ?: emptyList()
         }
     }
+
+    /** --- COMMON UTILS --- */
 
     /** Util to avoid having to do _yourAchievements.value = ... */
     private fun setYourAchievements(

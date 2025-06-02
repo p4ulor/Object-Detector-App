@@ -15,19 +15,18 @@ This text details things about conditions, state handling, decisions made, remin
 - For simplicity sake, only the latest message of Gemini is saved when the user leaves the screen or toggled off/on Gemini
 
 ### SettingsScreen 🔧
-- Everytime the user navigates to this screen the preferences and secret preferences are loaded
-- When the app that's installed doesn't have the MediaPipe models: The preferences are still set, but MediaPipe won't be running in the ImageAnalysis use case
+- On the first time the user navigates to this screen the preferences and secret preferences are loaded
+- Everytime he changes the settings, these are loaded automatically (except for Gemini API that requires clicking a button per example). Then the state of these are maintained in the viewmodel
+- When the app that's installed doesn't have the MediaPipe models: The preferences can still be set, but MediaPipe won't be running in the ImageAnalysis use case
 
 ### AchievementsScreen 🏅
 - Everytime the user navigates to this screen, the list of achievements are loaded
+- The ordering of the achievements by "Name" and "Done" are cached
 - If a user deletes his account the top objects stats coming from that user won't be deleted. New object detections are counted to the stats by doing a diff between the achievements already in firestore and the ones submitted by the user
-
-## Firebase
-1.
-- `google-services.json` should be placed in `app/`
 
 ## Firebase & Authentication 🛂
 ### Setup
+- `google-services.json` should be placed in `app/`
 - For properly setting up the Firebase project with authentication, a set of things must be done regarding the app signing and providing the SHA codes to the Firebase SDK setup for Android (the google-services.json). This will be used to authenticate the clients (android phones) doing requests to the Firebase project. You can change these SHA codes anytime, so you can leave it blank when creating the project's SDK.
 - These changes will make so that trying to decompile the .apk and making any attempts to make requests with any other built app not valid.
 1. Set up the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key). This will be used when generating the SHA certificate fingerprints
@@ -124,7 +123,7 @@ service cloud.firestore {
 - GeminiChat feature, state management and persistence (could be improved, per example saving the whole conversation instead of the latest message when toggling on/off Gemini)
 
 ## Things that were not done for the sake of moving on to other things
-- The data in viewmodels maybe could have been more organized. I could have added the "UseCases" pattern to encapsulate logic
+- The data in viewmodels maybe could have been more organized. I could have added the "UseCases" pattern to encapsulate logic, and leave viewmodels only for handling coroutines and maintaining state
 - Not supporting the animated detection outlines for more than 1 object when detection animation is enabled, since an identifier is required for the animation to track something, that being 1 object, but MediaPipe doesn't provide identifiers (and it wouldn't make sense that it did). Guessing could be done with the positioning and size of the outline, but it would be overkill
 - Not worrying about still using ImageDetectionUseCase when toggling Gemini mode. Only the emission of results is stopped. This was done like this in order to not restart (and interrupt) the camera preview, it's also faster this way.
 - Not displaying the whole list of Gemini messages in the chat, but only displaying the latest one

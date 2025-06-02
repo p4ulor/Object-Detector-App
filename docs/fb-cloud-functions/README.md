@@ -15,8 +15,9 @@ Manual command to export data of running emulators. Inside root npm dir:
 - npx firebase emulators:export dev-data
 
 ## Notes
+- The quality and investment on this code is not the same as in the app
 - I'm using CommonJS, not ES Modules (ESM) importing syntax
-- I'm using JavaScript just to make it simpler (and leave Typescript for other things. And experience is experience)
+- I'm using JavaScript just to make it simpler (and leave Typescript for other things. And experience is experience). PS: I'm not using JS again...
 - If there is an error along the lines of:
     - "functions: Request to «...» had HTTP Error: 400, Validation failed for trigger «...» Invalid resource state for "": Permission denied while using the Eventarc Service Agent"
     - Go to the IAM tab in Google Cloud panel that belongs to the Firebase project `https://console.cloud.google.com/iam-admin/iam?inv=1&invt=Abxwjw&project=object-detector-7f0d6` 

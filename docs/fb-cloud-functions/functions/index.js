@@ -31,11 +31,13 @@ const topUsersCollection = db.collection(collections.topUsers)
 /** Contains documents with structure @see ObjectDetectionStats */
 const topObjectsCollection = db.collection(collections.topObjects)
 
-initializeTopObjects()
+// initializeTopObjects() // this can just run once in some deployment, to easily setup the collection instead of doing it by hand and be commented for ever
 
 /** 
  * The following 3 functions listens to various changes on @see usersCollection collection and updates the 
  * @see topUsersCollection and @see topObjectsCollection
+ * 
+ * Rmember to use await before returning from the cloud function
  * 
  * Object.assign() is used to set documents to go around the error:
  * - Firestore doesn't support JavaScript objects with custom prototypes 
@@ -62,18 +64,20 @@ exports.onUserCreated = functions.firestore.onDocumentCreated(collections.users+
     .map(obj => JSON.stringify(obj))
     .join(", ")  
     logger.info(`topUsersLog = ${topUsersLog}`)
+
+    const topUserWithLowestPoints = topUsers[0]
     
     if (topUsers.length < TOP_USERS_MAX_DOCS) {
-        topUsersCollection
+        await topUsersCollection
             .doc(newUserId)
             .set(Object.assign({}, new TopUser(newUser.points)))
     } else {
-        if (topUsers[0].asTopUser().points < newUser.points) {
-            topUsersCollection
-                .doc(topUsers[0].uid)
+        if (topUserWithLowestPoints.asTopUser().points < newUser.points) {
+            await topUsersCollection
+                .doc(topUserWithLowestPoints.uid)
                 .delete()
             
-            topUsersCollection
+            await topUsersCollection
                 .doc(newUserId)
                 .set(Object.assign({}, new TopUser(newUser.points)))
         } else {
@@ -89,14 +93,18 @@ exports.onUserDeleted = functions.firestore.onDocumentDeleted(collections.users+
     const deletedUserId = snapshot.id
     const deletedUser = new User(snapshot.data())
 
+    logger.info(`onUserDeleted for ${deletedUserId}`)
+
     const topUsers = await getTopUsersInAscPoints()
     const isDeletedUserInTopUsers = topUsers.some(value => value.uid == deletedUserId)
 
     if (isDeletedUserInTopUsers) {
         logger.info(`Deleting user in top users ${deletedUserId}`)
-        removeUserFromTopUsers(deletedUserId, topUsers)
+        await topUsersCollection
+            .doc(deletedUserId)
+            .delete()
+        await removeUserFromTopUsersOrReplaceIfPossible(deletedUserId, topUsers)
     }
-
     return true
 })
 
@@ -111,19 +119,23 @@ exports.onUserPointsUpdated = functions.firestore.onDocumentUpdated(collections.
     if (userBefore.points != userAfter.points) {
         const topUsers = await getTopUsersInAscPoints()
         const topUserWithLowestPoints = topUsers[0]
-        if (topUserWithLowestPoints.asTopUser().points < userAfter.points) {
+        if (topUserWithLowestPoints.asTopUser().points < userAfter.points) { // if the updatedUser points are greater than the user with the lowest points in the topUsers, add it to topUsers
             if (topUsers.length == TOP_USERS_MAX_DOCS) {
-                topUsersCollection
-                    .doc(topUserWithLowestPoints.uid)
-                    .delete()
+                await removeUserFromTopUsersOrReplaceIfPossible(topUserWithLowestPoints.uid, topUsers)
             }
             
-            topUsersCollection
+            await topUsersCollection
                 .doc(userId)
                 .set(Object.assign({}, new TopUser(userAfter.points)))
         
-        } else if (topUsers.some((value) => value.uid == userId) && topUserWithLowestPoints.asTopUser().points > userAfter.points ) { // if the user is in topUsers and he resets achievements and updates his points
-            removeUserFromTopUsers(userId, topUsers)
+        } else if (topUsers.some((value) => value.uid == userId)) { // if the user is already topUsers 
+            if (topUserWithLowestPoints.asTopUser().points > userAfter.points) { // and his points are lower than the topUserWithLowestPoints, remove him
+                await removeUserFromTopUsersOrReplaceIfPossible(userId, topUsers)
+            } else { // otherwise just update his points
+                await topUsersCollection
+                    .doc(userId)
+                    .set(Object.assign({}, new TopUser(userAfter.points)))
+            }
         } else {
             logger.info(`No changes to ${collections.topUsers}`)
         }
@@ -146,23 +158,25 @@ async function getTopUsersInAscPoints(){
 }
 
 /**
- * Removes a user from the @see {topUsersCollection} and looks for a new user to take its place
+ * Removes a user from the @see {topUsersCollection} and looks for a new user to take its place if possible
  * @param {string} userId the user to remove
  * @param {Document[]} topUsers the current top users
  */
-async function removeUserFromTopUsers(userId, topUsers){
-    await topUsersCollection
-        .doc(userId)
-        .delete()
-    
-    //now, the expected lenght of topUsers should be 4, get the 5th user with the most points
+async function removeUserFromTopUsersOrReplaceIfPossible(userId, topUsers) {
+
+    const usersToNotConsider = topUsers.map(value => value.uid)
     const eligibleUserQuery = await usersCollection
-        .where(FieldPath.documentId(), "not-in", topUsers.map(value => value.uid))
+        .where(FieldPath.documentId(), "not-in", usersToNotConsider)
         .orderBy("points", "desc")
         .limit(1)
         .get()
     
     if (!eligibleUserQuery.empty) {
+
+        await topUsersCollection
+            .doc(userId)
+            .delete()
+
         // Get the user with the most points who is not in the current topUsers
         const eligibleUserDoc = eligibleUserQuery.docs[0]
         const newTopUser = new User(eligibleUserDoc.data())
@@ -182,6 +196,10 @@ async function removeUserFromTopUsers(userId, topUsers){
  * @param {Array<UserAchievement>} achievementsAfter 
  */
 async function updateTopObjects(achievementsBefore, achievementsAfter) {
+    if (achievementsBefore == null || achievementsAfter == null) {
+        logger.warn("updateTopObjects: achievements are null or undefined. This should only happen in the firebase emulator for testing when not creating all user fields")
+        return
+    }
     if (achievementsBefore.length != achievementsAfter.length) {
         logger.info(`achievementsBefore ${achievementsBefore.length} and achievementsAfter ${achievementsAfter.length} are not of equal length, this is expected when a user is submitting his achievements for the first time or when testing (users should have an array of fixed lenght (80) in this field )`)
     }
@@ -206,13 +224,13 @@ async function updateTopObjects(achievementsBefore, achievementsAfter) {
 
         if (before.certaintyScore != after.certaintyScore && after.certaintyScore != 0.0) {
             const detectionCount = ObjectDetectionStats.DETECTION_COUNT_FIELD
-            topObjectsCollection
+            try {
+                await topObjectsCollection
                 .doc(after.objectName)
                 .update({[detectionCount]: FieldValue.increment(1)})
-                .catch(e => {
-                    logger.error(`Error incrementing obj count (the objectName ${after.objectName} may be invalid). Code: ${e.code}. Details: ${e.details}`)
-                })
-
+            } catch (e) { // e is some Firestore error type I wasn't able to decipher, but I access some relevant fields
+                logger.error(`Error incrementing obj count (the objectName ${after.objectName} may be invalid). Code: ${e.code}. Details: ${e.details}`)
+            }
             logger.info(`Incremented count for ${after.objectName}`)
         }
     }

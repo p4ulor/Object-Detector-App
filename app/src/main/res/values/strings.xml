@@ -37,7 +37,7 @@
     <string name="all_achievements_will_be_deleted">All achievements will be deleted, do you wish do continue?</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
-    <string name="error_creating_gemini_prompt">Error creating Gemini prompt</string>
+    <string name="error_creating_gemini_prompt">Error creating Gemini prompt (a picture that was taken was likely deleted)</string>
     <string name="name">Name</string>
     <string name="done">Done</string>
     <string name="order_by">"Order by: "</string>

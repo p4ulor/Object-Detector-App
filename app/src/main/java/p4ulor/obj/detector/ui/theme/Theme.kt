@@ -251,8 +251,7 @@ private fun SampleComposable(){
                 animationSpec = infiniteRepeatable(
                     animation = smooth(3000),
                     repeatMode = RepeatMode.Reverse
-                ),
-                label = "animatedProgress"
+                )
             )
             LinearProgressIndicator(
                 progress = { animatedProgress.value },

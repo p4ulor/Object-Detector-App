@@ -140,6 +140,7 @@ fun AchievementsScreenUi(
                     topUsers = leaderboardState.topUsers,
                     topObjects = leaderboardState.topObjects,
                     connectionStatus = leaderboardState.connectionStatus,
+                    localAchievements = yourAchievementsState.achievements, // to calculate the diff between local and submitted achievements
                     onSignInWithGoogle = leaderboardSCallbacks.onSignInWithGoogle,
                     onSignOut = leaderboardSCallbacks.onSignOut,
                     onSubmitAchievements = leaderboardSCallbacks.onSubmitAchievements,

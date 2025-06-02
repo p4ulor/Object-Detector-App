@@ -121,7 +121,8 @@ private fun ChatMessagePreview() = PreviewComposable {
         ChatMessage(
             Message(
                 "**Witness** the convergence of advanced technology and creative vision. " +
-                        "This image encapsulates **the spirit** of modern photographyyyyyyyyyyyyyyyyyyyyyyyyyy.",
+                        "This image encapsulates **the spirit** of modern programming. " +
+                        "Including: \n* Persistence \n* Creativity \n* Stoicism \nAnd **aura** of course",
                 authorIsUser = false,
                 isPending = false
             )

@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.core.annotation.Single
@@ -33,6 +34,8 @@ import p4ulor.obj.detector.data.domains.firebase.UserAchievement
 import p4ulor.obj.detector.data.utils.executorCommon
 import p4ulor.obj.detector.e
 import p4ulor.obj.detector.i
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 /**
  * Provides methods to create and update documents from the Firebase project
@@ -52,6 +55,8 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
     private var credentialManager: CredentialManager? = null
     private val currUserId: String
         get() = fbAuth.currentUser?.uid.orEmpty()
+    private val isUserLoggedIn: Boolean
+        get() = fbAuth.currentUser != null
 
     fun init(ctx: Context) {
         i("Obtained user ${fbAuth.currentUser}")
@@ -64,7 +69,7 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
         credentialManager = CredentialManager.create(ctx)
     }
 
-    suspend fun signInWithGoogle(ctx: Context): User? {
+    suspend fun signInWithGoogle(ctx: Context) : User? {
         return runCatching {
             val selectedCredential = credentialManager?.getCredential( // launch Credential Manager (native) UI
                 context = ctx,
@@ -81,22 +86,22 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
                 null
             }
         }.onFailure { // Mostly to catch when the user closes the dialog, but can also fail if the app signing doesn't match to the signings that were added to the firebase project when creating the google-services.json). Per example when installing a new Android Studio, a different debug keystore will be at ~/.android/debug.keystore . You can replace your curr file with that other .keystore (thus avoiding creating a new google-services.json. Then, clean gradle build, invalidate caches and restart. (long story short: windows 11 messed up my wifi in my Ubuntu 22, so I had to get Ubuntu 24. yeah...)
-            e("signInWithGoogle failure: $it")
+            e("signInWithGoogle failure: ${it.message}")
         }.getOrNull()
     }
 
     /** Clear the current user credential state from all credential providers */
-    suspend fun signOut() {
+    suspend fun signOut() = runIfLoggedIn {
         runCatching {
             fbAuth.signOut()
             val clearRequest = ClearCredentialStateRequest()
             credentialManager?.clearCredentialState(clearRequest)
         }.onFailure {
-            e("signOut failure: $it")
+            e("signOut failure: ${it.message}")
         }
     }
 
-    suspend fun getTopUsers(): Result<List<User>> = coroutineScope {
+    suspend fun getTopUsers() : Result<List<User>> = coroutineScope {
         val result = CompletableDeferred<Result<List<User>>>()
         topUsersCollection
             .orderBy(TopUser.POINTS, Query.Direction.DESCENDING)
@@ -107,7 +112,9 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
                 launch {
                     val usersWithTopPoints = query.documents.filterNotNull()
                         .map { it.id }
+                    i("usersWithTopPoints $usersWithTopPoints") // IDK why this query sometimes doesn't respect the ordering of the points...
                     val topUsers = getUsers(usersWithTopPoints)
+                    i ("topUsers: ${topUsers.toList()}")
                     result.complete(Result.success(topUsers))
                 }
             }
@@ -118,7 +125,7 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
         return@coroutineScope result.await()
     }
 
-    suspend fun getTopObjects(): Result<List<ObjectDetectionStats>> {
+    suspend fun getTopObjects() : Result<List<ObjectDetectionStats>> {
         val result = CompletableDeferred<Result<List<ObjectDetectionStats>>>()
         topObjectsCollection
             .orderBy(ObjectDetectionStats.DETECTION_COUNT, Query.Direction.DESCENDING)
@@ -138,35 +145,44 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
     }
 
     private suspend fun getUsers(ids: List<String>) : List<User> = coroutineScope {
-        return@coroutineScope ids.map { id ->
-            coroutineScope {
-                async {
-                    runCatching {
-                        usersCollection.document(id)
-                            .get()
-                            .await()
-                            .toObject<User>()!!
-                    }
-                    .onFailure {
-                        e("Error getting user $id")
-                    }.getOrNull()
+        val fetchedUsersMap = ConcurrentHashMap<String, User>() // might not have correct ordering. ConcurrentHashMap ensures that concurrent structural modifications to the map are safe
+        val deferredResults = ids.map { id ->
+            async {
+                runCatching {
+                    usersCollection.document(id)
+                        .get()
+                        .await()
+                        .toObject<User>()!!.let { user ->
+                            fetchedUsersMap.put(id, user)
+                        }
+                }.onFailure {
+                    e("Error getting user $id. Reason: ${it.message}")
                 }
             }
-        }.awaitAll().filterNotNull()
+        }
+        deferredResults.awaitAll()
+
+        ids.mapNotNull { id -> // retrieves the users with the same ordering as the ids provided
+            fetchedUsersMap.remove(key = id)
+        }
     }
 
-    suspend fun updateUserAchievements(achievements: List<UserAchievement>, points: Float): Result<Unit> {
+    suspend fun updateUserAchievements(
+        achievements: List<UserAchievement>,
+        points: Float
+    ) = runIfLoggedInWithResult<Unit> {
         val error = StringBuilder("")
+
         usersCollection.document(currUserId)
             .update(User.ACHIEVEMENTS, achievements)
             .addOnSuccessListener { i("Achievements set") }
-            .addOnFailureListener { error.append(it.message) }
+            .addOnFailureListener { error.append("Achievements set failure "+it.message) }
             .await()
 
         usersCollection.document(currUserId)
             .update(User.POINTS, points)
             .addOnSuccessListener { i("Points set") }
-            .addOnFailureListener { error.append(it.message) }
+            .addOnFailureListener { error.append("Points set failure "+it.message) }
             .await()
 
         return if (error.isEmpty()) {
@@ -176,15 +192,15 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
         }
     }
 
-    fun deleteAccount() {
+    fun deleteAccount() = runIfLoggedIn {
         usersCollection.document(currUserId)
             .delete()
             .addOnSuccessListener {
                 i("User $currUserId deleted")
                 fbAuth.currentUser?.let {
-                    it.delete()
-                        .addOnSuccessListener { i("User deleted") }
-                        .addOnFailureListener { e("Error deleting user") }
+                    it.delete() // this unbinds the user from the firebase project
+                        .addOnSuccessListener { i("Logged in user deleted") }
+                        .addOnFailureListener { e("Error deleting logged in user ${it.message}") }
                 }
             }
             .addOnFailureListener { e("Error deleting user $currUserId") }
@@ -209,7 +225,7 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
                             result.complete(null)
                         }
                 } else {
-                    d("User document already exists for uid: $uid")
+                    d("User document already exists for id: $uid")
                     result.complete(doc.toObject<User>())
                 }
             }
@@ -241,6 +257,31 @@ class FirebaseInstance : CoroutineScope by CoroutineScope(Dispatchers.IO) {
             }
         result.await()
         return currUser
+    }
+
+    private inline fun <T> runIfLoggedIn(block: () -> T): T? {
+        return if (isUserLoggedIn) {
+            block()
+        } else {
+            e("No user logged in")
+            null
+        }
+    }
+
+    /**
+     * Wraps a [block] that produces a result and returns it, or returns other [Result] (like failure)
+     * coming from other conditions checks from this function
+     */
+    private inline fun <T> runIfLoggedInWithResult(block: () -> Result<T>): Result<T> {
+        return if (isUserLoggedIn) {
+            val blockResult = block()
+            blockResult.getOrNull()?.let {
+                Result.success(it)
+            } ?: Result.failure(blockResult.exceptionOrNull() ?: Throwable("Throwable is null"))
+        } else {
+            e("No user logged in")
+            Result.failure(Throwable("No user logged in"))
+        }
     }
 }
 

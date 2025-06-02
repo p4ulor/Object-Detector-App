@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import p4ulor.obj.detector.data.utils.getOrRandom
 import p4ulor.obj.detector.data.utils.toPercentage
+import p4ulor.obj.detector.data.utils.toPercentageWithDecimals
 import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.animations.linear
 import p4ulor.obj.detector.ui.components.utils.CenteredColumn
@@ -29,7 +34,7 @@ import p4ulor.obj.detector.ui.components.utils.VerticalPadding
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 import kotlin.math.ceil
 
-private const val MAX_ENTITIES_PER_ROW = 4
+typealias DonutChartData = Triple<String, Float, Color?>
 
 /**
  * @param data a list of [Triple]s where
@@ -40,16 +45,16 @@ private const val MAX_ENTITIES_PER_ROW = 4
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DonutChartWithLabels(
-    data: List<Triple<String, Float, Color?>>,
-    donutSize: Dp,
+    data: List<DonutChartData>,
     modifier: Modifier = Modifier,
-    donutStrokeWidth: Float = 50f,
+    donutSize: Dp = 200.dp,
+    donutStrokeWidth: Float = 50f
 ) {
-
     val totalSum = rememberSaveable { data.sumOf { it.second.toDouble() }.toFloat() }
+    var entities by remember { mutableStateOf(emptyList<DonutChartData>()) }
 
-    val entities = remember {
-        with(DonutChart) {
+    LaunchedEffect(data.hashCode()) {
+        entities = with(DonutChart) {
             data.take(MAX_ENTITIES).also {
                 if (data.size > MAX_ENTITIES) {
                     i("Note: data size exceeds $MAX_ENTITIES")
@@ -74,7 +79,7 @@ fun DonutChartWithLabels(
                 alignment = Alignment.CenterHorizontally
             ),
             verticalArrangement = Arrangement.spacedBy(VerticalPadding),
-            maxItemsInEachRow = MAX_ENTITIES_PER_ROW,
+            maxItemsInEachRow = DonutChart.MAX_ENTITIES_PER_ROW,
         ) {
             entities.forEachIndexed { index, (label, value, color) ->
                 val entityColor = color ?: DonutChart.predefinedColors.getOrRandom(index)
@@ -83,7 +88,7 @@ fun DonutChartWithLabels(
                         drawCircle(entityColor)
                     }
                     Text(
-                        "$label (${(value / totalSum).toPercentage()})",
+                        "$label (${(value / totalSum).toPercentageWithDecimals()})",
                         fontSize = 12.sp,
                         softWrap = true
                     )
@@ -95,7 +100,7 @@ fun DonutChartWithLabels(
 
 @Composable
 fun DonutChart(
-    data: List<Triple<String, Float, Color?>>,
+    data: List<DonutChartData>,
     totalSum: Float,
     strokeWidth: Float = 50f,
 ) {
@@ -144,15 +149,12 @@ object DonutChart {
     )
 
     val MAX_ENTITIES = predefinedColors.size
+    const val MAX_ENTITIES_PER_ROW = 4
 }
-
-
-
-
 
 @Preview
 @Composable // Run in interactive mode
-fun DonutChartExample() = PreviewComposable(enableDarkTheme = true) {
+private fun DonutChartExample() = PreviewComposable(enableDarkTheme = true) {
     DonutChartWithLabels(
         data = listOf(
             Triple("airplane", 50f, null),
@@ -161,14 +163,13 @@ fun DonutChartExample() = PreviewComposable(enableDarkTheme = true) {
             Triple("bicycle", 20f, null),
             Triple("car", 20f, null),
             Triple("cat", 20f, null)
-        ),
-        donutSize = 200.dp
+        )
     )
 }
 
 @Preview
 @Composable // Run in interactive mode
-fun DonutChartExample2() = PreviewComposable(enableDarkTheme = true) {
+private fun DonutChartExample2() = PreviewComposable(enableDarkTheme = true) {
     DonutChartWithLabels(
         data = listOf(
             Triple("bicycle", 20f, null),
@@ -176,11 +177,15 @@ fun DonutChartExample2() = PreviewComposable(enableDarkTheme = true) {
             Triple("cat", 20f, null),
             Triple("airplane", 50f, null),
             Triple("apple", 15f, null),
+
             Triple("person", 15f, null),
             Triple("backpack", 50f, null),
             Triple("sports ball", 15f, null),
             Triple("tennis racket", 15f, null),
-        ),
-        donutSize = 200.dp
+            Triple("refrigerator", 15f, null),
+
+            Triple("oven", 15f, null),
+            Triple("book", 15f, null),
+        )
     )
 }

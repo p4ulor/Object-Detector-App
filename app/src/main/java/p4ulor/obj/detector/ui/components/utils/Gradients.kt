@@ -23,6 +23,9 @@ import p4ulor.obj.detector.data.utils.toPercentage
 import p4ulor.obj.detector.ui.screens.root.BottomNavigationBarHeight
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 
+val GeminiLikeGradient = listOf(Color(0xFF2E78F4), Color(0xFFF76744)) // Blue to Red (Similar to Gemini colors)
+val MediaPipeLikeGradient = listOf(Color(0xFF5FFFB2), Color(0xFF00FF91))
+
 /**
  * Util function to create a [Brush] that can be passed to [fadingEdge] to create a fade in/out
  * of a composable
@@ -63,9 +66,6 @@ enum class TransparentGradientPosition(vararg val colorStops: Pair<Float, Color>
         1f to Color.Black
     )
 }
-
-val GeminiLikeGradient = listOf(Color(0xFF2E78F4), Color(0xFFF76744)) // Blue to Red (Similar to Gemini colors)
-val MediaPipeLikeGradient = listOf(Color(0xFF5FFFB2), Color(0xFF00FF91))
 
 @Composable
 fun ColorSchemeGradient() = Brush.horizontalGradient(listOf(

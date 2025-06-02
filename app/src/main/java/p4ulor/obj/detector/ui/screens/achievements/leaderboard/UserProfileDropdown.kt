@@ -1,10 +1,17 @@
 package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,6 +40,7 @@ import p4ulor.obj.detector.ui.components.IconMediumSize
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
 import p4ulor.obj.detector.ui.components.QuickIcon
+import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.GeneralPaddingTiny
 import p4ulor.obj.detector.ui.components.utils.RoundRectangleShape
 import p4ulor.obj.detector.ui.components.utils.VerticalPadding
@@ -45,16 +53,8 @@ private val ActionIconSize = IconMediumSize
 fun UserProfileDropdown(
     photoUri: String?,
     dropDownActions: List<DropdownAction>,
-    modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
     var isExpanded by remember { mutableStateOf(false) }
-
-    val popupOffset = remember {
-        with(density) {
-            IntOffset(x = 0, y = ExpanderIconSize.toPx().toInt() + GeneralPaddingTiny.toPx().toInt())
-        }
-    }
 
     val expandedBoxSize = remember {
         (dropDownActions.size * ExpanderIconSize.value).dp
@@ -65,42 +65,50 @@ fun UserProfileDropdown(
         animationSpec = bouncySpring()
     )
 
-    Box (modifier) {
+    CenteredColumn (Modifier) {
         Box(Modifier
             .clip(CircleShape) // makes so the selection area is also a circle
-            .clickable { isExpanded = !isExpanded }) {
+            .clickable { isExpanded = !isExpanded }
+        ) {
             UserProfilePicture(photoUri, ExpanderIconSize)
         }
 
-        Popup( // because wrapContentSize(unbounded = true) will not work so the dropdown extends beyond the composable bounds
-            alignment = Alignment.TopCenter,
-            offset = popupOffset,
-            onDismissRequest = { },
+        AnimatedVisibility( // With this, it fixes the weird behaviour from the Popup of starting the dropdown animation from the top of the screen when it's opened on the first time. With the column there's no longer the need to setup the IntOffset. The column will not consider this as occupying space. See commit 06a6df48ad96e6ef95d1424cda482878f8f60252
+            visible = isExpanded,
+            enter = EnterTransition.None,
+            exit = fadeOut()
         ) {
-            Box(Modifier
-                .size(
-                    width = ExpanderIconSize,
-                    height = expandedContainerHeight
-                )
-                .background(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    RoundRectangleShape
-                )
+            Popup( // because wrapContentSize(unbounded = true) will not work so the dropdown extends beyond the composable bounds
+                alignment = Alignment.TopCenter,
+                offset = IntOffset(0, 0),
+                onDismissRequest = { },
             ) {
-                LazyColumn (
-                    Modifier.align(Alignment.Center),
-                    verticalArrangement = Arrangement.spacedBy(VerticalPadding)
+                Box(Modifier
+                    .padding(top = GeneralPaddingTiny)
+                    .size(
+                        width = ExpanderIconSize,
+                        height = expandedContainerHeight
+                    )
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        RoundRectangleShape
+                    )
                 ) {
-                    items(dropDownActions) {
-                        QuickIcon(
-                            icon = it.icon,
-                            size = ActionIconSize,
-                            padding = 0.dp,
-                            onClick = {
-                                it.action()
-                                isExpanded = false
-                            }
-                        )
+                    LazyColumn (
+                        Modifier.align(Alignment.Center),
+                        verticalArrangement = Arrangement.spacedBy(VerticalPadding)
+                    ) {
+                        items(dropDownActions) {
+                            QuickIcon(
+                                icon = it.icon,
+                                size = ActionIconSize,
+                                padding = 0.dp,
+                                onClick = {
+                                    it.action()
+                                    isExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -115,7 +123,7 @@ data class DropdownAction(
 
 @Composable
 @Preview
-fun UserProfileDropdownPreview() = PreviewComposable (enableDarkTheme = true) {
+private fun UserProfileDropdownPreview() = PreviewComposable (enableDarkTheme = true) {
     UserProfileDropdown(
         photoUri = null,
         dropDownActions = listOf(

@@ -93,20 +93,3 @@ one or monitor the use of your API key
     1. Manually delete your data (including your achievements),stored in Firebase's Firestore, through the app 
     2. Go to `My Google Account` -> `Security` -> [Your connection to third-party apps & services](https://myaccount.google.com/connections)
     3. And look for `Object Detector`. This will clear you account entry in Firebase's Authentication
-
-## Todo 
-- Add sfx
-- Shrink and obfuscate apk https://developer.android.com/build/shrink-code#obfuscate using proguard. check results with https://github.com/Konloch/bytecode-viewer
-- CI & CD:
-  - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
-  - add docs github page https://github.com/p4ulor/Object-Detector-App/settings/pages
-  - https://github.com/marketplace/actions/github-pages-overwriter
-  - https://github.com/rayluo/github-pages-overwriter/blob/dev/action.yml
-- https://gist.github.com/cobyism/4730490#gistcomment-1374989
-  - https://github.com/skydoves/Balloon/blob/main/.github/workflows/release-docs.yaml
-### Fixes To-do 🕒
-
-- Not using the deprecated resolution selector causes
-```
-java.lang.RuntimeException: Buffer not large enough for pixels" at bitmapBuffer.copyPixelsFromBuffer
-```

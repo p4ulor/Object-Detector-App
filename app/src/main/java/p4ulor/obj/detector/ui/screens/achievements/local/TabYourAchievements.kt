@@ -75,13 +75,11 @@ fun TabYourAchievements(
     val blurRadius: Dp by animateDpAsState(
         targetValue = if (showDeletionConfirmation.value) 20.dp else 0.dp,
         animationSpec = smooth(),
-        label = "blurRadius"
     )
 
     val donePercentage: Float by animateFloatAsState(
         targetValue = donePercentageValue,
         animationSpec = smooth(durationMillis = 800, delayMillis = 300),
-        label = "donePercentage"
     )
 
     LaunchedEffect(achievements.hashCode()) {

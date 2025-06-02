@@ -25,6 +25,10 @@ data class User(
     val achievements: List<UserAchievement> = emptyList()
 ) {
 
+    override fun toString(): String {
+        return "name=$name, points=$points"
+    }
+
     companion object {
         fun createFrom(user: FirebaseUser) = User(
             name = user.displayName.toString(),

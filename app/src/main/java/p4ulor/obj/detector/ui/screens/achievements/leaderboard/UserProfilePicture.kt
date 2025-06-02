@@ -39,6 +39,6 @@ fun UserProfilePicture(photoUri: String?, size: Dp = IconMediumSize) {
 
 @Composable
 @Preview
-fun UserProfilePicturePreview() = PreviewComposable(enableDarkTheme = true) {
+private fun UserProfilePicturePreview() = PreviewComposable(enableDarkTheme = true) {
     UserProfilePicture(null)
 }

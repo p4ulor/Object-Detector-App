@@ -15,3 +15,6 @@ fun Float.trimToDecimals(decimals: Int): Float {
 
 /** Converts a float (expected to be in range [0.00, 1.0]) to a representable percentage */
 fun Float.toPercentage() = "${(this*100).toInt()}%"
+
+/** Converts a float (expected to be in range [0.00, 1.0]) to a representable percentage */
+fun Float.toPercentageWithDecimals() = "${(this*100).trimToDecimals(1)}%"

@@ -45,6 +45,6 @@ interface AchievementsDao {
     @Query("SELECT * FROM $tableAchivements WHERE objectName=:objectName")
     suspend fun get(objectName: String): AchievementsTuple?
 
-    @Query("UPDATE $tableAchivements SET detectionDate=NULL")
+    @Query("UPDATE $tableAchivements SET detectionDate=NULL, certaintyScore=0")
     suspend fun resetAll()
 }

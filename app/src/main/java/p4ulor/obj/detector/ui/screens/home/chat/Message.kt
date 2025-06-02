@@ -8,13 +8,26 @@ import java.util.UUID
  * @param isPending is true if the app is waiting for the HTTP response
  * @param isLoaded is true once the entire generated text has been loaded (with some typing animation)
  */
-data class Message(
-    val text: String = "",
-    val authorIsUser: Boolean = true,
-    var isPending: Boolean = false,
-    var isLoaded: Boolean = false,
-    val uuid: String = UUID.randomUUID().toString().take(5)
+data class Message private constructor(
+    val text: String,
+    val authorIsUser: Boolean,
+    var isPending: Boolean,
+    var isLoaded: Boolean,
+    val uuid: String
 ) {
+    constructor(
+        text: String = "",
+        authorIsUser: Boolean = true,
+        isPending: Boolean = false,
+        isLoaded: Boolean = false,
+    ) : this (
+        text.parseMarkdownBulletPoints(),
+        authorIsUser,
+        isPending,
+        isLoaded,
+        UUID.randomUUID().toString().take(5)
+    )
+
     override fun equals(other: Any?) = uuid == (other as? Message)?.uuid
 
     val isBlank get() = authorIsUser && text.isBlank()

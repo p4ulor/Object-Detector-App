@@ -28,6 +28,11 @@ fun <T> bouncySpring() = spring<T>(
     stiffness = Spring.StiffnessLow
 )
 
+fun <T> veryBouncySpring() = spring<T>(
+    dampingRatio = Spring.DampingRatioHighBouncy,
+    stiffness = Spring.StiffnessLow
+)
+
 fun slideInVertSmooth(slideUp: Boolean = true, durationMillis: Int = 400) = slideInVertically(
     animationSpec = smooth(
         durationMillis = durationMillis,
