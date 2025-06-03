@@ -75,8 +75,8 @@ class AchievementsViewModel(
                         setLeaderboard(connectionStatus = ConnectionStatus.Disconnected)
                         signOut()
                         delay(300) // Give some time for the disconnection event to be transmitted and valid
-                        setLeaderboard(connectionStatus = ConnectionStatus.Off)
                     }
+                    setLeaderboard(connectionStatus = ConnectionStatus.Off)
                 } else {
                     setLeaderboard(connectionStatus = ConnectionStatus.On)
                 }

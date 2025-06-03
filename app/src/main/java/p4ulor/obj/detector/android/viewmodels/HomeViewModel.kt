@@ -197,7 +197,6 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
             resultsCallback = object : ObjectDetectorCallbacks {
                 override fun onResults(resultBundle: ResultBundle) {
                     if (!_geminiStatus.value.isEnabled) {
-                        i("receiving results")
                         _objDetectionResults.value = resultBundle
                     }
                 }

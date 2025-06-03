@@ -6,6 +6,9 @@
 # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions-in-workflows-and-actions#status-check-functions
 # https://docs.github.com/en/webhooks/webhook-events-and-payloads#status
 # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+# https://github.com/orgs/community/discussions/25234
+# https://docs.github.com/pt/actions/security-for-github-actions/security-guides/automatic-token-authentication
+# https://docs.github.com/pt/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#github-context
 
 # Workflow name
 name: Object Detector GitHub Actions
@@ -105,8 +108,25 @@ jobs:
       - name: Make script executable
         run: chmod +x ./.github/workflows/deploy-gh-pages.sh
 
-      - name: Run local bash script
-        if: ${{ success() }} && steps.upload_apk.conclusion == 'success'
+      - name: Deploy to GH pages
+        if: github.event_name == 'release' && github.event.action == 'published' && steps.upload_apk.conclusion == 'success'
         run: |
           ./gradlew app:dokkaHtml
-          ./.github/workflows/deploy-gh-pages.sh
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git switch --orphan gh-pages
+          mv /docs/dokka-generated/* .
+          echo "Moved /docs/dokka-generated/* to root"
+          git add images/*
+          git add ./-object--detector--app/*
+          git add scripts/*
+          git add styles/*
+          git add index.html
+          git add navigation.html
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Deploy to gh-pages"
+          git remote set-url origin https://p4ulor:${{ github.token }}@github.com/${{ github.repository }}
+          git push origin gh-pages --force
