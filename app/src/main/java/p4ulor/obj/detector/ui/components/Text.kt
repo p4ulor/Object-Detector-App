@@ -48,7 +48,7 @@ fun EzText(
     maxLines: Int = Int.MAX_VALUE,
     textStyle: TextStyle = LocalTextStyle.current,
     overflow: TextOverflow = TextOverflow.Ellipsis,
-    onTextvOverflow: () -> Unit = {}
+    onTextOverflow: () -> Unit = {}
 ) = ComposeText(
     stringResource(text), modifier, color, fontSize, fontStyle, fontWeight, fontFamily,
     maxLines = maxLines,
@@ -56,7 +56,7 @@ fun EzText(
     overflow = overflow,
     onTextLayout = {
         if (it.didOverflowWidth) {
-            onTextvOverflow()
+            onTextOverflow()
         }
     }
 )

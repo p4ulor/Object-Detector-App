@@ -115,14 +115,14 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git switch --orphan gh-pages
-          mv /docs/dokka-generated/* .
+          mv ./docs/dokka-generated/* .
           echo "Moved /docs/dokka-generated/* to root"
-          git add images/*
+          git add ./images/*
           git add ./-object--detector--app/*
-          git add scripts/*
-          git add styles/*
-          git add index.html
-          git add navigation.html
+          git add ./scripts/*
+          git add ./styles/*
+          git add ./index.html
+          git add ./navigation.html
           if [ -z "$(git status --porcelain)" ]; then
             echo "No changes to commit"
             exit 0

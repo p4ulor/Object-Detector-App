@@ -3,6 +3,10 @@
     <p>Object Detector</p>
 </div>
 
+<div align="center">
+  <img style="max-height: 450px; object-fit: contain" src="./docs/Object_Detector_banner.jpg"  />
+</div>
+
 ## Demo 🎥
 
 ## Main Features ✨
