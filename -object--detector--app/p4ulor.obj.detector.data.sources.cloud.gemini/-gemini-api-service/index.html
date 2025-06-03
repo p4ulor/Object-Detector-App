@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>GeminiApiService</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            Object-Detector-App
+                    </a>
+            </div>
+            <div class="library-version">
+1.0            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":app:dokkaHtml/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="Object-Detector-App::p4ulor.obj.detector.data.sources.cloud.gemini/GeminiApiService///PointingToDeclaration//492899073">
+  <div class="breadcrumbs"><a href="../../../index.html">Object-Detector-App</a><span class="delimiter">/</span><a href="../index.html">p4ulor.obj.detector.data.sources.cloud.gemini</a><span class="delimiter">/</span><span class="current">GeminiApiService</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Gemini</span><wbr></wbr><span>Api</span><wbr></wbr><span><span>Service</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GeminiApiService</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">apiKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/java/io/Closeable.html">Closeable</a></div><p class="paragraph">Provides a clean interface for making HTTP calls to the <a href="../-gemini-api-endpoints/index.html">GeminiApiEndpoints</a> using a <a href="../../p4ulor.obj.detector.data.sources.client/-ktor-client/index.html">KtorClient</a> and handles Data Structure (DS) conversions between domain and HTTP bodies. The methods receive DSs from data.domains.gemini, and use DSs from data.sources.cloud.gemini to use with <a href="../../p4ulor.obj.detector.data.sources.client/-ktor-client/index.html">KtorClient</a> and then converts them back to DS from data.domains.gemini See &quot;gemini test2.sh&quot; in docs/gemini-api-curl-test for reference.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1813101778%2FConstructors%2F492899073" anchor-label="GeminiApiService" id="-1813101778%2FConstructors%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gemini-api-service.html"><span>Gemini</span><wbr></wbr><span>Api</span><wbr></wbr><span><span>Service</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1813101778%2FConstructors%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">apiKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="886780118%2FProperties%2F492899073" anchor-label="endpoints" id="886780118%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="endpoints.html"><span><span>endpoints</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="886780118%2FProperties%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">val </span><a href="endpoints.html">endpoints</a><span class="token operator">: </span><a href="../-gemini-api-endpoints/index.html">GeminiApiEndpoints</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-760758018%2FProperties%2F492899073" anchor-label="http" id="-760758018%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="http.html"><span><span>http</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-760758018%2FProperties%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">val </span><a href="http.html">http</a><span class="token operator">: </span><a href="../../p4ulor.obj.detector.data.sources.client/-ktor-client/index.html">KtorClient</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="1875413276%2FFunctions%2F492899073" anchor-label="close" id="1875413276%2FFunctions%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="close.html"><span><span>close</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1875413276%2FFunctions%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="close.html"><span class="token function">close</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="143275539%2FFunctions%2F492899073" anchor-label="promptWithImage" id="143275539%2FFunctions%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="prompt-with-image.html"><span>prompt</span><wbr></wbr><span>With</span><wbr></wbr><span><span>Image</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="143275539%2FFunctions%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="prompt-with-image.html"><span class="token function">promptWithImage</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prompt<span class="token operator">: </span><a href="../../p4ulor.obj.detector.data.domains.gemini/-gemini-prompt/index.html">GeminiPrompt</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../p4ulor.obj.detector.data.domains.gemini/-gemini-response/index.html">GeminiResponse</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Performs a POST request to Gemini given a <a href="prompt-with-image.html">prompt</a> as the body</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="901339507%2FFunctions%2F492899073" anchor-label="toDomain" id="901339507%2FFunctions%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-domain.html"><span>to</span><wbr></wbr><span><span>Domain</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="901339507%2FFunctions%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">fun </span><a href="../-generate-content-response/index.html">GenerateContentResponse</a><span class="token punctuation">.</span><a href="to-domain.html"><span class="token function">toDomain</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../p4ulor.obj.detector.data.domains.gemini/-gemini-response/index.html">GeminiResponse</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-820025790%2FFunctions%2F492899073" anchor-label="toDomainError" id="-820025790%2FFunctions%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-domain-error.html"><span>to</span><wbr></wbr><span>Domain</span><wbr></wbr><span><span>Error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-820025790%2FFunctions%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><span data-unresolved-link="io.ktor.client.statement/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token punctuation">.</span><a href="to-domain-error.html"><span class="token function">toDomainError</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../p4ulor.obj.detector.data.domains.gemini/-gemini-response/index.html">GeminiResponse</a></div><div class="brief "><p class="paragraph">To improve the text, I could have defined the possible JSON formats of the errors</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1775654488%2FFunctions%2F492899073" anchor-label="toHttpRequest" id="1775654488%2FFunctions%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-http-request.html"><span>to</span><wbr></wbr><span>Http</span><wbr></wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1775654488%2FFunctions%2F492899073"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">private </span><span class="token keyword">fun </span><a href="../../p4ulor.obj.detector.data.domains.gemini/-gemini-prompt/index.html">GeminiPrompt</a><span class="token punctuation">.</span><a href="to-http-request.html"><span class="token function">toHttpRequest</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-generate-content-request/index.html">GenerateContentRequest</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

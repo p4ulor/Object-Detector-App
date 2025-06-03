@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Object-Detector-App</title>
+    <link href="images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="scripts/sourceset_dependencies.js" async="async"></script>
+<link href="styles/style.css" rel="Stylesheet">
+<link href="styles/main.css" rel="Stylesheet">
+<link href="styles/prism.css" rel="Stylesheet">
+<link href="styles/logo-styles.css" rel="Stylesheet">
+<link href="styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="index.html">
+                            Object-Detector-App
+                    </a>
+            </div>
+            <div class="library-version">
+1.0            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":app:dokkaHtml/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" id="content" pageIds="Object-Detector-App::////PointingToDeclaration//492899073">
+  <div class="breadcrumbs"></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Object-Detector-App</span></span></h1>
+  </div>
+  <h2 class="">Packages</h2>
+  <div class="table"><a data-name="1306095343%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector" id="1306095343%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector/index.html">p4ulor.obj.detector</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1306095343%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1009338672%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.android" id="1009338672%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.android/index.html">p4ulor.obj.detector.android</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1009338672%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1303792303%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.android.activities" id="1303792303%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.android.activities/index.html">p4ulor.obj.detector.android.activities</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1303792303%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="2012617842%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.android.activities.utils" id="2012617842%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.android.activities.utils/index.html">p4ulor.obj.detector.android.activities.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2012617842%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1605793331%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.android.utils" id="1605793331%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.android.utils/index.html">p4ulor.obj.detector.android.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1605793331%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="381584772%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.android.utils.camera" id="381584772%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.android.utils.camera/index.html">p4ulor.obj.detector.android.utils.camera</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="381584772%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="643403153%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.android.viewmodels" id="643403153%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.android.viewmodels/index.html">p4ulor.obj.detector.android.viewmodels</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="643403153%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="417344980%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.android.viewmodels.utils" id="417344980%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.android.viewmodels.utils/index.html">p4ulor.obj.detector.android.viewmodels.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="417344980%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-46280853%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.domains.firebase" id="-46280853%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.domains.firebase/index.html">p4ulor.obj.detector.data.domains.firebase</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-46280853%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-904963431%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.domains.gemini" id="-904963431%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.domains.gemini/index.html">p4ulor.obj.detector.data.domains.gemini</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-904963431%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="175791858%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.domains.mediapipe" id="175791858%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.domains.mediapipe/index.html">p4ulor.obj.detector.data.domains.mediapipe</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="175791858%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="647383622%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.sources.client" id="647383622%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.sources.client/index.html">p4ulor.obj.detector.data.sources.client</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="647383622%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="930729691%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.sources.cloud.firebase" id="930729691%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.sources.cloud.firebase/index.html">p4ulor.obj.detector.data.sources.cloud.firebase</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="930729691%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1965323785%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.sources.cloud.gemini" id="1965323785%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.sources.cloud.gemini/index.html">p4ulor.obj.detector.data.sources.cloud.gemini</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1965323785%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="2135427161%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.sources.local.database" id="2135427161%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.sources.local.database/index.html">p4ulor.obj.detector.data.sources.local.database</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2135427161%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-655777123%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.sources.local.database.achievements" id="-655777123%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.sources.local.database.achievements/index.html">p4ulor.obj.detector.data.sources.local.database.achievements</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-655777123%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="242972318%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.sources.local.preferences" id="242972318%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.sources.local.preferences/index.html">p4ulor.obj.detector.data.sources.local.preferences</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="242972318%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="264594967%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.sources.local.utils" id="264594967%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.sources.local.utils/index.html">p4ulor.obj.detector.data.sources.local.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="264594967%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-1680584432%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.data.utils" id="-1680584432%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.data.utils/index.html">p4ulor.obj.detector.data.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1680584432%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="874132490%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.animations" id="874132490%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.animations/index.html">p4ulor.obj.detector.ui.animations</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="874132490%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1602883313%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.components" id="1602883313%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.components/index.html">p4ulor.obj.detector.ui.components</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1602883313%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-2008930508%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.components.utils" id="-2008930508%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.components.utils/index.html">p4ulor.obj.detector.ui.components.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2008930508%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1324372102%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.achievements" id="1324372102%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.achievements/index.html">p4ulor.obj.detector.ui.screens.achievements</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1324372102%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-356518827%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.achievements.leaderboard" id="-356518827%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.achievements.leaderboard/index.html">p4ulor.obj.detector.ui.screens.achievements.leaderboard</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-356518827%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1888722755%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.achievements.local" id="1888722755%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.achievements.local/index.html">p4ulor.obj.detector.ui.screens.achievements.local</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1888722755%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-401315199%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.home" id="-401315199%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.home/index.html">p4ulor.obj.detector.ui.screens.home</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-401315199%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-191331415%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.home.chat" id="-191331415%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.home.chat/index.html">p4ulor.obj.detector.ui.screens.home.chat</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-191331415%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="2137387733%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.home.outline" id="2137387733%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.home.outline/index.html">p4ulor.obj.detector.ui.screens.home.outline</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2137387733%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="741681348%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.root" id="741681348%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.root/index.html">p4ulor.obj.detector.ui.screens.root</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="741681348%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1813324997%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.screens.settings" id="1813324997%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.screens.settings/index.html">p4ulor.obj.detector.ui.screens.settings</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1813324997%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1809009490%2FPackages%2F492899073" anchor-label="p4ulor.obj.detector.ui.theme" id="1809009490%2FPackages%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+    <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="-object--detector--app/p4ulor.obj.detector.ui.theme/index.html">p4ulor.obj.detector.ui.theme</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1809009490%2FPackages%2F492899073"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag jvm-like">androidJvm</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
