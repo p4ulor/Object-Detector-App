@@ -2,10 +2,8 @@ package p4ulor.obj.detector.ui.screens.root
 
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,10 +12,8 @@ import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -29,12 +25,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.delay
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.activities.utils.getActivity
 import p4ulor.obj.detector.android.viewmodels.HomeViewModel
 import p4ulor.obj.detector.android.viewmodels.utils.create
-import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.Icon
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.ResourcesIcon

@@ -44,7 +44,7 @@ import p4ulor.obj.detector.android.viewmodels.SettingsViewModel
 import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
 import p4ulor.obj.detector.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.obj.detector.ui.animations.smooth
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.components.utils.HorizontalPadding
 import p4ulor.obj.detector.ui.theme.PreviewComposable
@@ -139,7 +139,7 @@ private fun ConnectivityStatus(hasConnection: Boolean) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        QuickText(R.string.connectivity_status)
+        EzText(R.string.connectivity_status)
         LottieAnimation(composition, modifier)
     }
 }
@@ -153,7 +153,7 @@ private fun SavePicturesCheckBox(currPrefs: UserPreferences, onNewPrefs: (UserPr
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        QuickText(R.string.save_pictures)
+        EzText(R.string.save_pictures)
         WidthSpacer(HorizontalPadding)
         Checkbox(
             checked = savePictures,

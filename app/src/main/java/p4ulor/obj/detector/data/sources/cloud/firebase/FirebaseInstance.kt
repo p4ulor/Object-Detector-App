@@ -21,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.core.annotation.Single
@@ -35,7 +34,6 @@ import p4ulor.obj.detector.data.utils.executorCommon
 import p4ulor.obj.detector.e
 import p4ulor.obj.detector.i
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 /**
  * Provides methods to create and update documents from the Firebase project

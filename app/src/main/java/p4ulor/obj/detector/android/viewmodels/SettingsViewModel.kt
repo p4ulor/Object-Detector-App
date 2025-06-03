@@ -3,7 +3,6 @@ package p4ulor.obj.detector.android.viewmodels
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.flow
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Single
 import p4ulor.obj.detector.android.utils.NetworkObserver

@@ -3,6 +3,9 @@
 # https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-gradle
 # https://github.com/gradle/actions
 # https://cli.github.com/manual/gh_release_upload
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions-in-workflows-and-actions#status-check-functions
+# https://docs.github.com/en/webhooks/webhook-events-and-payloads#status
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
 
 # Workflow name
 name: Object Detector GitHub Actions
@@ -81,7 +84,7 @@ jobs:
           # Locate the generated APK
           APK_PATH=$(find . -name "*.apk" -path "*app/build/outputs/apk/release/*" -print -quit)
           if [ -z "$APK_PATH" ]; then
-            echo "Error: No APK file found in expected location!"
+            echo "Error: No APK file found"
             exit 1
           fi
           echo "Found APK at: $APK_PATH"
@@ -89,6 +92,7 @@ jobs:
           echo "apk_name=$(basename $APK_PATH)" >> $GITHUB_OUTPUT
 
       - name: Upload APK to Release
+        id: upload_apk
         if: github.event_name == 'release' && github.event.action == 'published' && steps.find_apk.outputs.apk_path != '' # Only upload if an APK was found
         run: |
           echo "Uploading ${{ steps.find_apk.outputs.apk_path }} to release ${{ github.event.release.tag_name }}"
@@ -102,7 +106,7 @@ jobs:
         run: chmod +x ./.github/workflows/deploy-gh-pages.sh
 
       - name: Run local bash script
-        if: success() && steps.build_app == 'success'
+        if: ${{ success() }} && steps.upload_apk.conclusion == 'success'
         run: |
           ./gradlew app:dokkaHtml
           ./.github/workflows/deploy-gh-pages.sh

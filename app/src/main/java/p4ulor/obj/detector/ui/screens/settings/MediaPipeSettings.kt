@@ -45,8 +45,8 @@ import p4ulor.obj.detector.ui.components.CircleThumbCustom
 import p4ulor.obj.detector.ui.components.DropdownOptions
 import p4ulor.obj.detector.ui.components.IconSmallSize
 import p4ulor.obj.detector.ui.components.MaterialIcons
-import p4ulor.obj.detector.ui.components.QuickIcon
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzIcon
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.SliderTrackCustom
 import p4ulor.obj.detector.ui.components.mediaPipeLikeText
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
@@ -71,7 +71,7 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
     SettingsHeader(mediaPipeLikeText(R.string.mediapipe))
 
     Row {
-        QuickText(R.string.minimum_detection_certainty)
+        EzText(R.string.minimum_detection_certainty)
         Text(
             text = minDetectCertainty.toPercentage(),
             Modifier.width(textWidthOf("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
@@ -97,7 +97,7 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
     }
 
     Row {
-        QuickText(R.string.maximum_simultaneous_object_detections)
+        EzText(R.string.maximum_simultaneous_object_detections)
         Text(maxObjectsDetections.toString(), fontWeight = FontWeight.Bold)
     }
 
@@ -136,23 +136,23 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
         val toolTipState = rememberTooltipState(isPersistent = true)
         val scope = rememberCoroutineScope()
 
-        QuickText(R.string.detection_animations)
+        EzText(R.string.detection_animations)
 
         TooltipBox(
             positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
             tooltip = {
                 RichTooltip(
                     Modifier.padding(horizontal = GeneralPadding),
-                    title = { QuickText(R.string.note) },
+                    title = { EzText(R.string.note) },
                     action = {},
                     caretSize = TooltipDefaults.caretSize * 2f
                 ) {
-                    QuickText(R.string.detection_animations_details)
+                    EzText(R.string.detection_animations_details)
                 }
             },
             state = toolTipState
         ) {
-            QuickIcon(MaterialIcons.Info, IconSmallSize) {
+            EzIcon(MaterialIcons.Info, IconSmallSize) {
                 scope.launch { toolTipState.show() }
             }
         }

@@ -71,7 +71,7 @@ class AchievementsViewModel(
         launch {
             network.hasConnection.collect { hasConnection ->
                 if(!hasConnection) {
-                    if (leaderboard.value.currUser != null){
+                    if (leaderboard.value.currUser?.isLoggedOut == false){
                         setLeaderboard(connectionStatus = ConnectionStatus.Disconnected)
                         signOut()
                         delay(300) // Give some time for the disconnection event to be transmitted and valid
@@ -117,10 +117,7 @@ class AchievementsViewModel(
         )
     }
 
-    /**
-     * Orders achievements in a coroutine to avoid using UI thread (not doing through SQL even
-     * thought it's the most correct because I also want to train with Kotlin
-     */
+    /** This is now done through SQL, which is more correct. Keeping it so I recall how it's done in Kotlin */
     private fun orderAchievementsDeprecated() {
         launch {
             setYourAchievements(achievements = when (yourAchievements.value.orderOptions) {
@@ -156,7 +153,7 @@ class AchievementsViewModel(
 
     fun signOut() {
         launch {
-            setLeaderboard(currUser = null)
+            setLeaderboard(currUser = leaderboard.value.currUser?.copy()?.setAsLoggedOut()) // copy is used so it produces a different hash (yeah...)
             firebase.signOut()
         }
     }
@@ -169,14 +166,16 @@ class AchievementsViewModel(
                     val newUserAchievements = toUserAchievements()
                     firebase.updateUserAchievements(newUserAchievements, newPoints)
                         .onSuccess {
+                            val topUsers = getTopUsers() // refreshed top users and objects
+                            val topObjects = getTopObjects()
                             delay(400) // wait a bit for Cloud Functions to process
                             setLeaderboard(
                                 currUser = leaderboard.value.currUser?.copy(
                                     points = newPoints,
                                     achievements = newUserAchievements
                                 ),
-                                topUsers = getTopUsers(), // refreshed top users and objects
-                                topObjects = getTopObjects()
+                                topUsers = topUsers,
+                                topObjects = topObjects
                             )
                         }
                         .onFailure {
@@ -191,7 +190,7 @@ class AchievementsViewModel(
     }
 
     fun deleteAccount() {
-        setLeaderboard(currUser = null)
+        setLeaderboard(currUser = leaderboard.value.currUser?.copy()?.setAsLoggedOut()) // copy is used so it produces a different hash (yeah...)
         firebase.deleteAccount()
     }
 

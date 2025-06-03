@@ -64,6 +64,7 @@ android {
     val RELEASE_KEY_PASSWORD = "RELEASE_KEY_PASSWORD"
 
     val properties = Properties().apply {
+        println("Config Properties")
         val localProperties = project.rootProject.file("local.properties")
         if (localProperties.exists()) {
             println("local.properties exists")
@@ -107,9 +108,9 @@ android {
     buildTypes {
         // https://developer.android.com/build/shrink-code
         release {
-            isDebuggable = false
-            isMinifyEnabled = true // Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
-            isShrinkResources = true // removes unused resources, performed by Android Gradle plugin
+            isDebuggable = false // if true, will allow printing of logs and the .apk size will have around +25mb according to my tests
+            isMinifyEnabled = false // Disabled since it causes problems with MediaPipe | Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
+            isShrinkResources = false // Disabled since isMinifyEnabled must be true for this to be true | removes unused resources, performed by Android Gradle plugin
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -248,6 +249,7 @@ private val ASSET_DIR = "$projectDir/src/main/assets"
  *  https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#efficientdet-lite0_model_recommended
  */
 task<Download>("_download1") {
+    println("_download1 running")
     src("https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite")
     dest(File("$ASSET_DIR/efficientdet-lite0.tflite"))
     overwrite(false) // Prevents file from being downloaded again & overwritten
@@ -258,6 +260,7 @@ task<Download>("_download1") {
  * https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector#efficientdet-lite2_model
  */
 task<Download>("_download2") {
+    println("_download2 running")
     src("https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/float32/1/efficientdet_lite2.tflite")
     dest(File("$ASSET_DIR/efficientdet-lite2.tflite"))
     overwrite(false)
@@ -267,6 +270,7 @@ task<Download>("_download2") {
 val GOOGLE_SERVICES_JSON = "GOOGLE_SERVICES_JSON"
 
 task("create_google_services_json") {
+    println("Running task create_google_services_json")
     val localProperties = project.rootProject.file("local.properties")
     if (!localProperties.exists()) {
         println("local.properties not present. This is likely the GH Actions build")

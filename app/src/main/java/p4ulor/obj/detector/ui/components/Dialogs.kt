@@ -10,7 +10,7 @@ import p4ulor.obj.detector.R
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 @Composable
-fun QuickAlertDialog(
+fun EzAlertDialog(
     @StringRes title: Int,
     @StringRes description: Int,
     @StringRes confirmText: Int,
@@ -21,22 +21,22 @@ fun QuickAlertDialog(
 ){
     AlertDialog(
         onDismissRequest = dismissClick,
-        icon = { QuickIcon(icon) { } },
-        title = { QuickText(title) },
-        text = { QuickText(description) },
+        icon = { EzIcon(icon) { } },
+        title = { EzText(title) },
+        text = { EzText(description) },
         confirmButton = {
-            TextButton(onClick = confirmClick) { QuickText(confirmText) }
+            TextButton(onClick = confirmClick) { EzText(confirmText) }
         },
         dismissButton = {
-            TextButton(onClick = dismissClick) { QuickText(dismissText) }
+            TextButton(onClick = dismissClick) { EzText(dismissText) }
         }
     )
 }
 
 @Preview
 @Composable
-private fun QuickAlertDialogPreview() = PreviewComposable(enableDarkTheme = true) {
-    QuickAlertDialog(
+private fun EzAlertDialogPreview() = PreviewComposable(enableDarkTheme = true) {
+    EzAlertDialog(
         R.string.warning,
         R.string.all_achievements_will_be_deleted,
         R.string.yes,

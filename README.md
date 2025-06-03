@@ -93,3 +93,6 @@ one or monitor the use of your API key
     1. Manually delete your data (including your achievements),stored in Firebase's Firestore, through the app 
     2. Go to `My Google Account` -> `Security` -> [Your connection to third-party apps & services](https://myaccount.google.com/connections)
     3. And look for `Object Detector`. This will clear you account entry in Firebase's Authentication
+4. If the app isn't detecting objects with MediaPipe make sure you downloaded the models (should be performed automatically after a build via `finalizedBy`)
+    - ./gradlew _download1
+    - ./gradlew _download2

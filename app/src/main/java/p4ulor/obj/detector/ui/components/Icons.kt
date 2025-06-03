@@ -71,22 +71,22 @@ val IconMediumSize = 30.dp
 val IconSmallSize = 25.dp
 
 @Composable
-fun QuickIcon(
+fun EzIcon(
     icon: Icon,
     size: Dp = IconDefaultSize,
     padding: Dp = PaddingAroundIcon,
     onClick: () -> Unit,
 ){
     icon.asAppIcon?.let {
-        QuickIcon(it.resourcesIcon, size, padding, onClick)
+        EzIcon(it.resourcesIcon, size, padding, onClick)
     } ?: icon.asMaterialIcon?.let {
-        QuickIcon(it.materialIcon, size, padding, onClick)
+        EzIcon(it.materialIcon, size, padding, onClick)
     } ?: error("Something went wrong here")
 }
 
 /** Useful when using [MaterialIcons], which are [ImageVector]s. An alternative to [IconButton] */
 @Composable
-fun QuickIcon(
+fun EzIcon(
     icon: ImageVector,
     size: Dp = IconDefaultSize,
     padding: Dp = PaddingAroundIcon,
@@ -104,7 +104,7 @@ fun QuickIcon(
 )
 
 @Composable
-fun QuickIcon(
+fun EzIcon(
     icon: ResourcesIcon,
     size: Dp = IconDefaultSize,
     padding: Dp = PaddingAroundIcon,
@@ -125,20 +125,20 @@ val IconInContainerDefaultSize = 40.dp
 val IconContainerDefaultSize = 55.dp
 
 @Composable
-fun QuickIconWithBorder(
+fun EzIconWithBorder(
     icon: Icon,
     onClick: () -> Unit,
     onDrag: ((change: PointerInputChange, dragAmount: Offset) -> Unit)? = null
 ){
     icon.asAppIcon?.let {
-        QuickIconWithBorder(it.resourcesIcon, onClick, onDrag)
+        EzIconWithBorder(it.resourcesIcon, onClick, onDrag)
     } ?: icon.asMaterialIcon?.let {
-        QuickIconWithBorder(it.materialIcon, onClick, onDrag)
+        EzIconWithBorder(it.materialIcon, onClick, onDrag)
     } ?: error("Something went wrong here")
 }
 
 @Composable
-private fun QuickIconWithBorder(
+private fun EzIconWithBorder(
     icon: ResourcesIcon,
     onClick: () -> Unit,
     onDrag: ((change: PointerInputChange, dragAmount: Offset) -> Unit)? = null
@@ -175,7 +175,7 @@ private fun QuickIconWithBorder(
 }
 
 @Composable
-private fun QuickIconWithBorder(
+private fun EzIconWithBorder(
     icon: ImageVector,
     onClick: () -> Unit,
     onDrag: ((change: PointerInputChange, dragAmount: Offset) -> Unit)? = null
@@ -207,11 +207,11 @@ private fun QuickIconWithBorder(
 
 @Preview
 @Composable
-private fun QuickIconWithBorderPreview() = PreviewComposable {
+private fun EzIconWithBorderPreview() = PreviewComposable {
     Column {
-        QuickIconWithBorder(ResourcesIcon.Gemini, {})
-        QuickIconWithBorder(ResourcesIcon.Camera, {})
-        QuickIconWithBorder(MaterialIcons.Add, {})
-        QuickIconWithBorder(ResourcesIcon.Scale, {})
+        EzIconWithBorder(ResourcesIcon.Gemini, {})
+        EzIconWithBorder(ResourcesIcon.Camera, {})
+        EzIconWithBorder(MaterialIcons.Add, {})
+        EzIconWithBorder(ResourcesIcon.Scale, {})
     }
 }

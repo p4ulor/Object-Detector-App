@@ -1,7 +1,6 @@
 package p4ulor.obj.detector.ui.screens.home.chat
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -39,8 +38,8 @@ import p4ulor.obj.detector.ui.components.IconMediumSize
 import p4ulor.obj.detector.ui.components.IconSmallSize
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
-import p4ulor.obj.detector.ui.components.QuickIcon
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzIcon
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.utils.RoundRectangleShape
 import p4ulor.obj.detector.ui.components.utils.base64ToImageRequest
 import p4ulor.obj.detector.ui.components.utils.hasError
@@ -103,11 +102,11 @@ fun ChatInput(
         value = input,
         onValueChange = { input = it },
         modifier.border(2.dp, MaterialTheme.colorScheme.outline, RoundRectangleShape),
-        placeholder = { QuickText(R.string.ask_gemini) },
+        placeholder = { EzText(R.string.ask_gemini) },
         trailingIcon = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if(pictureTaken == null || image.hasError(ctx)) {
-                    QuickIcon(MaterialIcons.NoPhotography, IconSmallSize) {}
+                    EzIcon(MaterialIcons.NoPhotography, IconSmallSize) {}
                 } else {
                     SmallImagePreview(image, onClick = {
                         if (isImageFile) {
@@ -130,7 +129,7 @@ fun ChatInput(
                     })
                 }
                 val sendIcon = if(disableSubmit) MaterialIcons.Block else MaterialIconsExt.Send
-                QuickIcon(sendIcon, IconSmallSize) {
+                EzIcon(sendIcon, IconSmallSize) {
                     validateInputAndSubmit()
                 }
             }

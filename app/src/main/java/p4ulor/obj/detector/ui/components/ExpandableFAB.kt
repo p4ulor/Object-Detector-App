@@ -48,7 +48,7 @@ private val PaddingBetweenButtons = 2.dp
 @Composable
 fun ExpandableFAB(
     listOpenerIcon: Icon,
-    fabs: List<FloatingActionButton>,
+    fabs: List<Fab>,
     initialPosition: FabPosition = FabPosition.TopRight
 ) {
     val context = LocalContext.current
@@ -100,7 +100,7 @@ fun ExpandableFAB(
 
         // FAB opener + fabs
         Box(Modifier.offset { IntOffset(openerFabOffsetX.toInt(), openerFabOffsetY.toInt()) }) {
-            QuickIconWithBorder(
+            EzIconWithBorder(
                 listOpenerIcon,
                 onClick = { isExpanded = !isExpanded },
                 onDrag = { change, dragAmount ->
@@ -123,7 +123,7 @@ fun ExpandableFAB(
 }
 
 @Composable
-private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolean, isVisible: Boolean) {
+private fun ExpandableFabs(fabs: List<Fab>, openUpwards: Boolean, isVisible: Boolean) {
     AnimatedVisibility(
         visible = isVisible,
         Modifier.clipToBounds(), // Prevents the first or more FABs to show up slightly under and beyond the openerFAB's area when there are many FABs, due to the initial position of the slideIn animation
@@ -132,13 +132,13 @@ private fun ExpandableFabs(fabs: List<FloatingActionButton>, openUpwards: Boolea
     ) {
         LazyColumn (verticalArrangement = Arrangement.spacedBy(PaddingBetweenButtons)) {
             items(fabs){
-                QuickIconWithBorder(it.icon, it.onClick)
+                EzIconWithBorder(it.icon, it.onClick)
             }
         }
     }
 }
 
-data class FloatingActionButton(
+data class Fab(
     val icon: Icon,
     val onClick: () -> Unit = {}
 )
@@ -160,10 +160,10 @@ private fun ExpandableFABPreview() = AppTheme {
     ExpandableFAB(
         listOpenerIcon = Icon.Material(MaterialIcons.Add),
         listOf(
-            FloatingActionButton(Icon.App(ResourcesIcon.Camera)) { i("Edit clicked") },
-            FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) { i("Share clicked") },
-            FloatingActionButton(Icon.App(ResourcesIcon.Camera)) { i("Edit clicked") },
-            FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) { i("Share clicked") }
+            Fab(Icon.App(ResourcesIcon.Camera)) { i("Edit clicked") },
+            Fab(Icon.App(ResourcesIcon.Gemini)) { i("Share clicked") },
+            Fab(Icon.App(ResourcesIcon.Camera)) { i("Edit clicked") },
+            Fab(Icon.App(ResourcesIcon.Gemini)) { i("Share clicked") }
         ),
         initialPosition = FabPosition.TopRight
     )

@@ -53,7 +53,7 @@ import p4ulor.obj.detector.data.utils.getTodaysDate
 import p4ulor.obj.detector.data.utils.toPercentage
 import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.MaterialIcons
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.LightCircularContainer
 import p4ulor.obj.detector.ui.components.utils.TransparencyGradient
@@ -92,7 +92,7 @@ fun TabYourAchievements(
             .blur(blurRadius),
         topBar = {
             CenteredRow {
-                QuickText(R.string.order_by, fontWeight = FontWeight.Bold)
+                EzText(R.string.order_by, fontWeight = FontWeight.Bold)
 
                 SingleChoiceSegmentedButtonRow {
                     OrderOption.entries.forEachIndexed { index, option ->
@@ -105,7 +105,7 @@ fun TabYourAchievements(
                                 inactiveContainerColor = MaterialTheme.colorScheme.tertiaryContainer
                             )
                         ) {
-                            QuickText(option.strId)
+                            EzText(option.strId)
                         }
                     }
                 }

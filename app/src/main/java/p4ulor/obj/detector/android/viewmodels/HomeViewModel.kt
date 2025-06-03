@@ -194,9 +194,10 @@ class HomeViewModel(private val application: Application) : AndroidViewModel(app
         val myImageAnalyser = MyImageAnalyser(
             application.applicationContext,
             objectDetectorSettings,
-            resultCallback = object : ObjectDetectorCallbacks {
+            resultsCallback = object : ObjectDetectorCallbacks {
                 override fun onResults(resultBundle: ResultBundle) {
                     if (!_geminiStatus.value.isEnabled) {
+                        i("receiving results")
                         _objDetectionResults.value = resultBundle
                     }
                 }

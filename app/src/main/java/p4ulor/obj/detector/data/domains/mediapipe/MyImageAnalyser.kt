@@ -21,7 +21,7 @@ import p4ulor.obj.detector.e
 class MyImageAnalyser(
     private val context: Context,
     private val settings: ObjectDetectorSettings = ObjectDetectorSettings(),
-    private val resultCallback: ObjectDetectorCallbacks
+    private val resultsCallback: ObjectDetectorCallbacks
 ) : ImageAnalysis.Analyzer {
 
     private var objectDetector: ObjectDetector? = null
@@ -67,7 +67,7 @@ class MyImageAnalyser(
         val finishTimeMs = SystemClock.uptimeMillis()
         val inferenceTime = finishTimeMs - detectedObjects.timestampMs()
 
-        resultCallback.onResults(
+        resultsCallback.onResults(
             ResultBundle(
                 detectedObjects,
                 inferenceTime,
@@ -84,7 +84,7 @@ class MyImageAnalyser(
     /**
      * Runs object detection on live streaming cameras frame-by-frame which are obtained and listened
      * to asynchronously through the [MPImageResultListener] set at [resultListener], which calls
-     * the [resultCallback] of this [MyImageAnalyser]. Also read the original documentation
+     * the [resultsCallback] of this [MyImageAnalyser]. Also read the original documentation
      * [ImageAnalysis.Analyzer.analyze]
      */
     override fun analyze(image: ImageProxy) {

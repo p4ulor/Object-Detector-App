@@ -3,9 +3,7 @@ package p4ulor.obj.detector.ui.components
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,8 +14,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RenderEffect
-import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
@@ -41,7 +37,7 @@ import androidx.compose.material3.Text as ComposeText
 
 /** Because it's tiring to have to write [stringResource] */
 @Composable
-fun QuickText(
+fun EzText(
     @StringRes text: Int,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
@@ -98,10 +94,10 @@ fun mediaPipeLikeText(@StringRes text: Int) = buildAnnotatedString {
 }
 
 @Composable
-fun glowText(text: String, blurRadius: Float = 10f) = buildAnnotatedString {
+fun glowText(text: String, blurRadius: Float = 10f, color: Color = Color.White) = buildAnnotatedString {
     withStyle(
-        style = SpanStyle(
-            shadow = Shadow(Color.White, blurRadius = blurRadius)
+        style = SpanStyle( // Note: shadow doesn't accept Color.Unspecified
+            shadow = Shadow(color, blurRadius = blurRadius)
         )
     ) {
         append(text)
@@ -113,12 +109,13 @@ fun superGlowText(
     text: String, modifier:
     Modifier = Modifier,
     blurRadius: Float = 20f,
+    color: Color = Color.Unspecified,
     fontWeight: FontWeight? = null,
     textStyle: TextStyle = LocalTextStyle.current
 ) {
     Box(modifier) {
         Text(
-            glowText(text, blurRadius = blurRadius),
+            glowText(text, blurRadius, color),
             Modifier.graphicsLayer {
                 renderEffect = BlurEffect(
                     radiusX = 10f,
@@ -126,12 +123,14 @@ fun superGlowText(
                     edgeTreatment = TileMode.Decal
                 )
             },
+            color = color,
             fontWeight = fontWeight,
             style = textStyle,
         )
 
         Text(
-            glowText(text, blurRadius = blurRadius),
+            glowText(text, blurRadius, color),
+            color = color,
             fontWeight = fontWeight,
             style = textStyle,
         )

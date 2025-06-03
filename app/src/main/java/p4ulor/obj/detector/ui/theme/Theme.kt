@@ -6,14 +6,12 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -71,7 +69,7 @@ import p4ulor.obj.detector.R
 import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.DropdownOptions
 import p4ulor.obj.detector.ui.components.MaterialIcons
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.utils.BoxWithBackground
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.RoundRectangleShape
@@ -358,7 +356,7 @@ private fun SampleComposable(){
                         Tab(
                             selected = selectedTab.ordinal == index,
                             onClick = { selectedTab = tab },
-                            text = { QuickText(tab.label, maxLines = 1) }
+                            text = { EzText(tab.label, maxLines = 1) }
                         )
                     }
                 }

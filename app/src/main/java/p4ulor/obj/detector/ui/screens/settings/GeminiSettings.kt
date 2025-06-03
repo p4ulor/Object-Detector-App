@@ -30,8 +30,8 @@ import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.components.IconSmallSize
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
-import p4ulor.obj.detector.ui.components.QuickIcon
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzIcon
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.geminiLikeText
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.components.utils.toast
@@ -50,7 +50,7 @@ fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (Us
         Modifier
             .fillMaxWidth()
             .padding(bottom = GeneralPadding),
-        label = { QuickText(R.string.enter_api_key) },
+        label = { EzText(R.string.enter_api_key) },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done // Input Method Editor Action
@@ -59,14 +59,14 @@ fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (Us
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             Row {
-                QuickIcon(
+                EzIcon(
                     MaterialIconsExt.OpenInNew,
                     IconSmallSize
                 ) {
                     val openInBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(GEMINI_AI_STUDIO_LINK))
                     ctx.startActivity(openInBrowser)
                 }
-                QuickIcon(
+                EzIcon(
                     if (isVisible) MaterialIcons.VisibilityOff else MaterialIcons.Visibility,
                     IconSmallSize
                 ) {
@@ -83,6 +83,6 @@ fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (Us
             ctx.toast(R.string.saved_gemini_key)
         }
     ) {
-        QuickText(R.string.save)
+        EzText(R.string.save)
     }
 }

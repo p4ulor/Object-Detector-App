@@ -35,10 +35,12 @@ class GeminiApiEndpoints(private val apiKey: String) {
         /** https://ai.google.dev/api/all-methods#rest-resource:-v1beta.models */
         sealed interface Models {
             /** https://ai.google.dev/api/generate-content#method:-models.generatecontent */
-            object GenerateContent : Endpoint("/models/$defaultModel:generateContent", HttpMethod.Post)
+            object Flash2_0 {
+                object GenerateContent : Endpoint("/models/$flash2_0_Model:generateContent", HttpMethod.Post)
+            }
 
             companion object {
-                const val defaultModel: String = "gemini-2.0-flash"
+                const val flash2_0_Model: String = "gemini-2.0-flash"
             }
         }
     }

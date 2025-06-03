@@ -33,7 +33,7 @@ import p4ulor.obj.detector.android.utils.requestPermission
 import p4ulor.obj.detector.android.utils.requestUserToManuallyAddThePermission
 import p4ulor.obj.detector.android.viewmodels.HomeViewModel
 import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.theme.PreviewComposable
@@ -90,7 +90,7 @@ private fun HomeScreenNotGranted() {
     var oneTimePermRequestWasUsed by rememberSaveable { mutableStateOf(false) }
 
     CenteredColumn {
-        QuickText(R.string.no_camera_permission)
+        EzText(R.string.no_camera_permission)
         Spacer(Modifier.size(GeneralPadding))
         Button(onClick = {
             if (!oneTimePermRequestWasUsed) {
@@ -101,7 +101,7 @@ private fun HomeScreenNotGranted() {
                 ctx.requestUserToManuallyAddThePermission()
             }
         }) {
-            QuickText(R.string.get_permissions)
+            EzText(R.string.get_permissions)
         }
     }
 }

@@ -30,7 +30,7 @@ import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.data.utils.getTodaysDate
 import p4ulor.obj.detector.ui.animations.smooth
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.utils.toast
 import p4ulor.obj.detector.ui.screens.achievements.leaderboard.TabLeaderboard
 import p4ulor.obj.detector.ui.screens.achievements.local.OrderOption
@@ -119,7 +119,7 @@ fun AchievementsScreenUi(
             Tab.entries.forEachIndexed { index, tab ->
                 Tab(
                     selected = selectedTab.ordinal == index,
-                    text = { QuickText(tab.label, maxLines = 1) },
+                    text = { EzText(tab.label, maxLines = 1) },
                     onClick = { onSelectedTabChanged(tab) },
                 )
             }

@@ -12,4 +12,8 @@ data class GeminiResponse(
     val totalTokensUsed: Int
 ) {
     val date: String = getTodaysDate()
+    val rawGeneratedText: String
+        get() = generatedText
+            .replace("\r", "\\r")
+            .replace("\n", "\\n")
 }

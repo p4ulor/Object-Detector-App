@@ -6,7 +6,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,9 +45,13 @@ private const val bulletChar = '\u2022'
 
 /**
  * AnnotatedString could be used, but I want to keep it simple.
- * And this will also have much greater performance since it's run once in [Message]*/
+ * And this will also have much greater performance since it's run once in [Message]
+ * In rare occasions Gemini seems like it can also through sub bullet points, that may be use
+ * tabs or something. So this solution isn't a catch all
+ */
 fun String.parseMarkdownBulletPoints() =
-    replace("\n* ", "\n$bulletChar ")
+    replace("\n* ** ", "\n$bulletChar **")
+    .replace("\n* ", "\n$bulletChar ")
 
 @Preview
 @Composable
@@ -57,10 +60,13 @@ private fun MarkdownParserPreview() = Surface {
         Text(
             parseMarkdownBold(
                 """
+                * ** This a list **
+                * ** This a list **
                 ** This a list **:
                 **This a list**:
                 * apple
                 * orange
+                * extra
                 """.trimMargin().trimIndent().parseMarkdownBulletPoints()
             ),
             Modifier.wrapContentSize()

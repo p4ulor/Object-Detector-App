@@ -63,7 +63,7 @@ import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
 import p4ulor.obj.detector.e
 import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.components.ExpandableFAB
-import p4ulor.obj.detector.ui.components.FloatingActionButton
+import p4ulor.obj.detector.ui.components.Fab
 import p4ulor.obj.detector.ui.components.Icon
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.ResourcesIcon
@@ -155,7 +155,7 @@ fun HomeScreenGranted(
         }
     }
 
-    if(!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera and MediaPipe uses a lot of resources. And this is also used to terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to cancel the render of the AndroidView in the compose tree)
+    if (!isAppMinimized) { // Avoids showing composables of this screen for some milliseconds when changing screens, the justification is that the camera and MediaPipe uses a lot of resources. And this is also used to terminate the PreviewView, in order to avoid an occasional log spam updateSurface: surface is not valid when the app is minimized. (Apparently this is the only way by indicating to cancel the render of the AndroidView in the compose tree)
         Box(Modifier.fillMaxSize()) {
             val (modifier, alignment) = modifierAndAlignmentFor(cameraPreviewRatio, geminiStatus)
 
@@ -169,7 +169,9 @@ fun HomeScreenGranted(
                     }
                 )
 
-                EdgeBars(cameraPreviewSize, alignment)
+                if (geminiStatus.isEnabled && cameraPreviewRatio.is4by3) {
+                    HorizontalEdgeBars(cameraPreviewSize, alignment)
+                }
 
                 Box(
                     Modifier
@@ -182,7 +184,7 @@ fun HomeScreenGranted(
                             factory = { ctx -> // The following operations should be done in the main thread and are expensive, which can result in Choreographer complaining with "Skipped 42~ frames". Opening the camera with these use cases and using an AndroidView, may explain this, so maybe this can't be avoided
                                 val cameraPreviewView = PreviewView(ctx)
 
-                                val imageAnalysisSettings = vm.initObjectDetector(
+                                val imageAnalysisUseCase = vm.initObjectDetector(
                                     createCameraImageAnalyser(cameraPreviewRatio.toInt()),
                                     ObjectDetectorSettings(
                                         maxObjectDetections = prefs.maxObjectDetections,
@@ -195,7 +197,7 @@ fun HomeScreenGranted(
                                     cameraProvider,
                                     cameraPreviewView,
                                     imageCaptureUseCase,
-                                    imageAnalysisSettings,
+                                    imageAnalysisUseCase,
                                     lifecycleOwner
                                 )
 
@@ -206,7 +208,7 @@ fun HomeScreenGranted(
 
                     // Show the detected objects outlines
                     resultsBundle?.let {
-                        if(!geminiStatus.isEnabled){ // Easy implementation instead of rebinding the camera just for toggling off ImageAnalysis (there are other things to do in the project). We only re-bind the camera during app use only when the ratio changes, which is the most important to be able to have a valid ImageCapture to take pics after the fact
+                        if (!geminiStatus.isEnabled) { // Easy implementation instead of rebinding the camera just for toggling off ImageAnalysis (there are other things to do in the project). We only re-bind the camera during app use only when the ratio changes, which is the most important to be able to have a valid ImageCapture to take pics after the fact
                             ObjectBoundsBoxOutlines(
                                 detections = it.detectedObjects.detections(),
                                 frameWidth = it.inputImageWidth,
@@ -235,13 +237,13 @@ fun HomeScreenGranted(
             listOpenerIcon = Icon.Material(MaterialIcons.Add),
             fabs = buildList {
                 add(
-                    FloatingActionButton(Icon.App(ResourcesIcon.Scale)) {
+                    Fab(Icon.App(ResourcesIcon.Scale)) {
                         cameraProvider.unbindAll() // because a new [camera] will be initialized in the AndroidView
                         imageCaptureUseCase = createImageCaptureUseCase(vm.toggleCameraPreviewRatio())
                     }
                 )
                 add(
-                    FloatingActionButton(
+                    Fab(
                         Icon.App(
                         if (isFlashEnabled) ResourcesIcon.FlashlightOff else ResourcesIcon.FlashlightOn
                     )) {
@@ -258,11 +260,11 @@ fun HomeScreenGranted(
                 )
                 add(
                     if(geminiStatus.isEnabled){
-                        FloatingActionButton(Icon.App(ResourcesIcon.MediaPipe)){
+                        Fab(Icon.App(ResourcesIcon.MediaPipe)){
                             vm.toggleGemini(onFail = {})
                         }
                     } else {
-                        FloatingActionButton(Icon.App(ResourcesIcon.Gemini)) {
+                        Fab(Icon.App(ResourcesIcon.Gemini)) {
                             vm.toggleGemini(onFail = {
                                 ctx.toast(R.string.check_internet_and_gemini_key)
                             })
@@ -271,12 +273,12 @@ fun HomeScreenGranted(
                 )
                 if (geminiStatus.isEnabled) {
                     add(
-                        FloatingActionButton(Icon.App(ResourcesIcon.Camera)) {
+                        Fab(Icon.App(ResourcesIcon.Camera)) {
                             vm.takePicture(imageCaptureUseCase)
                         }
                     )
                     add(
-                        FloatingActionButton(Icon.Material(MaterialIcons.PermMedia)) {
+                        Fab(Icon.Material(MaterialIcons.PermMedia)) {
                             enableCameraUnbinding = false
                             photoPicker.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -299,7 +301,7 @@ private fun startCameraAndPreviewView(
     cameraProvider: ProcessCameraProvider,
     cameraPreviewView: PreviewView,
     imageCaptureUseCase: ImageCapture,
-    imageAnalysisSettings: ImageAnalysis,
+    imageAnalysisUseCase: ImageAnalysis,
     lifecycleOwner: LifecycleOwner
 ): Camera {
 
@@ -316,14 +318,14 @@ private fun startCameraAndPreviewView(
         useCases = arrayOf(
             previewUseCase,
             imageCaptureUseCase,
-            imageAnalysisSettings
+            imageAnalysisUseCase
         )
     )
 }
 
-/** Add bars in the sides so the background doesn't show, per example, when camera ratio == 4:3 */
+/** Add bars in the sides so the background doesn't show, per example, when camera ratio == 4:3 and Gemin is enabled */
 @Composable
-private fun BoxWithConstraintsScope.EdgeBars(cameraPreviewSize: Size, aligntment: Alignment) {
+private fun BoxWithConstraintsScope.HorizontalEdgeBars(cameraPreviewSize: Size, aligntment: Alignment) {
     Box(
         Modifier
             .align(aligntment)
@@ -334,7 +336,8 @@ private fun BoxWithConstraintsScope.EdgeBars(cameraPreviewSize: Size, aligntment
 }
 
 /**
- * Specifies the right modifier and alignment for 4_3 and 16_9 camera preview ratios
+ * Specifies the right modifier and alignment for 4_3 and 16_9 camera preview ratios when Gemini
+ * is enabled
  * - 4_3 -> Top with height equal to half of the available height
  * - 16_9 -> Bottom with max size
  */

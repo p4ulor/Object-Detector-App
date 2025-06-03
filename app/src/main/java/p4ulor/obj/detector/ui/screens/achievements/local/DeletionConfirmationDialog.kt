@@ -2,11 +2,11 @@ package p4ulor.obj.detector.ui.screens.achievements.local
 
 import androidx.compose.runtime.Composable
 import p4ulor.obj.detector.R
-import p4ulor.obj.detector.ui.components.QuickAlertDialog
+import p4ulor.obj.detector.ui.components.EzAlertDialog
 
 @Composable
 fun DeletionConfirmationDialog(confirmClick: () -> Unit, dismissClick: () -> Unit){
-    QuickAlertDialog(
+    EzAlertDialog(
         title = R.string.warning,
         description = R.string.all_achievements_will_be_deleted,
         confirmText = R.string.yes,

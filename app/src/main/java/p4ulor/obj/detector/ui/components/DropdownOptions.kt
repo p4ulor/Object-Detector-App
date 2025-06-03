@@ -78,7 +78,7 @@ fun DropdownOptions(
             OutlinedTextField(
                 value = options[selectedOption],
                 onValueChange = {  },
-                label = { QuickText(label) },
+                label = { EzText(label) },
                 readOnly = true,
                 trailingIcon = {
                     Button( // Turn around to make the text clickable. Modifier.clickable doesnt work

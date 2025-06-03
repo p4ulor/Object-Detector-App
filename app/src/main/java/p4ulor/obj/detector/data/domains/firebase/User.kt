@@ -1,7 +1,7 @@
 package p4ulor.obj.detector.data.domains.firebase
 
 import com.google.firebase.auth.FirebaseUser
-import p4ulor.obj.detector.data.domains.mediapipe.Achievement
+import com.google.firebase.firestore.Exclude
 import p4ulor.obj.detector.data.sources.cloud.firebase.FbCollection
 
 /**
@@ -22,8 +22,14 @@ data class User(
     val name: String = "",
     val photoUri: String = "",
     val points: Float = 0f, // so they dont have to be calculated everytime. max should be 80.0f
-    val achievements: List<UserAchievement> = emptyList()
+    val achievements: List<UserAchievement> = emptyList(),
+    @Exclude var isLoggedOut: Boolean = false // a utility flag to not cause more noise to other components
 ) {
+
+    /** Used to avoid showing null fields, blank profile pic and other UI details when logging out */
+    fun setAsLoggedOut() = this.apply {
+        isLoggedOut = true
+    }
 
     override fun toString(): String {
         return "name=$name, points=$points"

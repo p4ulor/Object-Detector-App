@@ -2,15 +2,12 @@ package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,19 +24,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import p4ulor.obj.detector.ui.animations.bouncySpring
 import p4ulor.obj.detector.ui.components.Icon
 import p4ulor.obj.detector.ui.components.IconDefaultSize
 import p4ulor.obj.detector.ui.components.IconMediumSize
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
-import p4ulor.obj.detector.ui.components.QuickIcon
+import p4ulor.obj.detector.ui.components.EzIcon
 import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.GeneralPaddingTiny
 import p4ulor.obj.detector.ui.components.utils.RoundRectangleShape
@@ -99,7 +94,7 @@ fun UserProfileDropdown(
                         verticalArrangement = Arrangement.spacedBy(VerticalPadding)
                     ) {
                         items(dropDownActions) {
-                            QuickIcon(
+                            EzIcon(
                                 icon = it.icon,
                                 size = ActionIconSize,
                                 padding = 0.dp,

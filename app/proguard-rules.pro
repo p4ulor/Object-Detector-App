@@ -33,3 +33,47 @@
 -dontwarn javax.lang.model.type.TypeVisitor
 -dontwarn javax.lang.model.util.SimpleTypeVisitor8
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+
+# to make it work with firebase https://stackoverflow.com/questions/60719791/firebase-firestore-variable-name-changed
+-keepparameternames
+-keepattributes MethodParameters
+-keepattributes Signature
+
+-keepclassmembers class p4ulor.obj.detector.data.domains.firebase.** {
+  *;
+}
+
+-keepnames class p4ulor.obj.detector.data.domains.firebase.** {
+  *;
+}
+
+-keepclassmembers class p4ulor.obj.detector.data.sources.cloud.firebase.** {
+  *;
+}
+
+-keepnames class p4ulor.obj.detector.data.sources.cloud.firebase.** {
+  *;
+}
+
+## for firebase
+
+-keepclassmembers class com.google.firebase.** {
+  *;
+}
+
+-keepnames class com.google.firebase.** {
+  *;
+}
+
+# for mediapipe
+
+-keepclassmembers class com.google.mediapipe.** {
+  *;
+}
+
+-keepnames class com.google.mediapipe.** {
+  *;
+}
+
+-dontwarn com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile
+-dontwarn com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate

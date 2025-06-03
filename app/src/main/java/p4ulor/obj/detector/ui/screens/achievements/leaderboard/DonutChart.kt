@@ -2,12 +2,19 @@ package p4ulor.obj.detector.ui.screens.achievements.leaderboard
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -22,7 +29,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import p4ulor.obj.detector.data.utils.getOrRandom
-import p4ulor.obj.detector.data.utils.toPercentage
 import p4ulor.obj.detector.data.utils.toPercentageWithDecimals
 import p4ulor.obj.detector.i
 import p4ulor.obj.detector.ui.animations.linear
@@ -32,7 +38,6 @@ import p4ulor.obj.detector.ui.components.utils.GeneralPaddingMedium
 import p4ulor.obj.detector.ui.components.utils.HorizontalPadding
 import p4ulor.obj.detector.ui.components.utils.VerticalPadding
 import p4ulor.obj.detector.ui.theme.PreviewComposable
-import kotlin.math.ceil
 
 typealias DonutChartData = Triple<String, Float, Color?>
 

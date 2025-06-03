@@ -8,7 +8,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -17,12 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,8 +32,7 @@ import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.domains.mediapipe.pointsDifferenceBetween
 import p4ulor.obj.detector.ui.animations.rememberBouncyFloatLooper
 import p4ulor.obj.detector.ui.components.MaterialIcons
-import p4ulor.obj.detector.ui.components.QuickText
-import p4ulor.obj.detector.ui.components.glowText
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.superGlowText
 import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
@@ -66,11 +63,16 @@ fun LeaderboardMainActions(
         }
 
         if (pointsDiff != 0f) {
-            val directionalDiff = if (pointsDiff > 0f) "+" else ""
+            val (directionalDiff, color) = if (pointsDiff >= 0f) {
+                "+" to Color.White
+            } else {
+                "" to Color.Red
+            }
             superGlowText(
                 "$directionalDiff${pointsDiff}",
                 Modifier.offset(y = animatedPointsY.value.dp),
-                blurRadius = Math.pow(4.0, animatedPointsY.value.toDouble()).toFloat()
+                blurRadius = Math.pow(4.0, animatedPointsY.value.toDouble()).toFloat(),
+                color = color
             )
         }
     }
@@ -93,18 +95,18 @@ private fun LeaderboardAction(
         tooltip = {
             RichTooltip(
                 Modifier.padding(horizontal = GeneralPadding),
-                title = { QuickText(title, fontWeight = FontWeight.ExtraBold) },
+                title = { EzText(title, fontWeight = FontWeight.ExtraBold) },
                 action = {
                     TextButton(onClick = {
                         performAction()
                         toolTipState.dismiss()
                     }) {
-                        QuickText(actionName)
+                        EzText(actionName)
                     }
                 },
                 caretSize = TooltipDefaults.caretSize * 2f
             ) {
-                QuickText(description)
+                EzText(description)
             }
         },
         state = toolTipState

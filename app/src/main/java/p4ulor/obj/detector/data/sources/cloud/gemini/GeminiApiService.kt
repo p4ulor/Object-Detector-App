@@ -12,6 +12,7 @@ import p4ulor.obj.detector.data.sources.cloud.gemini.GenerateContentRequest.Cont
 import p4ulor.obj.detector.data.sources.cloud.gemini.GenerateContentRequest.Image
 import p4ulor.obj.detector.data.sources.cloud.gemini.GenerateContentRequest.Part
 import p4ulor.obj.detector.e
+import p4ulor.obj.detector.i
 import java.io.Closeable
 
 /**
@@ -29,7 +30,7 @@ class GeminiApiService(apiKey: String) : Closeable {
 
     /** Performs a POST request to Gemini given a [prompt] as the body */
     suspend fun promptWithImage(prompt: GeminiPrompt): GeminiResponse? {
-        val (path, queryParams) = endpoints.postTo(GeminiApiEndpoints.Resources.Models.GenerateContent)
+        val (path, queryParams) = endpoints.postTo(GeminiApiEndpoints.Resources.Models.Flash2_0.GenerateContent)
         val body = prompt.toHttpRequest()
 
         return runCatching {
@@ -45,7 +46,10 @@ class GeminiApiService(apiKey: String) : Closeable {
                     }
                 )
             }
-        }.onFailure {
+        }.onSuccess {
+            i("raw GeminiResponse text: ${it.rawGeneratedText}")
+        }
+        .onFailure {
             e("promptWithImage error throwable message: ${it.message}")
         }.getOrNull()
     }

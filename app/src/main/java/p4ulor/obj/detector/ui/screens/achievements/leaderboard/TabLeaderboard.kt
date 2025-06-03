@@ -27,7 +27,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,7 +37,6 @@ import kotlinx.coroutines.delay
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.data.domains.firebase.ObjectDetectionStats
 import p4ulor.obj.detector.data.domains.firebase.User
-import p4ulor.obj.detector.data.domains.firebase.UserAchievement
 import p4ulor.obj.detector.data.domains.mediapipe.Achievement
 import p4ulor.obj.detector.data.utils.ConnectionStatus
 import p4ulor.obj.detector.i
@@ -47,8 +45,7 @@ import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.Icon
 import p4ulor.obj.detector.ui.components.MaterialIcons
 import p4ulor.obj.detector.ui.components.MaterialIconsExt
-import p4ulor.obj.detector.ui.components.QuickAlertDialog
-import p4ulor.obj.detector.ui.components.QuickText
+import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.utils.BoxWithBackground
 import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
@@ -69,9 +66,9 @@ fun TabLeaderboard(
     connectionStatus: ConnectionStatus,
     localAchievements: List<Achievement>,
     onSignInWithGoogle: () -> Unit = {},
-    onSignOut: () -> Unit= {},
-    onSubmitAchievements: () -> Unit= {},
-    onDeleteAccount: () -> Unit= {},
+    onSignOut: () -> Unit = {},
+    onSubmitAchievements: () -> Unit = {},
+    onDeleteAccount: () -> Unit = {},
     onRefreshLeaderboard: () -> Unit = {},
 ) {
     val ctx = LocalContext.current
@@ -82,7 +79,8 @@ fun TabLeaderboard(
         animationSpec = smooth(),
     )
 
-    VerticallyAnimatedVisibility(visible = currUser != null) { // Login granted
+
+    VerticallyAnimatedVisibility(visible = currUser != null && currUser?.isLoggedOut == false) { // Login granted
         Column(Modifier.blur(blurRadius)) {
             Card(
                 Modifier.fillMaxWidth().padding(GeneralPaddingSmall),
@@ -112,7 +110,9 @@ fun TabLeaderboard(
                     UserProfileDropdown(
                         currUser?.photoUri,
                         dropDownActions = listOf(
-                            DropdownAction(Icon.Material(MaterialIconsExt.Logout), action = { onSignOut() }),
+                            DropdownAction(Icon.Material(MaterialIconsExt.Logout), action = {
+                                onSignOut()
+                            }),
                             DropdownAction(Icon.Material(MaterialIcons.PersonOff), action = { showDeletionConfirmation.toggle() })
                         )
                     )
@@ -133,7 +133,7 @@ fun TabLeaderboard(
         }
     }
 
-    VerticallyAnimatedVisibility(visible = currUser == null) { // Login not granted
+    VerticallyAnimatedVisibility(visible = currUser == null || currUser.isLoggedOut) { // Login not granted
         CenteredColumn {
             SignInWithGoogle(Modifier.width(200.dp), onClick = {
                 if (connectionStatus.isEnabled) {
@@ -178,7 +178,7 @@ fun TopDataDashboard(
             }
         ) {
             CenteredColumn(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-                QuickText(
+                EzText(
                     R.string.top_user_points,
                     Modifier.padding(GeneralPadding),
                     textStyle = MaterialTheme.typography.titleLarge
@@ -199,7 +199,7 @@ fun TopDataDashboard(
                     }
                 }
 
-                QuickText(
+                EzText(
                     R.string.top_detected_objects,
                     Modifier.padding(GeneralPadding),
                     textStyle = MaterialTheme.typography.titleLarge
