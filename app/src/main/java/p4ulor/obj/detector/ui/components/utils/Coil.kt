@@ -9,6 +9,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Size
 import java.util.Base64
+import p4ulor.obj.detector.android.utils.camera.Picture
 
 fun Context.base64ToImageRequest(base64: String): ImageRequest {
     val base64ForCoil = base64.substringAfter("base64,") // https://stackoverflow.com/a/78151198/9375488
@@ -20,6 +21,7 @@ fun Context.base64ToImageRequest(base64: String): ImageRequest {
         .build()
 }
 
+/** See the [path] format in [Picture.File.path] */
 fun Context.pathToImageRequest(path: Uri) =
     ImageRequest.Builder(this)
         .data(path)

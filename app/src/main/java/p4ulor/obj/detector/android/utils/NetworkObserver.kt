@@ -13,9 +13,9 @@ import org.koin.core.annotation.Single
 import p4ulor.obj.detector.i
 
 /**
- * Allows receiving updates to the status of Wifi or Mobile Data connectivity via [hasConnection]
+ * Allows receiving updates of the status of Wifi or Mobile Data connectivity via [hasConnection]
  * @param [context] is injected by Koin. [trySendBlocking] is not used since none of these operations
- * are highly repetitive in a short amount of time
+ * are highly repetitive in a short amount of time and we don't want it to block
  */
 @Single
 class NetworkObserver(context: Context) {
@@ -26,10 +26,6 @@ class NetworkObserver(context: Context) {
     val hasConnection = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                trySend(true)
-            }
-
-            override fun onLosing(network: Network, maxMsToLive: Int) {
                 trySend(true)
             }
 
@@ -49,6 +45,7 @@ class NetworkObserver(context: Context) {
             .build()
 
         connectivityManager.registerNetworkCallback(networkTypesToObserve, callback)
+
         awaitClose {
             i("NetworkObserver closed hasConnection flow")
             connectivityManager.unregisterNetworkCallback(callback)

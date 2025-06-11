@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -58,6 +59,7 @@ import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.LightCircularContainer
 import p4ulor.obj.detector.ui.components.utils.TransparencyGradient
 import p4ulor.obj.detector.ui.components.utils.TransparentGradientPosition
+import p4ulor.obj.detector.ui.components.utils.UiTestTag
 import p4ulor.obj.detector.ui.components.utils.fadingEdge
 import p4ulor.obj.detector.ui.components.utils.rememberToggleableState
 import p4ulor.obj.detector.ui.theme.PreviewComposable
@@ -181,6 +183,7 @@ private fun AchievementsList(
 
     LazyColumn(
         Modifier
+            .testTag(UiTestTag.achievementsList)
             .padding(padding) // because of this, the amount of fade out that's visible is not the same as top because the list itself is pushed down (because of the topBar), so we need to provide this padding to the TransparencyGradient
             .fillMaxSize()
             .fadingEdge(

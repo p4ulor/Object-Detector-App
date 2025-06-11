@@ -112,7 +112,7 @@ fun DropdownOptions(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = optionLabels.get(option) ?: option,
+                                text = optionLabels.getOrDefault(option, option),
                                 Modifier.padding(horizontal = horizontalPadding)
                             )
                        },

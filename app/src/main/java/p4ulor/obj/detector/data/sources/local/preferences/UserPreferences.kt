@@ -20,7 +20,7 @@ data class UserPreferences(
     var minDetectCertainty: Float = Default.minDetectCertainty,
     var maxObjectDetections: Int = Default.maxObjectsDetections,
     var enableAnimations: Boolean = Default.enableAnimations,
-    var selectedModel: String = Default.selectedModel,
+    var selectedModel: String = Default.selectedModel.name,
     var savePictures: Boolean = Default.savePictures
 ) {
     companion object {
@@ -35,7 +35,7 @@ data class UserPreferences(
             const val minDetectCertainty = 0.50f
             const val maxObjectsDetections = 3
             const val enableAnimations = false
-            val selectedModel = Model.EFFICIENTDETV0.name
+            val selectedModel = Model.EFFICIENTDETV0
             const val savePictures = false
         }
 
@@ -56,7 +56,7 @@ data class UserPreferences(
                         this?.get(minDetectCertaintyKey) ?: Default.minDetectCertainty,
                         this?.get(maxObjectDetectionsKey) ?: Default.maxObjectsDetections,
                         this?.get(enableAnimationsKey) ?: Default.enableAnimations,
-                        this?.get(selectedModelKey) ?: Default.selectedModel,
+                        this?.get(selectedModelKey) ?: Default.selectedModel.name,
                         this?.get(savePicturesKey) ?: Default.savePictures
                     )
                 }

@@ -1,11 +1,9 @@
 package p4ulor.obj.detector.ui.screens.settings
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,10 +28,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import p4ulor.obj.detector.R
@@ -49,8 +48,13 @@ import p4ulor.obj.detector.ui.components.EzIcon
 import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.SliderTrackCustom
 import p4ulor.obj.detector.ui.components.mediaPipeLikeText
+import p4ulor.obj.detector.ui.components.utils.CenteredColumn
+import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
+import p4ulor.obj.detector.ui.components.utils.GeneralPaddingSmall
+import p4ulor.obj.detector.ui.components.utils.UiTestTag
 import p4ulor.obj.detector.ui.components.utils.textWidthOf
+import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 private val SliderTrackHeight = 10.dp
 
@@ -74,7 +78,9 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
         EzText(R.string.minimum_detection_certainty)
         Text(
             text = minDetectCertainty.toPercentage(),
-            Modifier.width(textWidthOf("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
+            Modifier
+                .testTag(UiTestTag.settingsMinimumDetectionCertaintyValue)
+                .width(textWidthOf("%%%%%")), // So the texts don't slightly change positions when slider goes through 0%-100$
             fontWeight = FontWeight.Bold,
             maxLines = 1
         )
@@ -89,6 +95,7 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
                 })
             },
             modifier = Modifier
+                .testTag(UiTestTag.settingsMinimumDetectionCertaintySlider)
                 .padding(GeneralPadding)
                 .widthIn(0.dp, maxWidth * 0.8f),
             valueRange = detectionCertaintyRange.start..detectionCertaintyRange.endInclusive,
@@ -128,11 +135,7 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
         )
     }
 
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
+    CenteredRow (horizontalPadding = GeneralPaddingSmall) {
         val toolTipState = rememberTooltipState(isPersistent = true)
         val scope = rememberCoroutineScope()
 
@@ -169,8 +172,6 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
                 uncheckedTrackColor = MaterialTheme.colorScheme.scrim
             )
         )
-
-        WidthSpacer(GeneralPadding)
     }
 
     Spacer(Modifier.size(GeneralPadding))
@@ -186,4 +187,15 @@ fun ColumnScope.MediaPipeSettings(currPrefs: UserPreferences, onNewPrefs: (UserP
             })
         }
     )
+}
+
+@Preview
+@Composable
+private fun MediaPipeSettingsPreview() = PreviewComposable {
+    CenteredColumn {
+        MediaPipeSettings(
+            UserPreferences(),
+            {}
+        )
+    }
 }

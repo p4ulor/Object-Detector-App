@@ -118,13 +118,13 @@ fun superGlowText(
             glowText(text, blurRadius, color),
             Modifier.graphicsLayer {
                 renderEffect = BlurEffect(
-                    radiusX = 10f,
-                    radiusY = 10f,
+                    radiusX = 15f,
+                    radiusY = 15f,
                     edgeTreatment = TileMode.Decal
                 )
             },
             color = color,
-            fontWeight = fontWeight,
+            fontWeight = FontWeight.SemiBold,
             style = textStyle,
         )
 
@@ -155,7 +155,7 @@ private fun TextPreviews() = AppTheme(enableDarkTheme = true){
             )
 
             Text(
-                glowText("Glow text"),
+                glowText("Glow bold"),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineMedium,
             )
@@ -177,7 +177,7 @@ private fun TextPreviews() = AppTheme(enableDarkTheme = true){
             )
 
             superGlowText(
-                "Glow text",
+                "Glow text +",
                 textStyle = MaterialTheme.typography.headlineMedium,
             )
         }

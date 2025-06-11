@@ -13,15 +13,14 @@ import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
  * in order to classify it as an object as X. Detections bellow this amount won't be displayed
  */
 data class ObjectDetectorSettings(
-    val maxObjectDetections: Int = Companion.maxObjectDetections,
-    val sensitivityThreshold: Float = 0.5F,
-    val model: Model = Model.EFFICIENTDETV0,
+    val maxObjectDetections: Int = UserPreferences.Companion.Default.maxObjectsDetections,
+    val sensitivityThreshold: Float = UserPreferences.Companion.Default.minDetectCertainty,
+    val model: Model = UserPreferences.Companion.Default.selectedModel,
     val processor: Delegate = Delegate.GPU,
     val mediaTypeToAnalyze: RunningMode = RunningMode.LIVE_STREAM
 ) {
 
     companion object {
-        // Use later
         val detectionCertaintyRange = 0f..1f
         const val maxObjectDetections = 5
     }

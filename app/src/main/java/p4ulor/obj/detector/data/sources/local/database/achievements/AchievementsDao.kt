@@ -14,6 +14,9 @@ import androidx.room.Query
  * withContext(Dispatchers.IO) to call suspending room queries. It will complicate the code and make
  * your queries run slower." says an Engineer from Google (even though it's not in the docs ...)
  * - https://medium.com/androiddevelopers/coroutines-on-android-part-iii-real-work-2ba8a2ec2f45
+ *
+ * PS: After reading some comments on this article and reflecting on it, basically I don't have to
+ * necessarily only use Dispatchers.IO. Technically, it's not a concrete mistake to use Dispatchers.IO
  */
 @Dao
 interface AchievementsDao {

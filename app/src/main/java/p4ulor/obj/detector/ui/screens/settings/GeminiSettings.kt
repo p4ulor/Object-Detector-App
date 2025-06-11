@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.data.sources.cloud.gemini.GEMINI_AI_STUDIO_LINK
 import p4ulor.obj.detector.data.sources.local.preferences.UserSecretPreferences
@@ -33,8 +34,10 @@ import p4ulor.obj.detector.ui.components.MaterialIconsExt
 import p4ulor.obj.detector.ui.components.EzIcon
 import p4ulor.obj.detector.ui.components.EzText
 import p4ulor.obj.detector.ui.components.geminiLikeText
+import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.components.utils.toast
+import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 @Composable
 fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (UserSecretPreferences) -> Unit) {
@@ -84,5 +87,16 @@ fun ColumnScope.GeminiSettings(currPrefs: UserSecretPreferences, onNewPrefs: (Us
         }
     ) {
         EzText(R.string.save)
+    }
+}
+
+@Preview
+@Composable
+private fun GeminiSettingsPreview() = PreviewComposable {
+    CenteredColumn {
+        GeminiSettings(
+            UserSecretPreferences(),
+            {}
+        )
     }
 }

@@ -67,7 +67,7 @@ jobs:
       - name: Grant Permissions to gradlew
         run: chmod +x gradlew
 
-      # build without running tests so it's faster
+      # build without running tests so it's faster and uses less GH Actions minutes
       - name: Build app
         id: build_app
         run: ./gradlew build -x test

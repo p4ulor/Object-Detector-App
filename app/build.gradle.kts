@@ -107,8 +107,8 @@ android {
 
     buildTypes {
         // https://developer.android.com/build/shrink-code
-        release { // fun fact: if minify is enabled, the release build goes from 165mb to 89mb
-            isDebuggable = false // if true, will allow printing of logs and the .apk size will have around +25mb according to my tests
+        release { // fun fact: if minify is enabled, the release build goes from 147mb to 89mb
+            isDebuggable = false // if true, will allow printing of logs and the .apk size will have around +20mb according to my tests
             isMinifyEnabled = false // Disabled since it causes problems with MediaPipe | Shrinks and obfuscate code (but it's not enough to protect against decompilers of the .apk)
             isShrinkResources = false // Disabled since isMinifyEnabled must be true for this to be true | removes unused resources, performed by Android Gradle plugin
             proguardFiles(

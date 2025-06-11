@@ -4,15 +4,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
@@ -30,10 +26,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -45,8 +41,11 @@ import p4ulor.obj.detector.data.sources.local.preferences.UserPreferences
 import p4ulor.obj.detector.data.sources.local.preferences.UserSecretPreferences
 import p4ulor.obj.detector.ui.animations.smooth
 import p4ulor.obj.detector.ui.components.EzText
+import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
-import p4ulor.obj.detector.ui.components.utils.HorizontalPadding
+import p4ulor.obj.detector.ui.components.utils.GeneralPaddingSmall
+import p4ulor.obj.detector.ui.components.utils.GeneralPaddingTiny
+import p4ulor.obj.detector.ui.components.utils.UiTestTag
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 @Composable
@@ -119,8 +118,6 @@ private fun SettingsScreenUi(
     }
 }
 
-
-
 @Composable
 private fun ConnectivityStatus(hasConnection: Boolean) {
     val (animation, modifier) = if (hasConnection) { // Because the lottie files have different paddings...
@@ -133,12 +130,10 @@ private fun ConnectivityStatus(hasConnection: Boolean) {
             .size(30.dp, 30.dp)
             .padding(horizontal = 2.dp)
     }
+
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(animation))
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
+
+    CenteredRow {
         EzText(R.string.connectivity_status)
         LottieAnimation(composition, modifier)
     }
@@ -148,13 +143,9 @@ private fun ConnectivityStatus(hasConnection: Boolean) {
 private fun SavePicturesCheckBox(currPrefs: UserPreferences, onNewPrefs: (UserPreferences) -> Unit) {
     var savePictures by remember { mutableStateOf(currPrefs.savePictures) }
 
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
+    CenteredRow (horizontalPadding = GeneralPaddingTiny) {
         EzText(R.string.save_pictures)
-        WidthSpacer(HorizontalPadding)
+
         Checkbox(
             checked = savePictures,
             onCheckedChange = {
@@ -163,6 +154,7 @@ private fun SavePicturesCheckBox(currPrefs: UserPreferences, onNewPrefs: (UserPr
                     this.savePictures = it
                 })
             },
+            Modifier.testTag(UiTestTag.settingsCheckBox),
             colors = CheckboxDefaults.colors(
                 uncheckedColor = MaterialTheme.colorScheme.scrim
             )
@@ -181,9 +173,6 @@ fun ColumnScope.SettingsHeader(styledText: AnnotatedString){
         style = MaterialTheme.typography.headlineSmall,
     )
 }
-
-@Composable
-fun WidthSpacer(width: Dp) = Spacer(Modifier.width(width))
 
 @Preview
 @Composable

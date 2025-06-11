@@ -38,6 +38,8 @@ import p4ulor.obj.detector.ui.components.utils.CenteredColumn
 import p4ulor.obj.detector.ui.components.utils.CenteredRow
 import p4ulor.obj.detector.ui.components.utils.GeneralPadding
 import p4ulor.obj.detector.ui.theme.PreviewComposable
+import kotlin.math.abs
+import kotlin.math.pow
 
 @Composable
 fun LeaderboardMainActions(
@@ -71,7 +73,7 @@ fun LeaderboardMainActions(
             superGlowText(
                 "$directionalDiff${pointsDiff}",
                 Modifier.offset(y = animatedPointsY.value.dp),
-                blurRadius = Math.pow(4.0, animatedPointsY.value.toDouble()).toFloat(),
+                blurRadius = 4.0.pow(animatedPointsY.value.toDouble()).toFloat(),
                 color = color
             )
         }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
@@ -16,6 +17,7 @@ import coil3.svg.SvgDecoder
 import p4ulor.obj.detector.R
 import p4ulor.obj.detector.android.utils.getResourcePath
 import p4ulor.obj.detector.i
+import p4ulor.obj.detector.ui.components.utils.UiTestTag
 import p4ulor.obj.detector.ui.theme.PreviewComposable
 
 /**
@@ -34,7 +36,10 @@ fun SignInWithGoogle(modifier: Modifier = Modifier.fillMaxSize(), onClick: () ->
             .decoderFactory(SvgDecoder.Factory())
             .build(),
         contentDescription = "Google Logo",
-        modifier.clip(CircleShape).clickable { onClick() },
+        modifier
+            .testTag(UiTestTag.achievementsGoogleSignIn)
+            .clip(CircleShape)
+            .clickable { onClick() },
         error = painterResource(R.drawable.flashlight_off),
         onError = {
             i("Error loading SignInWithGoogle: $it")

@@ -9,14 +9,14 @@
 This text details things about conditions, state handling, decisions made, reminders, errors, user experience, etc. The actual details are in the code of course.
 
 ### HomeScreen 🏠
-- Everytime the user navigates to this screen the preferences, secret preferences (gemini api key) and the unreached achievements are loaded
-- When existing the screen or minimizing the app, the camera is unbinded
+- Everytime the user navigates to this screen, the preferences, the secret preferences (Gemini api key) and the unreached achievements are loaded
+- When exiting the screen or minimizing the app, the camera is unbinded to save resources
 - Toggling on Gemini doesn't stop the image analysis from MediaPipe from running in the background because I didn't want to have to rebind the camera just to do so, but it stops the flow emissions of results
 - For simplicity sake, only the latest message of Gemini is saved when the user leaves the screen or toggled off/on Gemini
 
 ### SettingsScreen 🔧
 - On the first time the user navigates to this screen the preferences and secret preferences are loaded
-- Everytime he changes the settings, these are loaded automatically (except for Gemini API that requires clicking a button per example). Then the state of these are maintained in the viewmodel
+- Everytime the user changes the settings, these are saved automatically (except for Gemini API that requires clicking a button per example) in (preferences) DataStore. Then the state of these are maintained in the viewmodel
 - When the app that's installed doesn't have the MediaPipe models: The preferences can still be set, but MediaPipe won't be running in the ImageAnalysis use case
 
 ### AchievementsScreen 🏅
@@ -81,7 +81,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // only authenticated users can read and only authenticated users can write to their own data
     match /users/{userId} {
-    	allow read: if request.auth != null;
+      allow read: if request.auth != null;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
@@ -129,6 +129,7 @@ service cloud.firestore {
 - Not displaying the whole list of Gemini messages in the chat, but only displaying the latest one
 - Not opening the Achievements screen when clicking on a new achievement notification, but only navigating to the MainActivity
 - Not supporting zooming in with camera
+- Not allowing the user to config the Gemini API model he desires from a dropdown. It would be useful since there was a day or 2 where the 2.0 flash model was overloaded and was returning HTTP status 503 (Service Unavailable)
 
 ### Resources
 - https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/object_detection/android
