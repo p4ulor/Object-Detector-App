@@ -30,9 +30,9 @@ This text details things about conditions, state handling, decisions made, remin
 - For properly setting up the Firebase project with authentication, a set of things must be done regarding the app signing and providing the SHA codes to the Firebase SDK setup for Android (the google-services.json). This will be used to authenticate the clients (android phones) doing requests to the Firebase project. You can change these SHA codes anytime, so you can leave it blank when creating the project's SDK.
 - These changes will make so that trying to decompile the .apk and making any attempts to make requests with any other built app not valid.
 1. Set up the [App signing](https://developer.android.com/studio/publish/app-signing#generate-key). This will be used when generating the SHA certificate fingerprints
-2. Save the values and place them in `local.properties` (so you don't forget them. This is not checked in version control) like so
+2. Save the values and place them in `local.properties` (these are used in the gradle script when doing a release build. This is not checked in version control) like so
 ```cmake
-# Should be set in Github Actions
+# Should also be set in Github Actions
 RELEASE_JKS_FILE_BASE64= ... (see step 3)
 RELEASE_JSK_PASSWORD=...
 RELEASE_KEY_ALIAS=...
@@ -61,7 +61,7 @@ and copy it's contents to the `RELEASE_JKS_FILE_BASE64` variable. The JKS file i
 base64 --wrap=0 google-services.json > google_services_json.base64
 ```
 
-5. The previous operations and variable names should match the code insiprevious step should cretring environment variable in Github Actions and be converted to a file that's placed in `app/` directory during the job execution (and before the gradle build step)
+5. Check that the file and variable names should match the code in the `build.gradle.kts` and match environment variables in Github Actions. The `google-services.json` file will be created and placed in `app/` directory during the job execution (and before the gradle build step) and the .jks file will be created too when doing a release build.
 10. More info
    - https://developers.google.com/android/guides/client-auth
    - https://developer.android.com/studio/publish/app-signing
@@ -71,7 +71,8 @@ base64 --wrap=0 google-services.json > google_services_json.base64
     - With Firestore rules, only authenticated users can read data. And the only authentication method is with Google
     - Apps with unrecognized hashes will not be able to connect to the firebase project, even for trying to obtain authentication (see `onFailure` of `signInWithGoogle()`).
     - And the most important step is to setup the Firebase project (and the app) with ["App Check"](https://firebase.google.com/docs/app-check?hl=en&authuser=0#how_is_related_to), which is complementary to the Firebase authentication. It offers periodic attestation of the app or device's authenticity by requiring API calls to contain a valid App Check token with an expiration date. It requires creating a Play Console developer account (costs 25 dollars) and associating a Google Play project to the Firebase project. This is where the gradle generated SHA-256 comes in. To configure App Check is pretty simple, just go to it's tab in Firebase, click register, add the SHA-256, and on API's tab check enforcement for Firestore. But I didn't do this because: I don't want to pay 25 dollars, I want to move on to other things and I don't want to complicate the app use and building for other devs so they can try it out more easily.
-12. For testing outside of GH actions, you can set the environment variables (and rename some files that can be overwritten) in the terminal with `èxport GOOGLE_SERVICES_JSON=...` and then running the gradle script through the same terminal ` ./gradlew build -x test`
+	- And the final step would be to use ProGuard and DexGuard in a real production case
+12. For testing outside of GH actions, you can set the environment variables (and rename some files that can be overwritten) in the terminal with `èxport GOOGLE_SERVICES_JSON=...` and then running the gradle script through the same terminal ` ./gradlew build -x test` 
 
 ### Firebase rules (prod)
 ```javascript
